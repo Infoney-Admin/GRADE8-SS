@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meet the Animal You! – Personality Hotspot</title>
+    <style>
+        /* Font Imports */
+        @font-face {
+            font-family: 'Fredoka';
+            src: url('../assets/Fredoka-VariableFont_wdth\,wght.ttf') format('truetype');
+        }
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        /* Root Variables */
+        :root {
+             --font-xs: 1.1rem;
+            --font-sm: 1.4rem;
+            --font-md: 1.4rem;
+            --font-lg: 2rem;
+            --font-xl: 4rem;
+            --pad-sm: 1rem;
+            --pad-md: 1.6rem;
+            --pad-lg: 2.4rem;
+            --primary-color: #5D04B2;
+            --secondary-color: #fbb03b;
+            --progress-color: #ffff00;
+            --correct-color: #4caf50;
+            --text-color-dark: #333;
+            --text-color-light: #fff;
+            --card-background-light: #ffffff;
+            --header-font: 'Fredoka', sans-serif;
+            --body-font: var(--header-font);
+        }
+
+        /* Proportional Scaling System Setup */
+        html {
+            /* Establishes a master scaling unit relative to the viewport's smallest dimension. */
+            font-size: 1.8vmin;
+        }
+
+        /* Global Reset & Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Prevent body scrollbars */
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f4f8;
+            font-family: var(--body-font);
+        }
+
+        #game-wrapper {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16 / 9;
+            max-width: 1200px;
+            margin: auto;
+            position: relative;
+        }
+
+        #game-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            background-color: var(--primary-color);
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            overflow: hidden;
+            padding: 0rem;
+        }
+
+        .screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.95);
+        }
+
+        
+    /* ===== START SCREEN ===== */
+    #start-screen {
+      color: var(--text-color-light);
+      text-align: center;
+      padding: 2rem;
+      background-image: url('images/gamebg.jpg');
+      background-size: cover;
+      background-position: center;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    #start-screen h1 {
+      color: var(--text-color-light);
+      font-size: 4rem;
+      font-family: var(--header-font);
+      text-shadow: 0 0.2rem 0.5rem rgba(0,0,0,0.4);
+      font-weight: 500;
+    }
+    
+    .start-button {
+       font-family: var(--header-font);
+        background: var(--secondary-color);
+        color: var(--text-color-light);
+        font-weight: 500;
+        font-size: 1.2rem;
+        border: 3px solid #fff;
+        border-radius: 4.8rem;
+        padding: var(--pad-sm) var(--pad-lg);
+        margin-top: 1.6rem;
+        cursor: pointer;
+        text-shadow: 0 0.2rem 0 #b88b2a;
+        transition: all 0.2s;
+    }
+    
+    .start-button:hover {
+      transform: scale(1.06);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+    }
+    
+        /* Game Screen Styles */
+        #game-screen {
+             justify-content: flex-start;
+             padding: 0;
+             display: flex;
+             flex-direction: column;
+        }
+        
+        /* Header / Top Bar */
+        .game-top-section { 
+          width: 100%;
+          background-color: #5D04B2;
+          padding: 0.75rem 1.25rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          color: #fff;
+          z-index: 10;
+          box-shadow: 0 0.1rem 0.5rem rgba(0,0,0,0.2);
+          flex-shrink: 0;
+        }
+        
+        #game-title {
+          font-size: 1.8rem;
+          font-weight: 600;
+          margin: 0;
+        }
+        
+        .progress-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        /* Progress Bar */
+         #progress-container {
+            width: 12.5rem;
+            background-color: rgba(255,255,255,0.3);
+            border-radius: 1rem;
+            height: 1.25rem;
+            border: 2px solid #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #FFFF00;
+            border-radius: 0.8rem;
+            transition: width 0.5s ease;
+        }
+
+        #progress-text {
+            color: var(--text-color-light);
+            font-weight: 600;
+            font-size: 1rem;
+            text-shadow: 0.0625rem 0.0625rem 0.125rem rgba(0,0,0,0.6);
+            white-space: nowrap;
+        }
+            
+        @keyframes glow-pulse-white {
+            0%, 100% { box-shadow: 0 0 1rem rgba(255, 255, 255, 0.7), 0 0 2rem rgba(255, 255, 255, 0.5); transform: scale(1); }
+            50% { box-shadow: 0 0 2rem rgba(255, 255, 255, 1), 0 0 3rem rgba(255, 255, 255, 0.7); transform: scale(1.1); }
+        }
+
+        .instructions-icon {
+            width: 3rem;
+            height: 3rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 0.15rem solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 15;
+            flex-shrink: 0;
+            animation: glow-pulse-white 2s infinite ease-in-out;
+        }
+        .instructions-icon svg { width: 60%; height: 60%; fill: white; }
+        .instructions-icon:hover { 
+            transform: scale(1.1);
+            animation-play-state: paused;
+        }
+        
+        .lab-game-area {
+            width: 100%;
+            flex-grow: 1;
+            position: relative;
+            background-image: url('images/hotspot-img.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #fafafa;
+            aspect-ratio: 16/9;
+        }
+        
+        .hotspot {
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 0, 0.2);
+            border: 0.2rem solid white;
+            transform: translate(-50%, -50%); /* Center the hotspot */
+        }
+
+        @keyframes zone-pulse {
+            0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0rem rgba(255, 255, 255, 0.7); }
+            70% { box-shadow: 0 0 0 1.5rem rgba(255, 255, 255, 0); }
+            100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0rem rgba(255, 255, 255, 0); }
+        }
+        
+        .hotspot.active { animation: zone-pulse 1.5s infinite; }
+        .hotspot.completed::before {
+            content: '✓';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            color: white;
+            font-weight: 700;
+            text-shadow: 0 0.1rem 0.3rem rgba(0,0,0,0.5);
+        }
+        .hotspot.completed { 
+            pointer-events: none; 
+            background-color: rgba(76, 175, 80, 0.3);
+            border-color: rgba(255, 255, 255, 0.5); 
+            animation: none;
+        }
+        
+        /* MODALS */
+        .overlay {
+          position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+          background-color: rgba(0,0,0,0.4);
+          backdrop-filter: blur(0.5rem);
+          z-index: 100;
+          display: flex; justify-content: center; align-items: center;
+          animation: fadeIn 0.3s ease;
+        }
+        .overlay.hidden { display: none; }
+        
+        .modal {
+          background: var(--card-background-light, #fff);
+          padding: 2.5rem;
+          border-radius: 1rem;
+          text-align: center;
+          width: 90%; 
+          max-width: 50rem;
+          animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          position: relative;
+        }
+        
+        .modal .modal-title {
+          font-size: 2.5rem; font-weight: 600; margin-bottom: 1.5rem;
+          color: var(--primary-color);
+        }
+        .modal p { font-size: 1.5rem; line-height: 1.6; color: var(--text-color-dark, #333); }
+
+        #activity-description-overlay .modal { border-top: 0.5rem solid var(--primary-color); }
+        #activity-description-overlay .modal .modal-title { color: var(--primary-color); }
+        #activity-description-overlay .modal p {
+          text-align: left; background: #f8f9fa; padding: 1.5rem;
+          border-radius: 0.75rem; border-left: 0.4rem solid var(--primary-color);
+        }
+        
+        #game-instructions-overlay .modal { border-top: 0.5rem solid var(--primary-color); }
+        #game-instructions-overlay .modal .modal-title { color: var(--primary-color); }
+        #game-instructions-overlay .modal p {
+            text-align: left;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            font-size: 1.2rem; line-height: 1.6;
+        }
+        
+        .modal-close-btn {
+          width: 100%; padding: 1.2rem; font-size: 1.5rem; font-weight: 700;
+          border: none; border-radius: 0.75rem; cursor: pointer; color: #fff;
+          background-color: var(--primary-color);
+          transition: transform 0.2s, box-shadow 0.2s;
+          margin-top: 1.5rem;
+        }
+        
+        .modal-close-btn:hover { transform: scale(1.02); }
+
+        /* Scenario Info Modal */
+        .scenario-modal {
+            display: flex; 
+            flex-direction: row;
+            background: var(--card-background-light);
+            width: 90%; 
+            max-width: 60rem; /* Adjusted for single column text */
+            height: auto; /* Auto height for content */
+            max-height: 90vh; /* Max height */
+            border-radius: 1rem;
+            overflow: hidden; 
+            animation: slideIn 0.6s ease; 
+        }
+        .scenario-image-container { display: none; } /* Hide image container */
+        
+        .scenario-content { 
+            width: 100%; /* Full width for content */
+            padding: 2.5rem; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            overflow-y: auto; 
+        }
+        
+        .info-item {
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            text-align: left;
+        }
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-item.fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        .info-item p {
+            color: var(--text-color-dark);
+            font-size: 1.5rem;
+            line-height: 1.6;
+        }
+        .info-item p b {
+            color: var(--primary-color);
+            font-weight: 700;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+        #scenario-title {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            font-family: var(--header-font);
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            text-align: left;
+            font-weight: 700;
+        }
+        #scenario-title.fade-in-up {
+             animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        #scenario-close-btn {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateY(3rem) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(2rem);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Completion Screen */
+        #completion-overlay { 
+            background-image: url('images/gamebg.jpg');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            z-index: 200;
+        }
+        .completion-header { 
+          font-size: 4rem;
+          margin-bottom: 1rem;
+          text-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.2);
+          text-align: center;
+          position: absolute;
+          top: 3%;
+          font-weight: 600;
+        }
+        .completion-modal-content {
+            background: transparent;
+            box-shadow: none;
+            width: 80%;
+            height: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            overflow: visible;
+            margin-top: 0rem;
+            border: none;
+            margin-bottom: 3rem;
+        }
+        .completion-image {
+            display: block;
+            margin: 0 auto 1.5rem auto;
+            max-width: 60vw;
+            width: 80%;
+            height: auto;
+            object-fit: contain;
+            animation: fadeIn 0.5s ease-out;
+            border: 2px solid var(--secondary-color);
+            border-radius: 1rem;
+            margin-top: 4rem;
+        }
+        .completion-buttons-footer { 
+          position: absolute;
+          bottom: 1.5rem;
+          left: 0; right: 0;
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 2rem;
+          padding: 0 1.25rem;
+        }
+        .completion-btn { 
+            font-family: var(--header-font); background: var(--secondary-color); color: #fff;
+            font-weight: 500; 
+            font-size: 1.3rem;
+            border: 0.1875rem solid #fff; border-radius: 3rem; 
+            padding: clamp(0.5rem, 1.5vmin, 0.75rem) clamp(1.25rem, 3vmin, 2rem);
+            cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+            text-shadow: 0 0.125rem 0 #b88b2a; text-decoration: none;
+            min-width: 8.75rem; /* 140px */
+        }
+        .completion-btn:hover { transform: scale(1.06); box-shadow: 0 0.6rem 2.4rem rgba(0,0,0,0.18); }
+        
+        /* MEDIA QUERIES */
+        @media (max-aspect-ratio: 16/9) {
+            #game-wrapper {
+                max-height: 100%;
+                max-width: calc(100vh * 16 / 9);
+            }
+        }
+        @media (max-width: 1200px) {
+            html {
+                font-size: 2.2vmin;
+            }
+        }
+        
+        @media (max-width: 1000px) {
+            html{
+                font-size: 3vmin;
+            }
+            #game-wrapper {
+                width: 100vw; height: 100vh; min-width: 100vw; min-height: 100vh;
+                border-radius: 0; max-width: none; aspect-ratio: unset;
+            }
+            .info-item p {
+                font-size: 1.8rem;
+                line-height: 1.5;
+            }
+            .completion-image {
+                width: 70%;
+                margin-top: 8rem;
+            }
+        }
+        
+        
+        @media (max-width: 768px) {
+             html {
+                font-size: 3vmin;
+            }
+            .completion-header { font-size: 3rem; }
+            .completion-buttons-footer {
+                gap: 1rem;
+                bottom: 1rem;
+            }
+            .scenario-content {
+                padding: 1.5rem;
+            }
+            #scenario-title { font-size: 1.8rem; }
+            .info-item p { font-size: 1.5rem; }
+             .info-item p b { font-size: 1.6rem; }
+
+            .completion-image {
+                width: 80%;
+                margin-top: 6rem;
+                max-width: 100vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-wrapper">
+        <div id="game-container">
+            <div id="start-screen" class="screen">
+                <h1>Meet the Animal You!</h1>
+                <button class="start-button" onclick="startGame(); sendEvent(ActivityEvent.START_ACTIVITY, { activityName: 'Meet-the-Animal-You' });">Start Activity</button>
+            </div>
+
+            <div id="game-screen" class="screen hidden">
+                <div class="game-top-section">
+                    <h1 id="game-title">Personality Hotspot</h1>
+                    <div class="progress-wrapper">
+                         <div id="progress-container">
+                            <div id="progress-bar"></div>
+                        </div>
+                        <div id="progress-text">0 / 6</div>
+                        <div class="instructions-icon" onclick="showGameInstructions()">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="lab-game-area" id="lab-game-area">
+                    </div>
+            </div>
+
+            <div id="activity-description-overlay" class="overlay hidden">
+                <div class="modal">
+                    <h2 class="modal-title">Activity Introduction</h2>
+                    <p>Animals show qualities that remind us of human behaviour. In this activity, you will click on each animal to reveal the personality trait that matches its actions. Let us find out which animal teaches us about qualities we might see in ourselves.</p>
+                    <button class="modal-close-btn" onclick="closeActivityDescription();">Continue</button>
+                </div>
+            </div>
+            
+            <div id="game-instructions-overlay" class="overlay hidden">
+                <div class="modal">
+                    <h2 class="modal-title">Learner Instructions</h2>
+                    <p>Click on each animal to discover the personality trait it represents. Notice how the animal’s actions relate to human qualities.</p>
+                    <button class="modal-close-btn" onclick="closeGameInstructions()">Got It!</button>
+                </div>
+            </div>
+            
+            <div id="scenario-overlay" class="overlay hidden">
+                 <div class="scenario-modal">
+                    <div class="scenario-content">
+                        <h2 id="scenario-title"></h2>
+                        <div id="scenario-info"></div>
+                        <button id="scenario-close-btn" class="modal-close-btn" onclick="closeScenario()">Continue</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="completion-overlay" class="screen hidden">
+                <h2 class="completion-header">Activity Conclusion!</h2>
+                <div class="modal-content completion-modal-content">
+                     <img src="images/complete.jpg" alt="Illustration of a vibrant celebration" class="completion-image" onerror="this.src='https://placehold.co/400x300/5D04B2/ffffff?text=Well+Done!'; this.onerror=null;">
+                </div>       
+                <div class="completion-buttons-footer">
+                    <button class="completion-btn" onclick="restartGame()">Restart Activity</button>
+                    <button class="completion-btn" onclick="previousActivity()">Previous Activity</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="ding-sound" src="audio/ding.mp3" preload="auto"></audio>
+    <audio id="intro-audio" src="audio/intro.mp3" preload="auto"></audio>
+    <audio id="outro-audio" src="audio/outro.mp3" preload="auto"></audio>
+
+    <script>
+        // --- DATA ---
+        const activityData = [
+            {
+                id: 'eagle',
+                title: 'The Eagle',
+                explanation: `
+                    <div class="info-item"><p><b>Traits:</b> Visionary, observant, adaptable</p></div>
+                    <div class="info-item"><p><b>Example:</b> A student who plans ahead and adjusts when exams change.</p></div>
+                `,
+                coords: { top: '10%', left: '75%', width: '25%', height: '15%' }
+            },
+            {
+                id: 'elephant',
+                title: 'The Elephant',
+                explanation: `
+                    <div class="info-item"><p><b>Traits:</b> Loyal, compassionate, protective</p></div>
+                    <div class="info-item"><p><b>Example:</b> A friend who listens and supports others.</p></div>
+                `,
+                coords: { top: '45%', left: '25%', width: '25%', height: '40%' }
+            },
+            {
+                id: 'cheetah',
+                title: 'The Cheetah',
+                explanation: `
+                    <div class="info-item"><p><b>Traits:</b> Fast, goal-driven, focused</p></div>
+                    <div class="info-item"><p><b>Example:</b> Someone who finishes homework quickly and accurately.</p></div>
+                `,
+                coords: { top: '60%', left: '55%', width: '20%', height: '15%' }
+            },
+            {
+                id: 'tortoise',
+                title: 'The Tortoise',
+                explanation: `
+                    <div class="info-item"><p><b>Traits:</b> Patient, steady, thoughtful</p></div>
+                    <div class="info-item"><p><b>Example:</b> A learner who takes time to understand difficult topics.</p></div>
+                `,
+                coords: { top: '80%', left: '75%', width: '15%', height: '15%' }
+            },
+            {
+                id: 'hare',
+                title: 'The Hare',
+                explanation: `
+                    <div class="info-item"><p><b>Traits:</b> Energetic, quick, impulsive</p></div>
+                    <div class="info-item"><p><b>Example:</b> A classmate who volunteers fast but sometimes rushes.</p></div>
+                `,
+                coords: { top: '75%', left: '15%', width: '15%', height: '20%' }
+            },
+            {
+                id: 'lion',
+                title: 'The Lion',
+                explanation: `
+                    <div class="info-item"><p><b>Traits:</b> Brave, confident, natural leader</p></div>
+                    <div class="info-item"><p><b>Example:</b> A prefect who speaks up during school meetings.</p></div>
+                `,
+                coords: { top: '40%', left: '85%', width: '15%', height: '25%' }
+            }
+        ];
+        const TOTAL_ACTIVITIES = activityData.length;
+
+        // --- STATE ---
+        let completedActivities = new Set();
+        let activeActivity = null;
+
+        // --- DOM ELEMENTS ---
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const completionOverlay = document.getElementById('completion-overlay');
+        const labGameArea = document.getElementById('lab-game-area');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const overlays = {
+            activityDescription: document.getElementById('activity-description-overlay'),
+            gameInstructions: document.getElementById('game-instructions-overlay'),
+            scenario: document.getElementById('scenario-overlay'),
+        };
+        const sounds = {
+            ding: document.getElementById('ding-sound'),
+            intro: document.getElementById('intro-audio'),
+            outro: document.getElementById('outro-audio'),
+        };
+        
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', initializeGame);
+
+        function initializeGame() {
+            labGameArea.innerHTML = ''; 
+            activityData.forEach((item, index) => {
+                const hotspot = document.createElement('div');
+                hotspot.className = 'hotspot active';
+                hotspot.id = item.id;
+                hotspot.dataset.index = index;
+                Object.assign(hotspot.style, item.coords);
+                labGameArea.appendChild(hotspot);
+            });
+            updateHotspotStates();
+            updateProgress();
+            labGameArea.addEventListener('click', handleHotspotClick);
+        }
+
+        // --- GAME FLOW ---
+        function startGame() {
+            startScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            progressText.textContent = `0 / ${TOTAL_ACTIVITIES}`;
+            setTimeout(() => {
+                overlays.activityDescription.classList.remove('hidden');
+                if (sounds.intro) playSound(sounds.intro);
+            }, 500);
+        }
+
+        function closeActivityDescription() {
+            overlays.activityDescription.classList.add('hidden');
+            if (sounds.intro) sounds.intro.pause();
+        }
+        
+        function handleHotspotClick(event) {
+            const clickedHotspot = event.target.closest('.hotspot');
+            if (!clickedHotspot || clickedHotspot.classList.contains('completed')) return;
+            
+            activeActivity = activityData[parseInt(clickedHotspot.dataset.index)];
+            showScenarioInfo(activeActivity);
+        }
+
+        function showScenarioInfo(activity) {
+            const scenarioTitle = document.getElementById('scenario-title');
+            const infoContainer = document.getElementById('scenario-info');
+            const closeButton = document.getElementById('scenario-close-btn');
+
+            scenarioTitle.textContent = activity.title;
+            infoContainer.innerHTML = activity.explanation;
+            
+            const allItems = [scenarioTitle, ...infoContainer.querySelectorAll('.info-item')];
+            
+            closeButton.style.visibility = 'hidden';
+            closeButton.style.opacity = '0';
+            
+            overlays.scenario.classList.remove('hidden');
+            
+            allItems.forEach((el, index) => {
+                el.classList.remove('fade-in-up');
+                el.style.opacity = '0'; // Reset opacity
+                setTimeout(() => {
+                    el.classList.add('fade-in-up');
+                }, index * 200); // Stagger the animation
+            });
+
+            const totalAnimationTime = allItems.length * 200 + 300;
+            setTimeout(() => {
+                closeButton.style.visibility = 'visible';
+                closeButton.style.opacity = '1';
+            }, totalAnimationTime);
+        }
+
+        function closeScenario() {
+            overlays.scenario.classList.add('hidden');
+            
+            if (activeActivity && !completedActivities.has(activeActivity.id)) {
+                playSound(sounds.ding);
+                completedActivities.add(activeActivity.id);
+                updateProgress();
+                updateHotspotStates();
+            }
+             
+            activeActivity = null;
+
+            if (completedActivities.size === TOTAL_ACTIVITIES) {
+                 setTimeout(() => {
+                     gameScreen.classList.add('hidden');
+                     completionOverlay.classList.remove('hidden');
+                     if (sounds.outro) playSound(sounds.outro); 
+                     sendEvent(ActivityEvent.END_ACTIVITY, { activityName: 'Meet-the-Animal-You' });
+                 }, 800);
+            }
+        }
+        function previousActivity() {
+            if (sounds.outro) sounds.outro.pause();
+            // This is a placeholder, update with the actual previous activity URL if needed
+            // window.location.href = '../ACTIVITY_PREVIOUS/index.html';    
+            console.log("Navigating to the previous activity.");
+            sendEvent(LessonEvent.END_LESSON, { lessonName: 'Personality Hotspot: Lesson 1' });
+        }
+        
+        function restartGame() {
+            if (sounds.outro) sounds.outro.pause();
+            completedActivities.clear();
+            activeActivity = null;
+            completionOverlay.classList.add('hidden');
+            gameScreen.classList.add('hidden'); // Hide game screen to show start screen
+            startScreen.classList.remove('hidden');
+            updateHotspotStates();
+            updateProgress();
+        }
+        
+        // --- UI & FEEDBACK ---
+        function updateProgress() {
+            const progress = (completedActivities.size / TOTAL_ACTIVITIES) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = `${completedActivities.size} / ${TOTAL_ACTIVITIES}`;
+        }
+        
+        function updateHotspotStates() {
+            document.querySelectorAll('.hotspot').forEach((hotspot) => {
+                const activityId = hotspot.id;
+                hotspot.classList.remove('completed', 'active'); 
+                if (completedActivities.has(activityId)) {
+                    hotspot.classList.add('completed');
+                } else {
+                    hotspot.classList.add('active');
+                }
+            });
+        }
+
+        // --- MODAL CONTROLS ---
+        function showGameInstructions() { overlays.gameInstructions.classList.remove('hidden'); }
+        function closeGameInstructions() { overlays.gameInstructions.classList.add('hidden'); }
+        
+        // --- UTILITIES ---
+        function playSound(audioEl) {
+            if (audioEl) {
+                audioEl.currentTime = 0;
+                audioEl.play().catch(e => console.error('Audio play failed:', e));
+            }
+        }
+    </script>
+     <script src ="../eventSender.js"></script>
+</body>
+</html>

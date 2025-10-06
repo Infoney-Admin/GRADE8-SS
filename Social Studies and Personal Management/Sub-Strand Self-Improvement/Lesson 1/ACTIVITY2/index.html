@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>The Personality Wheel Spin – Big Five Explorer</title>
+<style>
+    /* Font Imports and Keyframes */
+    @font-face {
+        font-family: 'Fredoka';
+        src: url('https://fonts.gstatic.com/s/fredoka/v14/X7nP4b87HvSqjb_WIi2yD-699B8.woff2') format('woff2');
+    }
+    @keyframes glow-pulse {
+        0%, 100% { box-shadow: 0 0 10px rgba(251, 176, 59, 0.5), 0 0 20px rgba(251, 176, 59, 0.3); transform: scale(1); }
+        50% { box-shadow: 0 0 20px rgba(251, 176, 59, 0.8), 0 0 30px rgba(251, 176, 59, 0.5); transform: scale(1.1); }
+    }
+    @keyframes glow-pulse-white {
+        0%, 100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.5); transform: scale(1); }
+        50% { box-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 30px rgba(255, 255, 255, 0.7); transform: scale(1.1); }
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideIn { from { transform: translateY(30px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); } }
+
+    /* Root Variables */
+    :root {
+        --primary-color: #5D04B2;
+        --secondary-color: #fbb03b;
+        --text-color-dark: #333;
+        --text-color-light: #fff;
+        --card-background-light: #ffffff;
+        --shadow-dark: rgba(0, 0, 0, 0.3);
+        --border-radius: 1rem;
+        --header-font: 'Fredoka', sans-serif;
+    }
+
+    /* Global Reset & Base Styles */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100vh; overflow: hidden; }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f0f4f8;
+        font-family: var(--header-font), sans-serif;
+        padding: 0.5rem;
+    }
+
+    #game-wrapper {
+        width: 100%;
+        max-width: 1200px;
+        aspect-ratio: 16 / 9;
+        box-shadow: 0 15px 40px var(--shadow-dark);
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        background: var(--card-background-light);
+    }
+
+    #game-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .screen {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        transition: opacity 0.5s ease-in-out;
+        overflow: hidden;
+    }
+    .screen.hidden { opacity: 0; pointer-events: none; }
+    
+    #start-screen {
+       background-image: url('https://placehold.co/1200x675/7e57c2/ffffff?text=Personality+Wheel');
+       background-size: cover;
+       background-position: center;
+       justify-content: center;
+       align-items: center;
+       padding: 2rem;
+       text-align: center;
+    }
+    #start-screen h1 {
+       font-size: clamp(2.5rem, 5vw, 4.2rem);
+       color: var(--text-color-light);
+       margin-bottom: 1.2rem;
+       text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+       font-weight: 500;
+    }
+    .start-button { 
+        background: #FBB03B; color: #fff; font-weight: 900;
+        font-size: 1.1rem; border: 3px solid #fff; border-radius: 3rem;
+        padding: 0.75rem 2.25rem; margin-top: 1rem; cursor: pointer;
+        text-shadow: 0 2px 0 #b88b2a; transition: all 0.2s;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .start-button:hover { transform: scale(1.06); box-shadow: 0 6px 24px rgba(0,0,0,0.18); }
+
+    #game-screen { background: #f8f9ff; }
+
+    .game-top-section {
+        width: 100%; flex-shrink: 0; display: flex; justify-content: space-between;
+        align-items: center; background-color: var(--primary-color);
+        color: var(--text-color-light); padding: clamp(0.5rem, 1.5vmin, 0.75rem) clamp(0.75rem, 2vmin, 1.25rem);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2); gap: 1rem; flex-wrap: wrap;
+    }
+    
+    #game-title {
+        font-size: clamp(1.2rem, 4vmin, 1.8rem); font-weight: 600;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex: 1 1 300px; min-width: 0;
+    }
+
+    .progress-area { display: flex; align-items: center; gap: clamp(0.5rem, 1.5vw, 1rem); flex-shrink: 0; }
+    #progress-container {
+        width: clamp(100px, 20vw, 200px); background-color: rgba(255,255,255,0.3);
+        border-radius: 1rem; height: clamp(15px, 2.5vmin, 20px);
+        border: 2px solid #fff; position: relative; overflow: hidden;
+    }
+    #progress-bar {
+        height: 100%; width: 0%; background: #FFFF00;
+        border-radius: 0.8rem; transition: width 0.5s ease;
+    }
+    #progress-text {
+        color: var(--text-color-light); font-weight: 700;
+        font-size: clamp(0.75rem, 2vmin, 1rem); text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+    }
+    .instructions-icon {
+        width: 40px; height: 40px; background: rgba(255, 255, 255, 0.2); border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; cursor: pointer;
+        transition: all 0.3s ease; flex-shrink: 0; animation: glow-pulse-white 2s infinite;
+    }
+    .instructions-icon:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.1); }
+    .instructions-icon svg { fill: white; width: 20px; height: 20px; }
+
+    .game-content {
+        flex: 1; display: flex; padding: clamp(0.5rem, 1vw, 1rem);
+        overflow: hidden; position: relative;
+    }
+
+    #canvas-container {
+        flex: 1; height: 100%; position: relative;
+        min-width: 0; display: flex; align-items: center; justify-content: center;
+    }
+
+    canvas {
+        display: block;
+    }
+    
+    #controls {
+        display: flex; justify-content: center; gap: 1rem;
+        padding: 0.75rem; background-color: #e9ecef; border-top: 1px solid #dee2e6;
+    }
+    
+    .ctrl-btn {
+        font-family: var(--header-font); font-size: clamp(0.9rem, 2vw, 1.1rem); font-weight: bold;
+        color: white; border: none; border-radius: 50px; padding: clamp(0.5rem, 2vh, 0.7rem) clamp(1rem, 4vw, 1.8rem);
+        cursor: pointer; transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2), inset 0 -4px 0 rgba(0,0,0,0.2);
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.4); min-width: 140px;
+    }
+    .ctrl-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.3), inset 0 -2px 0 rgba(0,0,0,0.1); }
+    .ctrl-btn:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 2px 8px rgba(0,0,0,0.2), inset 0 -1px 0 rgba(0,0,0,0.2); }
+    .ctrl-btn:disabled { background: #bdc3c7; cursor: not-allowed; box-shadow: 0 2px 5px rgba(0,0,0,0.1), inset 0 -2px 0 rgba(0,0,0,0.1); }
+    
+    #spinBtn { background: linear-gradient(145deg, #27ae60, #229954); }
+
+    /* Hint Icon */
+    .hint-icon {
+        position: absolute;
+        bottom: 1rem;
+        right: 1rem;
+        width: 50px;
+        height: 50px;
+        background: var(--secondary-color);
+        border-radius: 50%;
+        border: 2px solid white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 1001;
+        box-shadow: 0 4px 15px rgba(251, 176, 59, 0.4);
+        animation: glow-pulse 2s infinite;
+    }
+    .hint-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 25px rgba(251, 176, 59, 0.8);
+    }
+    .hint-icon svg {
+        fill: white;
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Modal Styles */
+    .modal-overlay, .overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.4); backdrop-filter: blur(5px);
+        z-index: 3000; display: flex; justify-content: center; align-items: center;
+        animation: fadeIn 0.3s ease;
+    }
+    .modal-overlay.hidden, .overlay.hidden { display: none; }
+    .modal-content, .modal {
+        background: var(--card-background-light); padding: 2.5rem;
+        border-radius: var(--border-radius); text-align: center;
+        width: 90%; max-width: 600px;
+        animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+    }
+    .modal-content h2, .modal h2 {
+      font-size: 2rem; font-weight: 600; margin-bottom: 1.5rem;
+      color: var(--primary-color);
+    }
+    .modal-content p, .modal p { font-size: 1.2rem; line-height: 1.6; color: var(--text-color-dark); }
+     .modal ul {
+        list-style-type: none; text-align: left; margin-top: 1rem; padding: 0;
+    }
+    .modal li { margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative; font-size: 1.1rem;}
+    .modal li::before {
+        content: '➡️'; position: absolute; left: 0;
+    }
+
+    .modal-btn {
+        width: 100%; padding: 1rem; font-size: 1.2rem; font-weight: 700;
+        border: none; border-radius: 0.75rem; cursor: pointer; color: #fff;
+        background-color: var(--primary-color); transition: transform 0.2s, box-shadow 0.2s;
+        margin-top: 1.5rem;
+    }
+    .modal-btn:hover { transform: scale(1.02); }
+    
+    #feedback-modal-overlay .modal-content {
+        text-align: left;
+    }
+    #feedback-modal-overlay .modal-content p {
+        font-size: 1.1rem;
+    }
+    #feedback-modal-overlay .modal-content .example {
+        background: #f1f3f5;
+        border-left: 4px solid var(--secondary-color);
+        padding: 1rem;
+        margin-top: 1rem;
+        border-radius: 0.5rem;
+        font-style: italic;
+    }
+
+
+    #activity-intro-overlay .modal-content, #instructions-overlay .modal-content { border-top: 8px solid var(--primary-color); }
+    #activity-intro-overlay .modal-content p {
+        text-align: left; background: #f8f9fa; padding: 1.5rem;
+        border-radius: 0.75rem; border-left: 4px solid var(--primary-color);
+        line-height: 1.5; font-size: 1.2rem; color: var(--text-color-dark);
+    }
+    #instructions-overlay .modal-content ul, #hint-overlay .modal-content ul {
+        text-align: left; padding: 0; font-size: 1.1rem; line-height: 1.5;
+    }
+    #instructions-overlay .modal-content li, #hint-overlay .modal-content li {
+        margin-bottom: 0.8rem; font-size: 1.1em; line-height: 1.5;
+    }
+    #instructions-overlay .modal-content .hint-list { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; }
+    #instructions-overlay .modal-content .hint-list li::before, #hint-overlay .modal-content .hint-list li::before { content: '💡'; }
+
+    #hint-overlay .modal-content { border-top: 8px solid var(--secondary-color); }
+    #hint-overlay h2 { color: var(--secondary-color); }
+    #hint-overlay .modal-btn { background-color: var(--secondary-color); }
+
+    #feedback-modal-overlay .modal-content { border-top: 8px solid; }
+
+    /* Completion & Takeaways Overlay Styles */
+    #completion-overlay { 
+        background-image: url('https://placehold.co/1200x675/7e57c2/ffffff?text=Great+Job!'); background-size: cover; background-position: center;
+        flex-direction: column; justify-content: center; align-items: center;
+    }
+    .completion-title-banner { 
+        font-size: clamp(2rem, 7vmin, 4rem); text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        text-align: center; color: #fff; font-family: var(--header-font);
+        position: absolute; top: 5%; width: 100%;
+        font-weight: 500;
+    }
+    .completion-buttons {
+        position: absolute; bottom: 2rem; width: 100%; display: flex;
+        justify-content: center; gap: 1.5rem; padding: 0 2rem;
+    }
+    .completion-btn {
+       background: #FBB03B; color: #fff; font-weight: 700;
+       font-size: 1.1rem; border: 0.1875rem solid #fff;
+       border-radius: 3rem; padding: 0.75rem 2.25rem;
+       margin-top: 1rem; cursor: pointer; letter-spacing: 0.02em;
+       transition: all 0.2s; box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.2);
+    }
+    .completion-btn:hover { transform: scale(1.05); }
+    
+    .visually-hidden {
+        position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+        overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;
+    }
+
+    #pointer {
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: clamp(20px, 3vmin, 30px) clamp(15px, 2vmin, 20px) 0 clamp(15px, 2vmin, 20px);
+        border-color: #ff4757 transparent transparent transparent;
+        z-index: 10;
+        filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.4));
+        /* JS will handle positioning */
+    }
+
+    .spin-again-popup {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0,0,0,0.75);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        z-index: 4000;
+        animation: fadeIn 0.3s;
+        pointer-events: none;
+    }
+    .spin-again-popup.hidden {
+        display: none;
+    }
+    
+    @media (max-width: 991px) {
+       #game-wrapper {
+            width: 100vw !important; height: 100vh !important;
+            min-width: 100vw !important; min-height: 100vh !important;
+            border-radius: 0 !important; max-width: none !important;
+            aspect-ratio: unset !important; box-shadow: none;
+        }
+        .game-content {
+            flex-direction: column;
+        }
+        #canvas-container {
+             flex-grow: 1; 
+             height: auto;
+        }
+        .completion-buttons {align-items: center; bottom: 1rem; gap: 1rem; flex-wrap: wrap; }
+        #activity-intro-overlay .modal-content, #instructions-overlay .modal-content, #hint-overlay .modal-content { height: 90vh; overflow-y: auto; }
+
+    }
+    
+    @media (max-width: 768px) {
+            body { padding: 0; }
+            .completion-btn {
+                font-size: 0.9rem;
+                padding: 0.5rem 1.2rem;
+                border-radius: 2rem;
+            }
+            .completion-buttons {
+                gap: 0.5rem;
+                padding: 0 0.5rem;
+                justify-content: center;
+            }
+    }
+</style>
+</head>
+<body>
+<div id="game-wrapper">
+   <div id="game-container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen">
+            <h1>The Personality Wheel Spin</h1>
+            <button class="start-button">Start Activity</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen hidden">
+            <div class="game-top-section">
+               <h1 id="game-title">Big Five Explorer</h1>
+               <div class="progress-area">
+                   <div id="progress-container"><div id="progress-bar"></div></div>
+                   <div id="progress-text">0 / 5</div>
+               </div>
+               <div class="instructions-icon" id="instructions-icon">
+                   <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+               </div>
+            </div>
+            <div class="game-content">
+                <main id="canvas-container">
+                    <canvas id="activityCanvas" role="img" aria-label="A colorful spinning wheel with five personality traits. Click the spin button to play."></canvas>
+                    <div id="pointer"></div>
+                </main>
+                 <div class="hint-icon" id="hint-icon">
+                    <svg viewBox="0 0 24 24"><path d="M9 21c0 .5.4 1 1 1h4c.6 0 1-.5 1-1v-1H9v1zm3-19C8.1 2 5 5.1 5 9c0 2.4 1.2 4.5 3 5.7V17c0 .5.4 1 1 1h6c.6 0 1-.5 1-1v-2.3c1.8-1.3 3-3.4 3-5.7 0-3.9-3.1-7-7-7z"></path></svg>
+                </div>
+            </div>
+            <div id="controls">
+                <button id="spinBtn" class="ctrl-btn">Spin the Wheel</button>
+            </div>
+        </div>
+
+        <!-- Modals and Overlays -->
+        <div id="activity-intro-overlay" class="modal-overlay hidden">
+            <div class="modal-content">
+                <h2 style= 'color: var(--primary-color);'>Activity Introduction</h2>
+                <p>Personality researchers use five key traits to understand people. In this activity, you will spin a wheel and learn about each one. You will also see examples that connect to your own life.</p>
+                <button class="modal-btn" id="intro-continue-btn">Continue</button>
+            </div>
+        </div>
+
+        <div id="instructions-overlay" class="modal-overlay hidden">
+           <div class="modal-content">
+               <h2 style = 'color: var(--primary-color);margin-bottom: 1.5rem; font-size: 2.2rem;'>Learner Instructions</h2>
+               <ul>
+                   <li>Spin the wheel to land on a personality trait.</li>
+                   <li>Read the definition and look at the example.</li>
+                   <li>Ask yourself: Do I see this trait in my daily life?</li>
+                   <li>Keep spinning until you've learned about all five!</li>
+               </ul>
+               <button class="modal-btn" id="close-instructions-btn">Got it!</button>
+           </div>
+        </div>
+
+        <div id="hint-overlay" class="modal-overlay hidden">
+           <div class="modal-content">
+               <h2>Helpful Hints...</h2>
+               <ul class="hint-list">
+                    <li><b>Openness:</b> enjoying new experiences and ideas.</li>
+                    <li><b>Conscientiousness:</b> being responsible and organised.</li>
+                    <li><b>Neuroticism:</b> experiencing stress or strong emotions sometimes.</li>
+                    <li><b>Extroversion:</b> being sociable and confident.</li>
+                    <li><b>Agreeableness:</b> being kind and cooperative.</li>
+               </ul>
+               <button class="modal-btn" id="close-hint-btn">Got it</button>
+           </div>
+        </div>
+       
+        <div id="feedback-modal-overlay" class="modal-overlay hidden">
+            <div class="modal-content">
+                <h2 id="feedback-title"></h2>
+                <p id="feedback-text"></p>
+                <p class="example" id="feedback-example"></p>
+                <button class="modal-btn" id="feedback-continue-btn">Continue</button>
+            </div>
+        </div>
+
+        <div id="completion-overlay" class="overlay hidden">
+            <div class="completion-title-banner">Activity Wrap Up!</div>
+            <div class="completion-buttons">
+                <button class="completion-btn btn-previous">Previous Activity</button>
+                <button class="completion-btn btn-restart">Restart Activity</button>
+                <button class="completion-btn btn-next">Next Activity</button>
+            </div>
+        </div>
+        
+        <div id="aria-live-announcer" class="visually-hidden" aria-live="polite"></div>
+        
+    <div id="spin-again-popup" class="spin-again-popup hidden">Spin Again!</div>
+
+    <audio id="spin-sound" src="http://googleusercontent.com/file_content/0" preload="auto"></audio>
+    <audio id="intro-sound" src="https://assets.codepen.io/217233/intro.mp3" preload="auto"></audio>
+    <audio id="outro-sound" src="https://assets.codepen.io/217233/outro.mp3" preload="auto"></audio>
+   </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Game Data ---
+    const ACTIVITY_DATA = [
+        { trait: 'Openness', explanation: 'Curiosity, imagination, creativity', example: 'Enjoying art or trying new foods.', color: '#3498db' },
+        { trait: 'Conscientiousness', explanation: 'Organisation, responsibility, discipline', example: 'Completing assignments on time.', color: '#2ecc71' },
+        { trait: 'Extroversion', explanation: 'Sociability, talkativeness, confidence', example: 'Leading a group discussion.', color: '#f1c40f' },
+        { trait: 'Agreeableness', explanation: 'Kindness, empathy, cooperation', example: 'Helping a new student feel welcome.', color: '#e74c3c' },
+        { trait: 'Neuroticism', explanation: 'Emotional sensitivity, stress, worry', example: 'Feeling anxious before a test.', color: '#9b59b6' }
+    ];
+
+    // --- DOM Elements ---
+    const startScreen = document.getElementById('start-screen'), gameScreen = document.getElementById('game-screen');
+    const startBtn = document.querySelector('.start-button');
+    const canvas = document.getElementById('activityCanvas'), ctx = canvas.getContext('2d');
+    const pointer = document.getElementById('pointer');
+    const canvasContainer = document.getElementById('canvas-container');
+    const spinBtn = document.getElementById('spinBtn');
+    const announcer = document.getElementById('aria-live-announcer');
+    const spinAgainPopup = document.getElementById('spin-again-popup');
+    const progressBar = document.getElementById('progress-bar'), progressText = document.getElementById('progress-text');
+    const activityIntroOverlay = document.getElementById('activity-intro-overlay'), introContinueBtn = document.getElementById('intro-continue-btn');
+    const instructionsIcon = document.getElementById('instructions-icon'), instructionsOverlay = document.getElementById('instructions-overlay'), closeInstructionsBtn = document.getElementById('close-instructions-btn');
+    const hintIcon = document.getElementById('hint-icon'), hintOverlay = document.getElementById('hint-overlay'), closeHintBtn = document.getElementById('close-hint-btn');
+    const feedbackModalOverlay = document.getElementById('feedback-modal-overlay'), feedbackTitle = document.getElementById('feedback-title'), feedbackText = document.getElementById('feedback-text'), feedbackExample = document.getElementById('feedback-example'), feedbackContinueBtn = document.getElementById('feedback-continue-btn');
+    const completionOverlay = document.getElementById('completion-overlay');
+    const spinSound = document.getElementById('spin-sound'), introSound = document.getElementById('intro-sound'), outroSound = document.getElementById('outro-sound');
+
+    // Canvas & Sizing
+    let W, H;
+    const dpr = window.devicePixelRatio || 1;
+
+    // Game State
+    let isSpinning = false;
+    let rotation = 0;
+    let landedOn = [];
+    
+    // --- Sound Functions ---
+    function playSound(sound) { if(sound) { sound.currentTime = 0; sound.play().catch(e => {}); } }
+    function stopSound(sound) { if(sound) { sound.pause(); sound.currentTime = 0; } }
+
+    // --- Wheel Drawing ---
+    const totalSegments = ACTIVITY_DATA.length;
+    const anglePerSegment = (2 * Math.PI) / totalSegments;
+
+    function drawWheel() {
+        if (!ctx || !W || !H) return;
+        ctx.clearRect(0, 0, W, H);
+        ctx.save();
+        
+        const radius = Math.min(W, H) * 0.45;
+        const centerX = W / 2;
+        const centerY = H / 2;
+
+        ctx.translate(centerX, centerY);
+        ctx.rotate(rotation);
+
+        ACTIVITY_DATA.forEach((segment, i) => {
+            const startAngle = i * anglePerSegment;
+            const endAngle = startAngle + anglePerSegment;
+            const isLanded = landedOn.includes(i);
+
+            // Draw segment background color
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.arc(0, 0, radius, startAngle, endAngle);
+            ctx.closePath();
+            ctx.fillStyle = segment.color;
+            ctx.fill();
+
+            // If segment has been landed on, draw grey overlay
+            if (isLanded) {
+                ctx.fillStyle = 'rgba(128, 128, 128, 0.4)'; // A lighter, more transparent grey
+                ctx.fill();
+            }
+            
+            // Draw the text for ALL segments, so it appears on top of the overlay
+            ctx.save();
+            ctx.rotate(startAngle + anglePerSegment / 2);
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#fff';
+            ctx.font = `bold ${radius * 0.08}px ${getComputedStyle(document.body).fontFamily}`;
+            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            ctx.shadowBlur = 3;
+            ctx.fillText(segment.trait, radius * 0.95, 0);
+            ctx.restore();
+
+            // If landed on, draw the smaller, semi-transparent checkmark
+            if (isLanded) {
+                ctx.save();
+                const midAngle = startAngle + anglePerSegment / 2;
+                const checkX = Math.cos(midAngle) * radius * 0.65;
+                const checkY = Math.sin(midAngle) * radius * 0.65;
+                ctx.translate(checkX, checkY);
+                ctx.rotate(midAngle + Math.PI / 2); // Align checkmark to be upright
+                ctx.globalAlpha = 0.7; // Make checkmark semi-transparent
+
+                ctx.strokeStyle = '#2ecc71';
+                ctx.lineWidth = radius * 0.05; // Slightly thinner
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                
+                const checkSize = radius * 0.09; // Slightly smaller
+                ctx.beginPath();
+                ctx.moveTo(-checkSize, 0);
+                ctx.lineTo(-checkSize / 3, checkSize / 2);
+                ctx.lineTo(checkSize, -checkSize);
+                ctx.stroke();
+                ctx.restore(); // This will also restore globalAlpha
+            }
+
+            // Draw white border for all segments
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+        });
+
+        // Center circle
+        ctx.beginPath();
+        ctx.arc(0, 0, radius * 0.15, 0, 2 * Math.PI);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+        ctx.strokeStyle = '#e0e0e0';
+        ctx.lineWidth = 5;
+        ctx.stroke();
+
+        ctx.restore();
+    }
+
+    // --- Spinning Logic ---
+    function spin() {
+        if (isSpinning) return;
+        
+        const allSegmentsLanded = landedOn.length === ACTIVITY_DATA.length;
+        if (allSegmentsLanded) {
+            showCompletionScreen();
+            return;
+        }
+        
+        isSpinning = true;
+        spinBtn.disabled = true;
+        playSound(spinSound);
+
+        const targetSegmentIndex = Math.floor(Math.random() * ACTIVITY_DATA.length);
+        const segmentCenterAngle = (targetSegmentIndex * anglePerSegment) + (anglePerSegment / 2);
+        
+        const targetRotation = (2 * Math.PI) - segmentCenterAngle + (Math.PI / 2);
+        const randomSpins = 5 + Math.random() * 5;
+        const finalRotation = (randomSpins * 2 * Math.PI) + targetRotation;
+        const spinDuration = (spinSound.duration > 0 ? spinSound.duration : 4) * 1000 - 500;
+        const startTime = performance.now();
+
+        function animateSpin(currentTime) {
+            const elapsedTime = currentTime - startTime;
+            if (elapsedTime >= spinDuration) {
+                rotation = finalRotation;
+                drawWheel();
+                onSpinEnd(targetSegmentIndex);
+                return;
+            }
+
+            const progress = elapsedTime / spinDuration;
+            const easedProgress = 1 - Math.pow(1 - progress, 3);
+            rotation = finalRotation * easedProgress;
+
+            drawWheel();
+            requestAnimationFrame(animateSpin);
+        }
+        requestAnimationFrame(animateSpin);
+    }
+    
+    function onSpinEnd(segmentIndex) {
+        isSpinning = false;
+        
+        if (landedOn.includes(segmentIndex)) {
+            spinAgainPopup.classList.remove('hidden');
+            spinBtn.disabled = false;
+            setTimeout(() => {
+                spinAgainPopup.classList.add('hidden');
+            }, 3000);
+            return;
+        }
+
+        landedOn.push(segmentIndex);
+        updateProgress();
+        
+        const segment = ACTIVITY_DATA[segmentIndex];
+        announcer.textContent = `The wheel landed on ${segment.trait}.`;
+        
+        setTimeout(() => {
+            showFeedbackModal('trait', segment.trait, segment.explanation, segment.example, segment.color);
+        }, 500);
+    }
+    
+    // UI, Feedback & State Checks
+    function updateProgress() {
+        const total = ACTIVITY_DATA.length;
+        progressBar.style.width = `${(landedOn.length / total) * 100}%`;
+        progressText.textContent = `${landedOn.length} / ${total}`;
+    }
+
+    function showFeedbackModal(type, title, message, example, color = '#333') {
+        const modalContent = feedbackModalOverlay.querySelector('.modal-content');
+        feedbackTitle.textContent = title;
+        feedbackText.textContent = message;
+        feedbackExample.textContent = `Example: ${example}`;
+
+        modalContent.style.borderColor = color;
+        feedbackTitle.style.color = color;
+        
+        feedbackModalOverlay.classList.remove('hidden');
+
+        feedbackContinueBtn.onclick = () => {
+            feedbackModalOverlay.classList.add('hidden');
+            if (landedOn.length === ACTIVITY_DATA.length) {
+                showCompletionScreen();
+            } else {
+                spinBtn.disabled = false;
+            }
+        };
+    }
+   
+    function showCompletionScreen(){
+        completionOverlay.classList.remove('hidden');
+        playSound(outroSound);
+        sendEvent('END_ACTIVITY', { activityName: 'Personality Wheel' });
+    }
+    
+    function resize() {
+        const r = canvasContainer.getBoundingClientRect();
+        if (r.width === 0 || r.height === 0) return;
+        
+        const size = Math.min(r.width, r.height) * 0.9;
+        canvas.style.width = `${size}px`;
+        canvas.style.height = `${size}px`;
+
+        canvas.width = Math.floor(size * dpr);
+        canvas.height = Math.floor(size * dpr);
+        
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        W = size;
+        H = size;
+
+        // Position pointer relative to the canvas container
+        const containerHeight = canvasContainer.offsetHeight;
+        const containerWidth = canvasContainer.offsetWidth;
+        const wheelRadius = H * 0.45;
+        const pointerHeight = pointer.offsetHeight;
+        
+        const pointerTop = (containerHeight / 2) - wheelRadius - (pointerHeight * 0.66);
+        const pointerLeft = (containerWidth / 2) - (pointer.offsetWidth / 2);
+
+        pointer.style.top = `${pointerTop}px`;
+        pointer.style.left = `${pointerLeft}px`;
+
+        drawWheel();
+    }
+    
+    // --- Initialization ---
+    function init() {
+        startBtn.addEventListener('click', () => {
+            startScreen.classList.add('hidden'); gameScreen.classList.remove('hidden');
+            activityIntroOverlay.classList.remove('hidden');
+            resize();
+            playSound(introSound);
+            sendEvent('START_ACTIVITY', { activityName: 'Personality Wheel' });
+        });
+        introContinueBtn.addEventListener('click', () => {
+            activityIntroOverlay.classList.add('hidden');
+            stopSound(introSound);
+            drawWheel();
+        });
+        instructionsIcon.addEventListener('click', () => { instructionsOverlay.classList.remove('hidden'); });
+        closeInstructionsBtn.addEventListener('click', () => { instructionsOverlay.classList.add('hidden'); });
+        
+        hintIcon.addEventListener('click', () => { hintOverlay.classList.remove('hidden'); });
+        closeHintBtn.addEventListener('click', () => { hintOverlay.classList.add('hidden'); });
+
+        spinBtn.addEventListener('click', spin);
+
+        completionOverlay.querySelector('.btn-restart').addEventListener('click', () => {
+            stopSound(outroSound);
+            completionOverlay.classList.add('hidden'); 
+            gameScreen.classList.remove('hidden');   
+            startScreen.classList.add('hidden');     
+            landedOn = [];
+            rotation = 0;
+            updateProgress();
+            drawWheel();
+            spinBtn.disabled = false;
+            sendEvent('START_ACTIVITY', { activityName: 'Personality Wheel' });
+        });
+      
+        completionOverlay.querySelector('.btn-next').addEventListener('click', () => {
+             // Assuming there is no next activity for now
+        });
+        completionOverlay.querySelector('.btn-previous').addEventListener('click', () => {
+             // Assuming there is no previous activity for now
+        });
+        
+        window.addEventListener('resize', resize);
+        
+        setTimeout(resize, 100);
+    }
+
+    init();
+});
+
+// Mock event sender if not present
+if (typeof sendEvent !== 'function') {
+    window.sendEvent = function(eventName, detail) {
+        console.log("sendEvent:", eventName, detail);
+    };
+}
+</script>
+</body>
+</html>
+
