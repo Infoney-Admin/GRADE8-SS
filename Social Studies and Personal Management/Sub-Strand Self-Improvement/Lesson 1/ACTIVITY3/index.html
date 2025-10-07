@@ -100,7 +100,7 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            background-image: url('https://placehold.co/1200x675/c1e1c1/ffffff?text=Nature+Background');
+            background-image: url('https://placehold.co/1200x675/c1e1c1/ffffff?text=Ga');
             background-size: cover;
         }
         
@@ -208,10 +208,13 @@
 
         /* Feedback Modals */
         .feedback-modal { max-width: 480px; }
-        .feedback-header { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem; }
-        .feedback-header h2 { font-size: 2rem; font-weight: 700; }
-        .feedback-header.correct h2 { color: var(--correct-color); }
-        .feedback-header.incorrect h2 { color: var(--incorrect-color); }
+    .feedback-header { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .feedback-header h2 { font-size: 2rem; font-weight: 700; margin: 0; line-height: 1; }
+    /* make svg icons match the heading color and align with text */
+    .feedback-header svg { width: 2rem; height: 2rem; display: inline-block; vertical-align: middle; color: inherit; }
+    /* Specific coloring for correct/incorrect states (applies to both h2 and svg) */
+    .feedback-header.correct { color: var(--correct-color); }
+    .feedback-header.incorrect { color: var(--incorrect-color); }
         .feedback-btn.correct { background-color: var(--correct-color); }
         .feedback-btn.incorrect { background-color: var(--incorrect-color); }
         #feedback-correct-overlay .modal { border-top: 8px solid var(--correct-color); }
@@ -235,7 +238,7 @@
             padding: 0; overflow: visible;
         }
         #completion-image { 
-            width: clamp(300px, 50%, 400px); max-width: 85%; height: auto;
+            width: 69%; max-width: 85%; height: auto;
             border: 3px solid #FBB03B; border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             margin-top: 0.5rem;
@@ -265,7 +268,7 @@
             background-image: url('images/gamebg.jpg'); flex-direction: column; justify-content: center;
         }
         .takeaways-main-header {
-            font-family: var(--header-font); color: white; font-size: 2.5rem;
+            font-family: var(--header-font); color: white; font-size: 3.5rem;
             position: absolute; top: 5%; text-align: center; width: 100%;
             text-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.3);
         }
@@ -434,6 +437,7 @@
             margin-top: 0rem;
             cursor: pointer;
             transition: all 0.2s;
+            margin-bottom: 2rem;
         }
         .continue-story-btn:hover { transform: scale(1.05); }
 
@@ -516,11 +520,17 @@
         @media (max-width: 991px) {
             #game-wrapper { width: 100vw; height: 100vh; border-radius: 0; aspect-ratio: unset; }
             html{ font-size: 3vmin; }
-            .book-container, .book-container.story-view, .book-container.split-view { flex-direction: column; height: auto; max-height: 100%; overflow-y: auto; box-shadow: none; transform: none !important; }
+            .book-container, .book-container.story-view, .book-container.split-view {height: auto; max-height: 100%; overflow-y: auto; box-shadow: none; transform: none !important; }
             .book-container::before { display: none; }
             .book-page { padding: 1.5rem; flex: 1; }
-            .book-page.left { border-right: none; border-bottom: 2px solid #dedede; }
-            .story-view .book-page.right { display: none; }
+            .book-page.left {
+                border-right: none;
+                border-bottom: 2px solid #dedede;
+                overflow: auto;
+                justify-content: flex-start;
+            }
+           
+       .story-view .book-page.right { display: none; }
             .split-view .book-page.right { display: flex; opacity: 1; }
             #question-section.visible { padding-top: 1.5rem; }
             #page-turner { display: none !important; }
@@ -536,7 +546,7 @@
             .scenario-content { padding: 1rem; }
             .completion-title-banner { font-size: 1.8rem; }
             #completion-image { max-width: 66%; }
-            .completion-btn { min-width: 180px; }
+            .completion-btn { min-width: 155px; }
             .scenario-story{ line-height: 1.4; font-size: 1.2rem; }
             .book-page { gap: 1rem; }
         }
@@ -546,13 +556,11 @@
 
 <div id="game-wrapper">
     <div id="game-container">
-        <!-- Start Screen -->
         <div id="start-screen" class="screen">
             <h1>Aria the Eagle's Journey</h1>
             <button class="start-button" onclick="showActivityIntro();">Start Activity</button>
         </div>
 
-        <!-- Game Screen -->
         <div id="game-screen" class="screen hidden">
             <div class="game-top-section">
                 <h1 id="game-title">Aria's Journey</h1>
@@ -569,20 +577,17 @@
             
             <div class="scenario-content">
                 <div class="book-container" id="book-container">
-                    <!-- Left Page: Story -->
                     <div class="book-page left">
                         <p class="scenario-story" id="scenario-story-text"></p>
                         <img id="scenario-image" src="" alt="Scenario Image">
                         <button class="continue-story-btn" id="continue-story-btn" onclick="showQuestion()">Continue</button>
                     </div>
-                    <!-- Right Page: Question -->
                     <div class="book-page right">
                         <div id="question-section">
                              <h3 id="question-text"></h3>
                             <div class="options-container" id="options-container"></div>
                         </div>
                     </div>
-                    <!-- Page Turner Element -->
                     <div id="page-turner">
                         <div class="page-content front" id="page-turner-front"></div>
                         <div class="page-content back" id="page-turner-back"></div>
@@ -595,15 +600,13 @@
             </div>
         </div>
 
-        <!-- Completion and Takeaways Screens -->
         <div id="completion-overlay" class="overlay hidden">
-            <h2 class="completion-title-banner" id="completion-title-banner">Aria's Journey is Complete!</h2>
-            <img id="completion-image" src="https://placehold.co/400x300/87ceeb/ffffff?text=Well+Done!" alt="Activity Complete Summary">
-             <p id="completion-summary"></p>
+            <h2 class="completion-title-banner" id="completion-title-banner">Activity Conclusion</h2>
+            <img id="completion-image" src="images/complete.jpg" alt="Activity Complete Summary">
             <div class="completion-buttons">
-                <button class="completion-btn btn-prev" onclick="goToPreviousActivity()">Previous</button>
-                <button class="completion-btn btn-restart" onclick="restartGame()">Restart</button>
-                <button class="completion-btn btn-next" onclick="showTakeaways()">Takeaways</button>
+                <button class="completion-btn btn-prev" onclick="goToPreviousActivity()">Previous Activity</button>
+                <button class="completion-btn btn-restart" onclick="restartGame()">Restart Activity</button>
+                <button class="completion-btn btn-next" onclick="showTakeaways()">Key Takeaways</button>
             </div>
         </div>
 
@@ -615,10 +618,9 @@
                 </div>
                 <ul id="takeaways-list"></ul>
             </div>
-            <button class="end-lesson-btn" onclick="sendEvent('LessonEvent.END_LESSON', {lessonName: 'Personality Traits that Help with Self-Understanding: Lesson 1'})">Exit Lesson</button>
+            <button class="end-lesson-btn" onclick="sendEvent(LessonEvent.END_LESSON, {lessonName: 'Personality Traits that Help with Self-Understanding: Lesson 1'})">Exit Lesson</button>
         </div>
 
-        <!-- Modal Overlays -->
         <div id="activity-intro-overlay" class="overlay hidden">
             <div class="modal">
                 <h2>Activity Introduction</h2>
@@ -680,7 +682,6 @@
             "How would a resilient eagle act after failing?",
             "What could an adaptable eagle do in a storm?"
         ],
-        conclusion: "Aria’s story shows that growth comes from resilience, curiosity, and adaptability. Just like Aria, you can face challenges, learn from others, and adjust to new situations.",
         keyTakeaways: [
             "<strong>Personality traits</strong> are consistent patterns of behaviour, thought, and emotion.",
             "The <strong>Big Five traits</strong> help us understand differences among people.",
@@ -694,8 +695,8 @@
                 image: "images/eagleraaah.jpg",
                 question: "How should Aria react to her fall?",
                 options: [
-                    { text: "Keep flapping hard", trait: "Resilience", feedback: "✅ You chose to keep flapping. That shows <strong>resilience</strong>, just like people who don’t give up when learning something new." },
-                    { text: "Give up and hide", trait: "Fear", feedback: "❌ Giving up feels safe, but it shows <strong>fear</strong>. Resilient learners keep trying until they succeed." }
+                    { text: "Keep flapping hard", trait: "Resilience", feedback: " You chose to keep flapping. That shows <strong>resilience</strong>, just like people who don’t give up when learning something new." },
+                    { text: "Give up and hide", trait: "Fear", feedback: "Giving up feels safe, but it shows <strong>fear</strong>. Resilient learners keep trying until they succeed." }
                 ],
                 correctIndex: 0
             },
@@ -705,8 +706,8 @@
                 image: "images/eagle(.jpg",
                  question: "What should Aria do?",
                 options: [
-                    { text: "Watch and learn", trait: "Curiosity", feedback: "✅ Watching and learning shows <strong>curiosity</strong>. Curious learners pay attention and grow through observation." },
-                    { text: "Ignore them", trait: "Missed Opportunity", feedback: "❌ Ignoring others means missing a chance to learn. Being curious opens the door to new ideas." }
+                    { text: "Watch and learn", trait: "Curiosity", feedback: " Watching and learning shows <strong>curiosity</strong>. Curious learners pay attention and grow through observation." },
+                    { text: "Ignore them", trait: "Missed Opportunity", feedback: "Ignoring others means missing a chance to learn. Being curious opens the door to new ideas." }
                 ],
                 correctIndex: 0
             },
@@ -716,8 +717,8 @@
                 image: "images/wtfisaKILOMETERRRR!!.jpg",
                  question: "How can Aria face the storm?",
                 options: [
-                    { text: "Use wind to rise", trait: "Adaptability", feedback: "✅ Using the wind to rise shows <strong>adaptability</strong>. Adaptable learners use challenges to improve themselves." },
-                    { text: "Hide in cave", trait: "Avoids Challenge", feedback: "❌ Hiding avoids the challenge, but nothing new is learned. Adaptability helps us face storms in life." }
+                    { text: "Use wind to rise", trait: "Adaptability", feedback: " Using the wind to rise shows <strong>adaptability</strong>. Adaptable learners use challenges to improve themselves." },
+                    { text: "Hide in cave", trait: "Avoids Challenge", feedback: "Hiding avoids the challenge, but nothing new is learned. Adaptability helps us face storms in life." }
                 ],
                 correctIndex: 0
             }
@@ -763,7 +764,7 @@
         document.getElementById('scenario-image').alt = scenario.title;
         
         document.getElementById('question-section').classList.remove('visible');
-        document.getElementById('continue-story-btn').style.display = 'block';
+        document.getElementById('continue-story-btn').style.visibility = 'visible';
 
         const optionsContainer = document.getElementById('options-container');
         optionsContainer.innerHTML = ''; 
@@ -787,8 +788,8 @@
             button.onclick = () => selectOption(index);
             optionsContainer.appendChild(button);
         });
-        
-        document.getElementById('continue-story-btn').style.display = 'none';
+
+        document.getElementById('continue-story-btn').style.visibility = 'hidden';
         document.getElementById('question-section').classList.add('visible');
     }
 
@@ -839,12 +840,17 @@
          } else {
             const pageTurner = document.getElementById('page-turner');
             const pageTurnerFront = document.getElementById('page-turner-front');
+            const bookContainer = document.getElementById('book-container');
             
             // Populate the turning page with the *current* right page content
             pageTurnerFront.innerHTML = document.querySelector('.book-page.right').innerHTML;
             
             playSound(pageTurnAudio);
             pageTurner.classList.add('turning');
+
+            // Set the book to story view immediately so the original right page disappears
+            // behind the turning animation.
+            bookContainer.className = 'book-container story-view';
 
             pageTurner.onanimationend = () => {
                 pageTurner.classList.remove('turning');
@@ -931,7 +937,6 @@
     
     function populateStaticContent() {
         document.getElementById('intro-text').innerHTML = activityData.introduction;
-        document.getElementById('completion-summary').innerHTML = activityData.conclusion;
         
         const instructionsList = document.getElementById('instructions-list');
         instructionsList.innerHTML = activityData.instructions.map(item => `<li>${item}</li>`).join('');
@@ -955,5 +960,3 @@
 <script src = "../eventSender.js"></script>
 </body>
 </html>
-
-
