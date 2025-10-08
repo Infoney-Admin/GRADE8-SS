@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>The Self-Esteem Drain</title>
+<style>
+    /* Font Imports and Keyframes */
+    @font-face {
+        font-family: 'Fredoka';
+        src: url('../assets/Fredoka-VariableFont_wdth\,wght.ttf') format('truetype');
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideIn { from { transform: translateY(30px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+    @keyframes glow-pulse {
+        0%, 100% { box-shadow: 0 0 10px rgba(251, 176, 59, 0.5), 0 0 20px rgba(251, 176, 59, 0.3); transform: scale(1); }
+        50% { box-shadow: 0 0 20px rgba(251, 176, 59, 0.8), 0 0 30px rgba(251, 176, 59, 0.5); transform: scale(1.1); }
+    }
+    @keyframes glow-pulse-white {
+        0%, 100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.5); transform: scale(1); }
+        50% { box-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 30px rgba(255, 255, 255, 0.7); transform: scale(1.05); }
+    }
+    ::-webkit-scrollbar{
+        display: none;
+    }
+
+    /* Root Variables */
+    :root {
+        --font-xs: 1.1rem;
+        --font-sm: 1.4rem;
+        --font-md: 1.6rem;
+        --font-lg: 2rem;
+        --font-xl: 4rem;
+        --pad-sm: 1rem;
+        --pad-md: 1.6rem;
+        --pad-lg: 2.4rem;
+        --primary-color: #5D04B2;
+        --secondary-color: #fbb03b;
+        --correct-color: #4caf50;
+        --text-color-dark: #333;
+        --text-color-light: #fff;
+        --card-background-light: #ffffff;
+        --shadow-dark: rgba(0, 0, 0, 0.3);
+        --border-radius: 1rem;
+        --header-font: 'Fredoka', sans-serif;
+        --path-a-color: #3498db; /* Blue */
+        --path-b-color: #e74c3c; /* Red */
+    }
+
+    /* Global Reset & Base Styles */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100vh; overflow: hidden; }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f0f4f8;
+        font-family: var(--header-font), sans-serif;
+    }
+
+    #game-wrapper {
+        width: 100%;
+        max-width: 1200px;
+        aspect-ratio: 16 / 9;
+        box-shadow: 0 15px 40px var(--shadow-dark);
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        background: var(--card-background-light);
+    }
+
+    #game-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .screen {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        transition: opacity 0.5s ease-in-out;
+        overflow: hidden;
+    }
+    .screen.hidden { opacity: 0; pointer-events: none; }
+    
+    #start-screen {
+       background-image: url('images/gamebg.jpg');
+       background-size: cover;
+       background-position: center;
+       justify-content: center;
+       align-items: center;
+       padding: 2rem;
+       text-align: center;
+    }
+    #start-screen h1 {
+      color: var(--text-color-light);
+      font-size: 4rem;
+      font-family: var(--header-font);
+      font-weight: 500;
+    }
+    .start-button {
+        font-family: var(--header-font);
+        background: var(--secondary-color);
+        color: var(--text-color-light);
+        font-weight: 500;
+        font-size: 1.2rem;
+        border: 3px solid #fff;
+        border-radius: 4.8rem;
+        padding: var(--pad-sm) var(--pad-lg);
+        margin-top: 1.6rem;
+        cursor: pointer;
+        text-shadow: 0 0.2rem 0 #b88b2a;
+        transition: all 0.2s;
+    }
+    
+    .start-button:hover { transform: scale(1.06); }
+
+    #game-screen { background: #f8f9ff; justify-content: flex-start; }
+
+    .game-top-section {
+        width: 100%; flex-shrink: 0; display: flex; justify-content: space-between;
+        align-items: center; background-color: var(--primary-color); z-index: 10;
+        color: var(--text-color-light); padding: clamp(0.5rem, 1.5vmin, 0.75rem) clamp(0.75rem, 2vmin, 1.25rem);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2); gap: 1rem;
+    }
+    
+    #game-title {
+        font-size: clamp(1.2rem, 4vmin, 1.8rem); font-weight: 600;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex: 1 1 300px; min-width: 0;
+    }
+
+    .top-right-controls { display: flex; align-items: center; gap: 1rem; }
+    #progress-container {
+        width: clamp(100px, 20vw, 200px); background-color: rgba(255,255,255,0.3);
+        border-radius: 1rem; height: clamp(15px, 2.5vmin, 20px);
+        border: 2px solid #fff; position: relative; overflow: hidden;
+    }
+    #progress-bar {
+        height: 100%; width: 0%; background: #FFFF00;
+        border-radius: 0.8rem; transition: width 0.5s ease;
+    }
+    #progress-text {
+        color: var(--text-color-light); font-weight: 600;
+        font-size: clamp(0.75rem, 2vmin, 1rem); text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+    }
+    
+    .instructions-icon {
+        width: 2.5rem; height: 2.5rem; background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 50%; display: flex;
+        align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease;
+        z-index: 15; flex-shrink: 0;
+        animation: glow-pulse-white 2s infinite;
+    }
+    .instructions-icon:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.1); }
+    .instructions-icon svg { width: 1.25rem; height: 1.25rem; fill: white;}
+
+    .game-content {
+        flex: 1; display: flex; padding: clamp(0.5rem, 2vw, 2rem);
+        overflow-y: auto; position: relative;
+        align-items: center; justify-content: center;
+    }
+    
+    #hint-button {
+        position: absolute; bottom: 2rem; right: 2rem; z-index: 20;
+        width: 4rem; height: 4rem; background: var(--secondary-color);
+        border: 0.3rem solid white; border-radius: 50%; display: flex;
+        align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease;
+        box-shadow: 0 0.4rem 1.5rem rgba(251, 176, 59, 0.4);
+        animation: glow-pulse 2.5s infinite ease-in-out;
+    }
+    #hint-button:hover { animation: none; transform: scale(1.1); box-shadow: 0 0.6rem 2.5rem rgba(251, 176, 59, 0.8); }
+    #hint-button svg { width: 2rem; height: 2rem; fill: white; }
+    #hint-button.hidden { display: none; }
+
+    /* --- Flowchart Styles --- */
+    #flowchart-container {
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-start;
+        gap: clamp(1rem, 4vw, 3rem);
+        width: 100%;
+        max-width: 1100px;
+        padding: clamp(0.5rem, 2vw, 1rem);
+    }
+    .flowchart-path {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(0.8rem, 1.5vh, 1.5rem);
+        flex: 1;
+        min-width: 0; /* Allow flex items to shrink */
+    }
+    .path-title {
+        font-size: clamp(1.2rem, 3.5vmin, 1.8rem);
+        font-weight: 600;
+        padding: 0.5rem 1.5rem;
+        border-radius: 1.5rem;
+        color: white;
+        text-align: center;
+        margin-bottom: clamp(0.5rem, 2vh, 1rem);
+    }
+    .path-a .path-title { background-color: var(--path-a-color); }
+    .path-b .path-title { background-color: var(--path-b-color); }
+
+    .node {
+        width: 100%;
+        position: relative;
+    }
+
+    /* SMOOTHER ANIMATION: Using CSS Grid to animate */
+    .node-content {
+        display: grid;
+        grid-template-rows: auto 0fr; /* Title row, Explanation row (initially 0 height) */
+        background: #fff;
+        border-radius: var(--border-radius);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        cursor: pointer;
+        border-left: 8px solid; /* color set by JS */
+        transition: transform 0.3s ease, box-shadow 0.3s ease, grid-template-rows 0.4s ease-in-out;
+    }
+    .node.revealed .node-content {
+        grid-template-rows: auto 1fr; /* Expand the second row to fit its content */
+    }
+    .node-content:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    .node.revealed .node-content {
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    .node-title {
+        font-size: clamp(1rem, 3vmin, 1.4rem);
+        font-weight: 600;
+        pointer-events: none;
+        padding: clamp(0.8rem, 2.5vmin, 1.2rem);
+    }
+    .node-explanation {
+        overflow: hidden; /* Crucial for the grid animation */
+    }
+    .node-explanation p {
+        font-size: clamp(0.85rem, 2.5vmin, 1.1rem);
+        line-height: 1.5;
+        background-color: #f8f9fa;
+        padding: clamp(0.8rem, 2.5vmin, 1rem);
+    }
+    
+    .arrow-connector {
+        font-size: clamp(1.8rem, 5vmin, 2.5rem);
+        color: #bdc3c7;
+        transform: rotate(90deg);
+        opacity: 0;
+        animation: fadeIn 0.5s 0.3s forwards;
+    }
+
+    /* Modal Styles */
+    .modal-overlay, .overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.4); backdrop-filter: blur(5px);
+        z-index: 1000; display: flex; justify-content: center; align-items: center;
+        animation: fadeIn 0.3s ease;
+    }
+    .modal-overlay.hidden, .overlay.hidden { display: none; }
+    .modal-content, .modal {
+        background: var(--card-background-light); padding: 2.5rem;
+        border-radius: var(--border-radius); text-align: center;
+        width: 90%; max-width: 600px;
+        animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+    }
+    .modal-content h2, .modal h2 {
+      font-size: 2rem; font-weight: 600; margin-bottom: 1.5rem;
+      color: var(--primary-color);
+    }
+    .modal-content p, .modal p { font-size: 1.2rem; line-height: 1.6; color: var(--text-color-dark); }
+     .modal ul {
+        list-style-type: none; text-align: left; margin-top: 1rem; padding: 0;
+    }
+    .modal li { margin-bottom: 0.8rem; font-size: 1.1em; line-height: 1.5; }
+
+    .modal-btn {
+        width: 100%; padding: 1rem; font-size: 1.2rem; font-weight: 700;
+        border: none; border-radius: 0.75rem; cursor: pointer; color: #fff;
+        background-color: var(--primary-color); transition: transform 0.2s, box-shadow 0.2s;
+        margin-top: 1.5rem;
+    }
+    .modal-btn:hover { transform: scale(1.02); }
+
+    #activity-intro-overlay .modal-content, #instructions-modal-overlay .modal-content { border-top: 8px solid var(--primary-color); }
+    #activity-intro-overlay .modal-content p {
+        text-align: center; background: #f8f9fa; padding: 1.5rem;
+        border-radius: 0.75rem; border-left: 4px solid var(--primary-color);
+        line-height: 1.5; font-size: 1.2rem; color: var(--text-color-dark);
+    }
+    /* Remove bullets and default indents for instruction/hint lists */
+    #instructions-modal-overlay ul,
+    #hint-modal ul { list-style: none; margin: 0; padding: 0; text-align: center; }
+    #instructions-modal-overlay li,
+    #hint-modal li { list-style: initial;text-align: left; margin: 0 0 0.8rem 0; padding-left: 0; }
+    #hint-modal .hint-list { margin-top: 1.5rem; padding-top: 1.5rem;}
+     #hint-modal .modal-content{
+        border-top: 8px solid var(--secondary-color);
+     }
+     #hint-modal h2 { color: var(--secondary-color); }
+     #hint-modal p { font-size: 1.1rem; margin-bottom: 1rem; color: var(--text-color-dark); }
+     #hint-modal li { font-size: 1.1rem; margin-bottom: 0.75rem; line-height: 1.5; }
+     #hint-modal .modal-btn {
+        background-color: var(--secondary-color); font-size: 1.1rem; padding: 0.75rem;
+     }
+    /* Completion Overlay Styles */
+    #completion-overlay { 
+        background-image: url('images/gamebg.jpg'); background-size: cover; background-position: center;
+        flex-direction: column; justify-content: center; align-items: center;
+    }
+    .completion-title-banner { 
+        color: var(--text-color-light);
+        font-size: clamp(2rem, 7vmin, 4rem);
+        text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+        text-align: center; font-family: var(--header-font);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    #completion-overlay .modal {
+        background: transparent; box-shadow: none; padding: 0; overflow: visible;
+        width: auto; max-width: none;margin-bottom: 4rem;
+    }
+    #completion-image { 
+        width: clamp(300px, 60vw, 700px); max-width: 85%; height: auto;
+        border: 3px solid var(--secondary-color); border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-top: 0.5rem;
+    }
+    .completion-buttons {
+        position: absolute; bottom: 1.5rem; width: 100%; display: flex;
+        justify-content: space-between; gap: 1.5rem; padding: 0 2rem; flex-wrap: wrap;
+    }
+    .completion-btn {
+      font-family: var(--header-font); background: var(--secondary-color); color: #fff;
+        font-weight: 500; font-size: clamp(1rem, 2.5vmin, 1.3rem); border: 0.1875rem solid #fff; border-radius: 3rem; 
+        padding: clamp(0.5rem, 1.5vmin, 0.75rem) clamp(1.25rem, 3vmin, 2rem);
+        cursor: pointer; transition: all 0.2s; box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+        text-shadow: 0 0.125rem 0 #b88b2a; text-decoration: none; min-width: 8.75rem;
+    }
+    .completion-btn:hover { transform: scale(1.05); }
+
+    /* ===== TAKEAWAYS OVERLAY ===== */
+    #takeaways-overlay {
+        background-image: url(images/gamebg.jpg); flex-direction: column; justify-content: center;
+    }
+    .takeaways-main-header {
+        font-family: var(--header-font); color: white; font-size: 2.5rem;
+        position: absolute; top: 5%; text-align: center; width: 100%;
+        text-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.3);
+    }
+    #takeaways-overlay .modal { max-width: 800px; padding: 2rem; display: flex; flex-direction: column; align-items: center; height: 50vh;
+        overflow-y: auto; margin-top: 3rem;
+    }
+    .takeaways-header { color:var(--primary-color); display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+    .takeaways-header h3 { font-family: var(--header-font); font-size: 1.8rem; color: var(--primary-color); }
+    #takeaways-list { list-style-type: none; padding: 0; width: 100%; }
+    #takeaways-list li {
+        background: none;
+        border-left: none;
+        margin-bottom: 0rem;
+        padding: 1rem 1rem 1rem 2.5rem;
+        border-radius: 0.5rem;
+        font-size: 1.1rem;
+        text-align: left;
+        position: relative;
+    }
+    #takeaways-list li::before {
+        content: '';
+        display: inline-block;
+        position: absolute;
+        left: 0.8rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1.2rem;
+        height: 1.2rem;
+        background: none;
+        /* SVG checkmark as background-image */
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%235cb85c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 10.8 17 4 10.8"/></svg>');
+        background-size: 1.2rem 1.2rem;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    
+    .end-lesson-btn {
+        background: var(--secondary-color);
+        font-family: var(--header-font);
+        color: #fff;
+        font-weight: 500;
+        font-size: 1.3rem;
+        border: 3px solid #fff;
+        border-radius: 3rem;
+        padding: clamp(0.5rem, 1.5vmin, 0.75rem) clamp(1.25rem, 3vmin, 2rem);
+        text-shadow: 0 2px 0 #b88b2a;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        width: auto;
+        min-width: 180px;
+        margin-top: 2rem;
+    }
+    .end-lesson-btn:hover { transform: scale(1.06); box-shadow: 0 6px 24px rgba(0,0,0,0.18); }
+    
+    .visually-hidden {
+        position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+        overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;
+    }
+
+    @media (min-width:1400px){
+        #completion-image {
+          width: clamp(300px, 60vw, 50vw);
+        }
+    }
+    @media (max-width: 1024px) {
+        #game-wrapper { 
+            width: 100vw;
+             height: 100vh;
+              border-radius: 0;
+               aspect-ratio: unset; }
+        }
+        @media (max-width: 900px) {
+            #takeaways-overlay .modal {
+                max-width: 70vw;
+                height: 60vh;
+                margin-top: 5rem;
+            }
+            .takeaways-header{
+                margin-bottom: 0rem;
+            }
+        }
+    @media (max-width: 768px) {
+        body { padding: 0; }
+        #takeaways-overlay .modal { height: 60vh; max-width: 100%;}
+
+    }
+</style>
+</head>
+<body>
+<div id="game-wrapper">
+   <div id="game-container">
+        <div id="start-screen" class="screen">
+            <h1>The Self-Esteem Drain</h1>
+            <button class="start-button">Start Activity</button>
+        </div>
+
+        <div id="game-screen" class="screen hidden">
+            <div class="game-top-section">
+               <h1 id="game-title">The Self-Esteem Drain</h1>
+               <div class="top-right-controls">
+                   <div id="progress-container"><div id="progress-bar"></div></div>
+                   <div id="progress-text">0 / 6</div>
+                   <div class="instructions-icon" id="instructions-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+                   </div>
+               </div>
+            </div>
+            <div class="game-content">
+                <main id="flowchart-container"></main>
+            </div>
+            <button id="hint-button" class="hidden" title="Get a Hint">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M9 21c0 .5.4 1 1 1h4c.6 0 1-.5 1-1v-1H9v1zm3-19C8.1 2 5 5.1 5 9c0 2.4 1.2 4.5 3 5.7V17c0 .5.4 1 1 1h6c.6 0 1-.5 1-1v-2.3c1.8-1.3 3-3.4 3-5.7 0-3.9-3.1-7-7-7z"/></svg>
+            </button>
+        </div>
+
+        <div id="activity-intro-overlay" class="modal-overlay hidden">
+            <div class="modal-content">
+                <h2>Activity Introduction</h2>
+                <p>Low self-esteem does not appear suddenly. It grows when negative experiences build on one another. In this activity, you will trace how bullying, rejection, and criticism drain self-worth.</p>
+                <button class="modal-btn" id="intro-continue-btn">Continue</button>
+            </div>
+        </div>
+
+        <div id="instructions-modal-overlay" class="modal-overlay hidden">
+            <div class="modal-content">
+                <h2>Instructions</h2>
+                <ul>
+                    <li>Follow the flowchart paths. Click on each stage to reveal how low self-esteem grows step by step.</li>
+                </ul>
+                <button class="modal-btn" id="close-instructions-btn">Got It!</button>
+            </div>
+        </div>
+
+        <div id="hint-modal-overlay" class="modal-overlay hidden">
+           <div id="hint-modal" class="modal-content">
+               <h2>Here is a hint</h2>
+               <ul class="hint-list">
+                   <li>How does bullying cause a learner to skip school?</li>
+                   <li>Why might fear of speaking stop someone from sharing their ideas?</li>
+                   <li>How can shame or rejection grow into isolation?</li>
+               </ul>
+               <button class="modal-btn" id="close-hint-btn">Got it!</button>
+           </div>
+        </div>
+       
+        <div id="completion-overlay" class="overlay hidden">
+            <div class="completion-title-banner">Activity conclusion!</div>
+            <div class="modal">
+                <img id="completion-image" src="images/complete.jpg" alt="Activity Complete" onerror="this.style.display='none'">
+            </div>
+            <div class="completion-buttons">
+                <button class="completion-btn btn-previous">Previous Activity</button>
+                <button class="completion-btn btn-restart">Restart Activity</button>
+                <button class="completion-btn btn-takeaways">Key Takeaways</button>
+            </div>
+        </div>
+        
+        <div id="takeaways-overlay" class="overlay hidden">
+            <h2 class="takeaways-main-header">Lesson Complete</h2>
+            <div class="modal">
+                <div class="takeaways-header">
+                    <h3>Key Takeaways</h3>
+                </div>
+                <ul id="takeaways-list"></ul>
+            </div>
+            <button class="end-lesson-btn" onclick="sendEvent(LessonEvent.END_LESSON, {lessonName: 'Effects of Unhealthy Self-Esteem in Social Life: Lesson 2'})">Exit Lesson</button>
+        </div>
+
+        <div id="aria-live-announcer" class="visually-hidden" aria-live="polite"></div>
+        
+    <audio id="ding-sound" src="audio/ding.mp3" preload="auto"></audio>
+    <audio id="intro-sound" src="audio/intro.mp3" preload="auto"></audio>
+    <audio id="outro-sound" src="audio/outro.mp3" preload="auto"></audio>
+   </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- DOM Elements ---
+    const startScreen = document.getElementById('start-screen'), gameScreen = document.getElementById('game-screen');
+    const startBtn = document.querySelector('.start-button');
+    const flowchartContainer = document.getElementById('flowchart-container');
+    const announcer = document.getElementById('aria-live-announcer');
+    const progressBar = document.getElementById('progress-bar'), progressText = document.getElementById('progress-text');
+    const activityIntroOverlay = document.getElementById('activity-intro-overlay'), introContinueBtn = document.getElementById('intro-continue-btn');
+    const instructionsIcon = document.getElementById('instructions-icon'), instructionsModalOverlay = document.getElementById('instructions-modal-overlay'), closeInstructionsBtn = document.getElementById('close-instructions-btn');
+    const hintButton = document.getElementById('hint-button'), hintModalOverlay = document.getElementById('hint-modal-overlay'), closeHintBtn = document.getElementById('close-hint-btn');
+    const completionOverlay = document.getElementById('completion-overlay');
+    const takeawaysOverlay = document.getElementById('takeaways-overlay');
+    const dingSound = document.getElementById('ding-sound'), introSound = document.getElementById('intro-sound'), outroSound = document.getElementById('outro-sound');
+
+    // Game State
+    let isPaused = true;
+    let activityCompleted = false;
+    let exploredNodes = new Set();
+    let totalNodes = 0;
+
+    // --- Data ---
+    const activityData = {
+        paths: [
+            { 
+                title: 'Path A', 
+                color: 'var(--path-a-color)',
+                nodes: [
+                    { title: 'Bullying', explanation: 'Creates feelings of shame' },
+                    { title: 'Shame', explanation: 'Leads to hiding from others' },
+                    { title: 'Isolation', explanation: 'Causes poor academic and social performance' },
+                ]
+            },
+            { 
+                title: 'Path B',
+                color: 'var(--path-b-color)',
+                nodes: [
+                    { title: 'Rejection', explanation: 'Builds self-doubt' },
+                    { title: 'Self-doubt', explanation: 'Grows into fear of speaking' },
+                    { title: 'Fear of speaking', explanation: 'Leads to missed opportunities' },
+                ]
+            }
+        ],
+        takeaways: [
+            "Low self-esteem leads to isolation, fear of judgement, and poor decision-making.",
+            "It can cause anxiety, depression, and poor performance.",
+            "Bullying and rejection often deepen self-doubt.",
+            "Support, kindness, and self-reflection rebuild confidence and self-worth."
+        ]
+    };
+    totalNodes = activityData.paths.reduce((sum, path) => sum + path.nodes.length, 0);
+
+    // --- Sound ---
+    function playSound(sound) { if(sound) { sound.currentTime = 0; sound.play().catch(e => console.log("Sound play failed:", e)); } }
+    function stopSound(sound) { if(sound) { sound.pause(); } }
+
+    // --- UI Update ---
+    function updateProgress() {
+        const progress = exploredNodes.size;
+        progressBar.style.width = `${(progress / totalNodes) * 100}%`;
+        progressText.textContent = `${progress} / ${totalNodes}`;
+
+        if (progress === totalNodes && !activityCompleted) {
+            activityCompleted = true;
+            isPaused = true;
+            setTimeout(() => {
+                completeActivity();
+            }, 1200);
+        }
+    }
+
+    // --- Activity Setup ---
+    function setupActivity() {
+        isPaused = false;
+        activityCompleted = false;
+        exploredNodes.clear();
+        flowchartContainer.innerHTML = '';
+        progressText.textContent = `0 / ${totalNodes}`;
+        updateProgress();
+
+        activityData.paths.forEach((path, pathIndex) => {
+            const pathDiv = document.createElement('div');
+            pathDiv.className = `flowchart-path path-${pathIndex === 0 ? 'a' : 'b'}`;
+            
+            let pathHtml = `<h2 class="path-title">${path.title}</h2>`;
+
+            path.nodes.forEach((node, nodeIndex) => {
+                const nodeId = `p${pathIndex}-n${nodeIndex}`;
+                pathHtml += `
+                    <div class="node" id="${nodeId}">
+                        <div class="node-content" style="border-color: ${path.color};">
+                            <h3 class="node-title">${node.title}</h3>
+                            <div class="node-explanation"><p>${node.explanation}</p></div>
+                        </div>
+                    </div>
+                    ${nodeIndex < path.nodes.length - 1 ? '<div class="arrow-connector">&rarr;</div>' : ''}
+                `;
+            });
+            pathDiv.innerHTML = pathHtml;
+            flowchartContainer.appendChild(pathDiv);
+        });
+
+        addEventListeners();
+    }
+    
+    function setupTakeaways() {
+        const list = document.getElementById('takeaways-list');
+        list.innerHTML = activityData.takeaways.map(item => `<li>${item}</li>`).join('');
+    }
+
+    // --- Event Listeners ---
+    function addEventListeners() {
+        document.querySelectorAll('.node').forEach(node => {
+            node.addEventListener('click', handleNodeClick);
+        });
+    }
+
+    function handleNodeClick(event) {
+        if (isPaused || activityCompleted) return;
+        const clickedNode = event.currentTarget;
+        const nodeId = clickedNode.id;
+        
+        const isRevealed = clickedNode.classList.toggle('revealed');
+
+        if (isRevealed) {
+            announce(`${clickedNode.querySelector('.node-title').textContent} revealed: ${clickedNode.querySelector('.node-explanation p').textContent}`);
+             if (!exploredNodes.has(nodeId)) {
+                exploredNodes.add(nodeId);
+                playSound(dingSound);
+                updateProgress();
+            }
+        } else {
+             announce(`${clickedNode.querySelector('.node-title').textContent} hidden.`);
+        }
+    }
+
+    function completeActivity() {
+        completionOverlay.classList.remove('hidden');
+        playSound(outroSound);
+    }
+
+    function announce(text) { 
+        announcer.textContent = '';
+        setTimeout(() => { announcer.textContent = text; }, 100);
+    }
+    
+    // --- Main Initialization ---
+    function init() {
+        startBtn.addEventListener('click', () => {
+            startScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            instructionsIcon.classList.remove('hidden');
+            hintButton.classList.remove('hidden');
+            activityIntroOverlay.classList.remove('hidden');
+            isPaused = true;
+            playSound(introSound);
+            setupActivity();
+            sendEvent(ActivityEvent.START_ACTIVITY, { activityName: 'The Self-Esteem Drain' });
+        });
+
+        introContinueBtn.addEventListener('click', () => {
+            activityIntroOverlay.classList.add('hidden');
+            isPaused = false;
+            stopSound(introSound);
+        });
+
+        instructionsIcon.addEventListener('click', () => {
+            instructionsModalOverlay.classList.remove('hidden');
+            isPaused = true;
+        });
+
+        closeInstructionsBtn.addEventListener('click', () => {
+            instructionsModalOverlay.classList.add('hidden');
+            if (!activityCompleted) {
+                isPaused = false;
+            }
+        });
+
+        hintButton.addEventListener('click', () => {
+            hintModalOverlay.classList.remove('hidden');
+            isPaused = true;
+        });
+
+        closeHintBtn.addEventListener('click', () => {
+            hintModalOverlay.classList.add('hidden');
+            if (!activityCompleted) {
+                isPaused = false;
+            }
+        });
+        completionOverlay.querySelector('.btn-previous').addEventListener('click', () => {
+            stopSound(outroSound);
+            sendEvent(ActivityEvent.PREVIOUS_ACTIVITY, { activityName: 'The Self-Esteem Drain' });
+            window.location.href = '../ACTIVITY3/index.html';
+        });
+
+        completionOverlay.querySelector('.btn-restart').addEventListener('click', () => {
+            stopSound(outroSound);
+            completionOverlay.classList.add('hidden');
+            startScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            instructionsIcon.classList.remove('hidden');
+            hintButton.classList.remove('hidden');
+            setupActivity();
+        });
+        
+        completionOverlay.querySelector('.btn-takeaways').addEventListener('click', () => {
+            stopSound(outroSound);
+            completionOverlay.classList.add('hidden');
+            takeawaysOverlay.classList.remove('hidden');
+            setupTakeaways();
+            sendEvent(ActivityEvent.END_ACTIVITY, { activityName: 'The Self-Esteem Drain' });
+        });
+    }
+
+    init();
+});
+</script>
+<script src="../eventSender.js"></script>
+</body>
+</html>

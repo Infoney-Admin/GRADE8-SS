@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Social Challenge Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ====== FONT IMPORTS ====== */
+        @font-face {
+            font-family: 'Fredoka';
+            src: url('../assets/Fredoka-VariableFont_wdth\,wght.ttf') format('truetype');
+        }
+        ::-webkit-scrollbar{
+            display: none;
+        }
+        /* ====== ROOT VARIABLES & SCALING ====== */
+        :root {
+            --font-xs: 1.1rem;
+            --font-sm: 1.4rem;
+            --font-md: 1.4rem;
+            --font-lg: 2rem;
+            --font-xl: 4rem;
+            --pad-sm: 1rem;
+            --pad-md: 1.6rem;
+            --pad-lg: 2.4rem;
+            --primary-color: #5D04B2;
+            --secondary-color: #FBB03B;
+            --correct-color: #5cb85c;
+            --incorrect-color: #d9534f;
+            --text-color-dark: #333;
+            --text-color-light: #fff;
+            --border-radius: 1rem;
+            --header-font: 'Fredoka', 'Poppins', sans-serif;
+            --body-font: var(--header-font);
+        }
+        
+        html {
+             font-size: 1.8vmin;
+        }
+
+        /* ===== HIDE SCROLLBAR ===== */
+        body::-webkit-scrollbar, .scenario-content::-webkit-scrollbar, .modal::-webkit-scrollbar { display: none; }
+        body, .scenario-content, .modal { scrollbar-width: none; -ms-overflow-style: none; }
+
+        /* ====== GLOBAL BASE ====== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; background: #f0f4f8;
+            font-family: var(--body-font);
+            overflow: hidden;
+        }
+        #game-wrapper {
+            width: 100%; max-width: 1200px; aspect-ratio: 16 / 9;
+            overflow: hidden;
+            display: flex; flex-direction: column; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        #game-container {
+            width: 100%; height: 100%; background: #fff;
+            position: relative; display: flex; flex-direction: column;
+        }
+        .screen {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s;
+            pointer-events: all; visibility: visible;
+        }
+        .hidden { opacity: 0; pointer-events: none; visibility: hidden; }
+
+        /* ===== START SCREEN ===== */
+        #start-screen {
+            color: var(--text-color-light); text-align: center; padding: 2rem;
+            background-image: url('images/gamebg.jpg'); background-size: cover; background-position: center;
+        }
+        #start-screen h1 {
+          color: var(--text-color-light);
+          font-size: 4rem;
+          font-family: var(--header-font);
+          font-weight: 500;
+        }
+        .start-button {
+            font-family: var(--header-font);
+            background: var(--secondary-color);
+            color: var(--text-color-light);
+            font-weight: 500;
+            font-size: 1.2rem;
+            border: 3px solid #fff;
+            border-radius: 4.8rem;
+            padding: var(--pad-sm) var(--pad-lg);
+            margin-top: 1.6rem;
+            cursor: pointer;
+            text-shadow: 0 0.2rem 0 #b88b2a;
+            transition: all 0.2s;
+        }
+    
+        .start-button:hover { transform: scale(1.06); }
+
+
+        /* ===== GAME SCREEN STYLES ===== */
+        #game-screen { 
+            justify-content: flex-start; 
+            overflow: hidden; 
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .game-top-section {
+            width: 100%; background-color: #5D04B2; 
+            padding: clamp(0.5rem, 1.5vmin, 0.75rem) clamp(0.75rem, 2vmin, 1.25rem);
+            display: flex; justify-content: space-between; align-items: center;
+            color: #fff; z-index: 10;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+        }
+    
+        #game-title {
+            font-weight: 600;
+            margin: 0; font-family: var(--header-font);
+        }
+    
+        .top-right-controls { display: flex; align-items: center; gap: 1rem; }
+        
+        #progress-container { 
+            width: clamp(100px, 20vw, 200px); background-color: rgba(255,255,255,0.3);
+            border-radius: 1rem; height: clamp(15px, 2.5vmin, 20px);
+            border: 2px solid #fff; position: relative; overflow: hidden;
+        }
+        #progress-bar {
+            height: 100%; width: 0%; background: #FFFF00;
+            border-radius: 0.8rem; transition: width 0.5s ease;
+        }
+        #progress-text {
+            font-weight: 600; color: #fff;
+            text-shadow: none;
+        }
+
+        .instructions-icon {
+            width: 2.5rem; height: 2.5rem; background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease;
+            z-index: 15; flex-shrink: 0;
+            animation: glow-pulse-white 2s infinite;
+        }
+        .instructions-icon:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.1); }
+        .instructions-icon svg { width: 1.25rem; height: 1.25rem; fill: white;}
+
+        .hint-icon {
+            position: absolute; bottom: 1.5rem; right: 1.5rem; width: 3.125rem; height: 3.125rem;
+            background: var(--secondary-color); border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease;
+            z-index: 1001;
+            border: 0.1875rem solid white;
+            animation: glow-pulse 2s infinite;
+        }
+        .hint-icon:hover { transform: scale(1.1); }
+        .hint-icon svg { fill: white; width: 1.5rem; height: 1.5rem; }
+
+        /* ===== MODALS ===== */
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            backdrop-filter: blur(5px);
+            z-index: 3000;
+            display: flex; justify-content: center; align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .overlay.hidden { display: none; visibility: hidden; opacity: 0; }
+        .modal {
+            background: #fff; padding: 2.5rem; border-radius: 1rem;
+            text-align: center; width: 90%; max-width: 600px;
+            animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateY(30px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); } }
+
+        .modal h2 {
+            font-size: 1.8rem; font-weight: 600; margin-bottom: 1.5rem;
+            font-family: var(--header-font);
+        }
+        .modal p, .modal ul { font-size: 1.5rem; line-height: 1.6; color: var(--text-color-dark, #333); }
+        
+        #activity-intro-overlay .modal { border-top: 8px solid var(--primary-color); }
+        #activity-intro-overlay .modal h2 { color: var(--primary-color); }
+        #activity-intro-overlay .modal p {
+            text-align: left; background: #f8f9fa; padding: 1.5rem;
+            border-radius: 0.75rem; border-left: 4px solid var(--primary-color);
+        }
+        
+        #instructions-overlay .modal { border-top: 8px solid var(--primary-color); }
+        #instructions-overlay .modal h2 { color: var(--primary-color); }
+        #instructions-overlay .modal ol { text-align: left; padding-left: 2rem; font-size: 1.2rem; }
+
+        #hint-overlay .modal { border-top: 8px solid var(--secondary-color); }
+        #hint-overlay .modal h2 { 
+            color: var(--secondary-color); display: flex; 
+            align-items: center; justify-content: center; gap: 0.75rem; 
+        }
+        #hint-overlay ul { text-align: left; list-style-position: inside; }
+
+        /* Modal Buttons */
+        .modal button {
+            width: 100%; padding: 1rem; font-size: 1.2rem; font-weight: 700;
+            border: none; border-radius: 0.75rem; cursor: pointer; color: #fff;
+            transition: transform 0.2s, box-shadow 0.2s; margin-top: 1rem;
+        }
+        .modal button:hover { transform: scale(1.02); }
+        #activity-intro-overlay button, #instructions-overlay button { background-color: var(--primary-color); }
+        #hint-overlay button { background-color: var(--secondary-color); }
+
+        /* Feedback Modals */
+        .feedback-modal { max-width: 520px; } /* Increased width for more content */
+        .feedback-header { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem; }
+        .feedback-header h2 { font-size: 2rem; font-weight: 700; }
+        .feedback-header.correct h2 { color: var(--correct-color); }
+        .feedback-header.incorrect h2 { color: var(--incorrect-color); }
+        .feedback-btn.correct { background-color: var(--correct-color); }
+        .feedback-btn.incorrect { background-color: var(--incorrect-color); }
+        #feedback-correct-overlay .modal { border-top: 8px solid var(--correct-color); }
+        #feedback-incorrect-overlay .modal { border-top: 8px solid var(--incorrect-color); }
+
+        /* ===== COMPLETION SCREEN ===== */
+        #completion-overlay { 
+            background-image: url('images/gamebg.jpg'); background-size: cover; background-position: center;
+            color: #fff; display: flex; flex-direction: column; justify-content: center;
+            align-items: center; gap: 1rem; padding: 1rem;
+        }
+        .completion-title-banner { 
+             font-size: clamp(2rem, 7vmin, 4rem);
+            text-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+            text-align: center; font-family: var(--header-font);
+            font-weight: 500;
+        }
+        #completion-overlay .modal { 
+            background: transparent; box-shadow: none; width: auto; max-width: none;
+            display: flex; justify-content: center; align-items: center;
+            padding: 0; overflow: visible;
+        }
+        #completion-image { 
+            width: clamp(400px, 70%, 700px); max-width: 85%; height: auto;
+            border: 3px solid #FBB03B; border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-top: 0.5rem;
+        }
+        .completion-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 1.5rem;
+            width: 100%;
+            padding: 1rem 2rem;
+        }
+        .completion-btn {
+            font-family: var(--header-font); background: var(--secondary-color); color: #fff;
+            font-weight: 500; 
+            font-size: 1.3rem;
+            border: 0.1875rem solid #fff; border-radius: 3rem; 
+            padding: clamp(0.5rem, 1.5vmin, 0.75rem) clamp(1.25rem, 3vmin, 2rem);
+            cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+            text-shadow: 0 0.125rem 0 #b88b2a; text-decoration: none;
+            min-width: 8.75rem; /* 140px */
+        }
+        .completion-btn:hover { 
+            transform: scale(1.05); 
+            box-shadow: 0 0.5rem 1.25rem rgba(0,0,0,0.2);
+        }
+
+        /* ===== TAKEAWAYS OVERLAY ===== */
+        #takeaways-overlay {
+            background-image: url(images/gamebg.jpg); flex-direction: column; justify-content: center;
+        }
+        .takeaways-main-header {
+            font-family: var(--header-font); color: white; font-size: 2.5rem;
+            position: absolute; top: 5%; text-align: center; width: 100%;
+            text-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.3);
+        }
+        #takeaways-overlay .modal { max-width: 800px; padding: 2rem; display: flex; flex-direction: column; align-items: center; height: 45vh;
+            overflow-y: auto; margin-top: 3rem;
+        }
+        .takeaways-header { color:var(--primary-color); display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+        .takeaways-header h3 { font-family: var(--header-font); font-size: 1.8rem; color: var(--primary-color); }
+        #takeaways-list { list-style-type: none; padding: 0; width: 100%; }
+        #takeaways-list li {
+            background: none;
+            border-left: none;
+            margin-bottom: 0rem;
+            padding: 1rem 1rem 1rem 2.5rem;
+            border-radius: 0.5rem;
+            font-size: 1.1rem;
+            text-align: left;
+            position: relative;
+        }
+        #takeaways-list li::before {
+            content: '';
+            display: inline-block;
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.2rem;
+            height: 1.2rem;
+            background: none;
+            /* SVG checkmark as background-image */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%235cb85c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 10.8 17 4 10.8"/></svg>');
+            background-size: 1.2rem 1.2rem;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        .end-lesson-btn
+        {
+            background: var(--secondary-color);
+            font-family: var(--header-font);
+            color: #fff;
+            font-weight: 500;
+            font-size: 1.3rem;
+            border: 3px solid #fff;
+            border-radius: 3rem;
+            padding: clamp(0.5rem, 1.5vmin, 0.75rem) clamp(1.25rem, 3vmin, 2rem);
+            text-shadow: 0 2px 0 #b88b2a;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: auto;
+            min-width: 180px;
+            margin-top: 2rem;
+        }
+        .end-lesson-btn:hover { transform: scale(1.06); box-shadow: 0 6px 24px rgba(0,0,0,0.18); }
+    
+        /* ===== SCENARIO LAYOUT ===== */
+        .scenario-title {
+            font-family: var(--header-font); color: var(--primary-color);
+            font-size: 2.2rem; text-align: center; padding: 1rem;
+            width: 100%; margin-bottom: 0.5rem; flex-shrink: 0;
+        }
+        .scenario-content {
+            flex: 1; padding: 1rem 2rem; overflow: auto; display: flex;
+            justify-content: center; align-items: center; margin-top: 0;
+        }
+        .scenario-container {
+            display: flex; gap: 2rem; align-items: center; width: 100%;
+            max-width: 80rem; padding: 1rem; background: #fff;
+            border-radius: var(--border-radius); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            opacity: 1; transition: opacity 0.3s ease-in-out; height: 55vh;
+        }
+        .scenario-container.fade-out { opacity: 0; }
+        
+        .scenario-details { flex: 1 1 50%; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+        .scenario-story { font-size: 1.3rem; color: #444; line-height: 1.7; background: #f8f9fa; border-left: 0.25rem solid var(--primary-color); padding: 1.5rem; border-radius: 0.8rem; text-align: left; width: 100%; }
+        
+        .question-section {
+            flex: 1 1 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            background-color: #f2f0f5;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            height: 50vh;
+            overflow-y: auto;
+        }
+        .question-section h3 { font-family: var(--header-font); color: var(--text-color-dark); font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center; font-weight: 500;}
+        
+        .options-container { display: flex; flex-direction: column; gap: 1rem; width: 100%; max-width: 450px; }
+        .option-button {
+            background: #fff; border: 2px solid #ddd; border-radius: 1rem; padding: 1.2rem; cursor: pointer;
+            transition: all 0.3s ease; font-size: 1.2rem; color: var(--text-color-dark); font-weight: 700;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05); text-align: left;
+        }
+        .option-button:hover:not(:disabled) { transform: translateY(-3px); border-color: var(--primary-color); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+        .option-button.selected {
+            border-color: var(--secondary-color);
+            background-color: #fffaf0;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(251, 176, 59, 0.2);
+        }
+        .option-button.correct { background: var(--correct-color); color: white; border-color: #fff; transform: scale(1.02); }
+        .option-button.incorrect { background: var(--incorrect-color); color: white; animation: shake 0.5s; }
+        .option-button:disabled { cursor: not-allowed; opacity: 0.7; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+
+        /* ===== Glowing Pulsating Effect Keyframes ====== */
+        @keyframes glow-pulse { 0%, 100% { box-shadow: 0 0 10px rgba(251,176,59,0.5), 0 0 20px rgba(251,176,59,0.3); transform: scale(1); } 50% { box-shadow: 0 0 20px rgba(251,176,59,0.8), 0 0 30px rgba(251,176,59,0.5); transform: scale(1.1); } }
+        @keyframes glow-pulse-white { 0%, 100% { box-shadow: 0 0 10px rgba(255,255,255,0.7), 0 0 20px rgba(255,255,255,0.5); transform: scale(1); } 50% { box-shadow: 0 0 20px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.7); transform: scale(1.1); } }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media(min-width: 1200px) { 
+            .question-section {
+                height: 50vh;
+                overflow-y: auto;
+            }
+            .scenario-story {
+                font-size: 1.8rem;
+                color: #444;
+                line-height: 2;
+                background: #f8f9fa;
+                border-left: 0.25rem solid var(--primary-color);
+                padding: 1.5rem;
+                border-radius: 0.8rem;
+                text-align: left;
+                width: 100%;
+                height: 30vh;
+            }
+        }
+
+        @media (max-width: 1199px) {html { font-size: 2.5vmin; } }
+        @media (max-width: 1024px) {#game-wrapper { width: 100vw; height: 100vh; border-radius: 0; aspect-ratio: unset; }
+            .question-section{
+                height: 50vh;
+                overflow-y: auto;
+            }
+        } 
+ 
+        @media (max-width: 991px) {
+            html{ font-size: 3vmin; }
+            .scenario-container { height: auto; max-height: 100%; overflow-y: auto; padding: 1.5rem; }
+       
+            .completion-buttons { align-items: center; }
+            .completion-title-banner{
+                top:1%;
+            }
+            .completion-image {
+                width: 57%;
+            }
+            .options-container {
+                display: grid;      
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+                max-width: 100vw;
+                grid-template-columns: repeat(2, auto);
+                height: 40vh;
+                justify-items: flex-start;
+                overflow-y: auto;
+            }
+            .option-button {
+                width: 100%;
+            }
+            .question-section {
+                height: 65vh;
+                overflow-y: auto;
+            }
+            #completion-image {
+                max-width: 60%;
+            }
+             #takeaways-overlay .modal {
+                max-width: 80vw;
+                height: 67vh;
+                margin-top: 5rem;
+            }
+        }
+        @media (max-width: 768px) {
+            html { font-size: 3.3vmin; }
+            .scenario-title { font-size: 1.8rem; }
+            .scenario-content { padding: 1rem; }
+            .completion-title-banner { font-size: 1.8rem; }
+            #completion-image { max-width: 66%; }
+            .completion-btn { min-width: 155px; }
+            .options-container {
+                display: grid;
+                gap: 1rem;
+                width: 100%;
+                max-width: 100vw;
+                grid-template-columns: repeat(2, auto);
+                height: 40vh;
+                justify-items: flex-start;
+                overflow-y: auto;
+            }
+            .question-section h3{
+                font-size: 1.2rem;
+            }
+            .question-section {
+                height: 66vh;
+                overflow-y: auto;
+            }
+            .option-button{
+                font-size: 1rem;    
+                padding: 1rem;
+            }
+            .scenario-container{
+                height: 70vh;
+            }
+             #completion-image {
+                max-width: 85%;
+            }
+           
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-wrapper">
+    <div id="game-container">
+        <div id="start-screen" class="screen">
+            <h1>Otieno & Amina</h1>
+            <button class="start-button" onclick="showActivityIntro();">Start Activity</button>
+        </div>
+
+        <div id="game-screen" class="screen hidden">
+            <div class="game-top-section">
+                <h1 id="game-title">Dialogue Decision Maker</h1>
+                <div class="top-right-controls">
+                    <div id="progress-container">
+                        <div id="progress-bar"></div>
+                    </div>
+                    <span id="progress-text">0 / 3</span>
+                    <div class="instructions-icon" onclick="showInstructions()">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="scenario-title" id="scenario-title"></h2>
+            
+            <div class="scenario-content">
+                <div class="scenario-container" id="scenario-container">
+                    <div class="scenario-details">
+                        <p class="scenario-story" id="scenario-story-text"></p>
+                    </div>
+                    <div class="question-section">
+                        <h3 id="question-text"></h3>
+                        <div class="options-container" id="options-container"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hint-icon" id="hint-icon" onclick="showHint()">
+                <svg viewBox="0 0 24 24"><path d="M9 21c0 .5.4 1 1 1h4c.6 0 1-.5 1-1v-1H9v1zm3-19C8.1 2 5 5.1 5 9c0 2.4 1.2 4.5 3 5.7V17c0 .5.4 1 1 1h6c.6 0 1-.5 1-1v-2.3c1.8-1.3 3-3.4 3-5.7 0-3.9-3.1-7-7-7z"></path></svg>
+            </div>
+        </div>
+
+        <div id="completion-overlay" class="overlay hidden">
+            <h2 class="completion-title-banner">Activity Conclusion</h2>
+            <img id="completion-image" src="images/complete.jpg" alt="Activity Complete Summary">
+            <div class="completion-buttons">
+                <button class="completion-btn btn-prev" onclick="goToPreviousActivity()">Previous Activity</button>
+                <button class="completion-btn btn-restart" onclick="restartGame()">Restart Activity</button>
+                <button class="completion-btn btn-next" onclick="showTakeaways()">Key Takeaways</button>
+            </div>
+        </div>
+        
+        <div id="takeaways-overlay" class="overlay hidden">
+            <h2 class="takeaways-main-header">Lesson Complete</h2>
+            <div class="modal">
+                <div class="takeaways-header">
+                    <h3>Key Takeaways</h3>
+                </div>
+                <ul id="takeaways-list"></ul>
+            </div>
+            <button class="end-lesson-btn" onclick="ExitLesson()">Exit Lesson</button>
+        </div>
+
+        <div id="activity-intro-overlay" class="overlay hidden">
+            <div class="modal">
+                <h2>Activity Introduction</h2>
+                <p id="intro-text"></p>
+                <button onclick="closeModal('activity-intro-overlay')">Continue</button>
+            </div>
+        </div>
+
+        <div id="instructions-overlay" class="overlay hidden">
+            <div class="modal">
+                <h2>Instructions</h2>
+                <ol id="instructions-list"></ol>
+                <button onclick="closeModal('instructions-overlay')">Got it!</button>
+            </div>
+        </div>
+        
+        <div id="hint-overlay" class="overlay hidden">
+            <div class="modal">
+                <h2>Here's a hint...</h2>
+                <ul id="hint-list"></ul>
+                <button onclick="closeModal('hint-overlay')">Got it!</button>
+            </div>
+        </div>
+        
+        <div id="feedback-correct-overlay" class="overlay hidden">
+            <div class="modal feedback-modal">
+                <div class="feedback-header correct" style="justify-content:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--correct-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:2rem;height:2rem;margin-right:0.5rem;vertical-align:middle;display:inline-block;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <h2 style="margin:0;align-self:center;text-align:center;">Correct!</h2>
+                </div>
+                <div id="correct-feedback-text"></div>
+                <button class="feedback-btn correct">OK</button>
+            </div>
+        </div>
+        
+        <div id="feedback-incorrect-overlay" class="overlay hidden">
+            <div class="modal feedback-modal">
+                <div class="feedback-header incorrect" style="justify-content:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--incorrect-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:2rem;height:2rem;margin-right:0.5rem;vertical-align:middle;display:inline-block;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                    <h2 style="margin:0;align-self:center;text-align:center;">Not Quite...</h2>
+                </div>
+                <div id="incorrect-feedback-text"></div>
+                <button class="feedback-btn incorrect">Try Again</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const activityData = {
+        title: "Otieno & Amina",
+        introduction: "Otieno notices that Amina has changed. She is more confident, speaks up in class, and believes in herself. In this activity, you will step into their conversation and see how self-esteem changes relationships.",
+        instructions: [
+            "Read Otieno’s question carefully.",
+            "Select all the correct responses for Amina.",
+            "You must find all correct options to move to the next scenario.",
+            "Observe how Otieno reacts to each choice you make."
+        ],
+        hints: [
+            "What would a confident person say?",
+            "How does believing in yourself change the way you respond?",
+            "Which answer shows growth, courage, or motivation?"
+        ],
+        conclusion: {
+            voiceOver: "Amina’s story shows how believing in yourself changes behaviour, performance, and relationships. Self-esteem gives you the courage to succeed.",
+            takeaways: [
+                "Self-esteem is how you value and perceive yourself.",
+                "High self-esteem supports emotional health, decision-making, and strong relationships.",
+                "Believing in yourself increases motivation, resilience, and achievement.",
+                "Real-life stories such as the beggar with the pencils show that respect and dignity can transform lives."
+            ]
+        },
+        scenarios: [
+            {
+                title: "Scenario 1: Academic Performance",
+                story: "Otieno has noticed a positive change in Amina's confidence and performance at school. He decides to ask her about it.",
+                question: "How did you start doing so well in class?",
+                options: [
+                    { text: "I did not think I could, so I gave up.", outcome: "Otieno looks concerned.", feedback: "This shows low self-esteem. Giving up prevents growth. Think of a confident response.", isCorrect: false },
+                    { text: "I copied from others to look smart.", outcome: "Otieno frowns and shakes his head.", feedback: "Copying is dishonest and does not reflect true confidence.", isCorrect: false },
+                    { text: "I started believing I could and things changed.", outcome: "Otieno smiles: \"That makes sense!\"", feedback: "Excellent. Believing in yourself shows growth and self-esteem.", isCorrect: true },
+                    { text: "I just got lucky, it was not me.", outcome: "Otieno looks doubtful.", feedback: "This is not correct. Self-esteem means taking credit for your effort, not luck.", isCorrect: false }
+                ]
+            },
+            {
+                title: "Scenario 2: Speaking Up",
+                story: "Otieno has noticed a positive change in Amina's confidence and performance at school. He decides to ask her about it.",
+                question: "You are more active in class now. What changed?",
+                options: [
+                    { text: "I decided my voice matters, so I speak.", outcome: "Otieno nods proudly.", feedback: "Correct. This reflects confidence and belief in self.", isCorrect: true },
+                    { text: "I still think my ideas are useless.", outcome: "Otieno looks sad.", feedback: "This shows low self-esteem. Every learner’s ideas matter.", isCorrect: false },
+                    { text: "I only speak when forced by the teacher.", outcome: "Otieno shrugs, unimpressed.", feedback: "Not correct. Waiting until forced does not show confidence.", isCorrect: false },
+                    { text: "I told myself I can contribute and I tried.", outcome: "Otieno smiles warmly.", feedback: "Good choice. Encouraging yourself is a sign of strong self-esteem.", isCorrect: true }
+                ]
+            },
+            {
+                title: "Scenario 3: Handling Challenges",
+                story: "Otieno has noticed a positive change in Amina's confidence and performance at school. He decides to ask her about it.",
+                question: "Last week you failed a test but kept going. How did you do that?",
+                options: [
+                    { text: "I decided to stop trying. It is too hard.", outcome: "Otieno looks disappointed.", feedback: "This is not correct. Giving up is not resilience.", isCorrect: false },
+                    { text: "I told myself failure is a chance to learn.", outcome: "Otieno smiles: \"That is inspiring.\"", feedback: "Excellent. Seeing failure as learning is resilience from self-esteem.", isCorrect: true },
+                    { text: "I asked for help and kept practising.", outcome: "Otieno nods encouragingly.", feedback: "Correct. Asking for help and practising shows confidence and growth.", isCorrect: true },
+                    { text: "I blamed the teacher for the low marks.", outcome: "Otieno shakes his head.", feedback: "Not correct. Blaming others avoids responsibility and lowers self-esteem.", isCorrect: false }
+                ]
+            }
+        ]
+    };
+
+    let currentScenarioIndex = 0;
+    const totalScenarios = activityData.scenarios.length;
+    let introAudio, dingAudio, buzzAudio, outroAudio;
+
+    function initAudio() {
+        try {
+            introAudio = new Audio('audio/intro.mp3');
+            dingAudio = new Audio('audio/ding.mp3');
+            buzzAudio = new Audio('audio/buzz.mp3');
+            outroAudio = new Audio('audio/outro.mp3');
+        } catch (e) {
+            console.warn("Audio could not be loaded.");
+            const mockAudio = { play: () => {}, pause: () => {}, currentTime: 0 };
+            introAudio = dingAudio = buzzAudio = outroAudio = mockAudio;
+        }
+    }
+
+    function playSound(audio) { if(audio) { audio.currentTime = 0; audio.play().catch(e => {}); } }
+    function stopSound(audio) { if(audio) { audio.pause(); } }
+
+    function initGame() {
+        loadScenario();
+    }
+    
+    function loadScenario() {
+        const scenario = activityData.scenarios[currentScenarioIndex];
+        const optionsContainer = document.getElementById('options-container');
+        
+        document.getElementById('scenario-title').textContent = scenario.title;
+        document.getElementById('scenario-story-text').innerHTML = scenario.story;
+        document.getElementById('question-text').textContent = scenario.question;
+        
+        optionsContainer.innerHTML = '';
+        const optionLabels = ['A', 'B', 'C', 'D'];
+
+        scenario.options.forEach((optionData, index) => {
+            const button = document.createElement('button');
+            button.className = 'option-button';
+            button.innerHTML = `<strong>${optionLabels[index]}.</strong> ${optionData.text}`;
+            button.onclick = () => handleOptionClick(optionData, button);
+            optionsContainer.appendChild(button);
+        });
+        
+        updateProgress();
+    }
+    
+    function handleOptionClick(optionData, clickedButton) {
+        clickedButton.disabled = true;
+        
+        const isCorrect = optionData.isCorrect;
+        
+        const feedbackMessage = `
+            <p style="text-align:left; font-size: 1.1rem;"><strong>Otieno's Reaction:</strong> ${optionData.outcome}</p>
+            <hr style="margin: 1rem 0;">
+            <p style="text-align:left; font-size: 1.1rem;">${optionData.feedback}</p>
+        `;
+
+        if (isCorrect) {
+            playSound(dingAudio);
+            clickedButton.classList.add('correct');
+            showFeedbackPopup('correct', feedbackMessage);
+        } else {
+            playSound(buzzAudio);
+            clickedButton.classList.add('incorrect');
+            showFeedbackPopup('incorrect', feedbackMessage);
+        }
+    }
+
+    function goToNextScenario() {
+        const container = document.getElementById('scenario-container');
+        container.classList.add('fade-out');
+        setTimeout(() => {
+            if (currentScenarioIndex < totalScenarios - 1) {
+                currentScenarioIndex++;
+                loadScenario();
+                container.classList.remove('fade-out');
+            } else {
+                endActivity();
+            }
+        }, 500);
+    }
+    
+    function updateProgress() {
+        const progress = currentScenarioIndex;
+        document.getElementById('progress-bar').style.width = `${(progress / totalScenarios) * 100}%`;
+        document.getElementById('progress-text').textContent = `${progress} / ${totalScenarios}`;
+    }
+
+    function showFeedbackPopup(type, message) {
+        document.getElementById(`${type}-feedback-text`).innerHTML = message;
+        document.getElementById(`feedback-${type}-overlay`).classList.remove('hidden');
+    }
+    
+    function showActivityIntro() {
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+        document.getElementById('activity-intro-overlay').classList.remove('hidden');
+        playSound(introAudio);
+        sendEvent(ActivityEvent.START_ACTIVITY, {activityName: 'Otieno & Amina – Dialogue Decision Maker'});
+    }
+
+    function showInstructions() { document.getElementById('instructions-overlay').classList.remove('hidden'); }
+    
+    function showHint() { document.getElementById('hint-overlay').classList.remove('hidden'); }
+
+    function showTakeaways() {
+        stopSound(outroAudio);
+        document.getElementById('takeaways-overlay').classList.remove('hidden');
+        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'Otieno & Amina – Dialogue Decision Maker'});
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.add('hidden');
+        if (id === 'activity-intro-overlay') { 
+            stopSound(introAudio); 
+            initGame(); 
+        }
+    }
+    
+    function closeCorrectFeedbackAndCheck() {
+        closeModal('feedback-correct-overlay');
+        
+        const scenario = activityData.scenarios[currentScenarioIndex];
+        const totalCorrectOptions = scenario.options.filter(opt => opt.isCorrect).length;
+        const selectedCorrectOptions = document.querySelectorAll('.option-button.correct').length;
+
+        if (selectedCorrectOptions === totalCorrectOptions) {
+
+            goToNextScenario();
+        }
+    }
+
+    function endActivity() {
+        document.getElementById('progress-bar').style.width = `100%`;
+        document.getElementById('progress-text').textContent = `${totalScenarios} / ${totalScenarios}`;
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('completion-overlay').classList.remove('hidden');
+        playSound(outroAudio);
+        
+    }
+    
+    function restartGame() {
+        stopSound(outroAudio);
+        speechSynthesis.cancel();
+        document.getElementById('completion-overlay').classList.add('hidden');
+        document.getElementById('takeaways-overlay').classList.add('hidden');
+        currentScenarioIndex = 0;
+        document.getElementById('game-screen').classList.remove('hidden');
+        document.getElementById('scenario-container').classList.remove('fade-out');
+        loadScenario();
+    }
+
+    function goToPreviousActivity() { 
+        window.location.href = "../ACTIVITY2/index.html"; 
+        stopSound(outroAudio);
+        speechSynthesis.cancel();
+        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'Otieno & Amina – Dialogue Decision Maker'});
+    }
+    function ExitLesson() { 
+        sendEvent(LessonEvent.END_LESSON, {lesssonName: 'How Self-Esteem Contributes to Holistic Development: Lesson 1'});
+    }
+    
+    function populateStaticContent() {
+        document.getElementById('game-title').textContent = activityData.title;
+        document.getElementById('intro-text').innerHTML = activityData.introduction;
+        
+        const instructionsList = document.getElementById('instructions-list');
+        instructionsList.innerHTML = activityData.instructions.map(item => `<li>${item}</li>`).join('');
+
+        const hintList = document.getElementById('hint-list');
+        hintList.innerHTML = activityData.hints.map(item => `<li>${item}</li>`).join('');
+
+        const takeawaysList = document.getElementById('takeaways-list');
+        takeawaysList.innerHTML = activityData.conclusion.takeaways.map(item => `<li>${item}</li>`).join('');
+
+        document.getElementById('progress-text').textContent = `0 / ${totalScenarios}`;
+
+        const correctBtn = document.querySelector('#feedback-correct-overlay .feedback-btn');
+        correctBtn.onclick = () => closeCorrectFeedbackAndCheck();
+
+        const incorrectBtn = document.querySelector('#feedback-incorrect-overlay .feedback-btn');
+        incorrectBtn.onclick = () => closeModal('feedback-incorrect-overlay');
+    }
+
+    window.onload = () => { initAudio(); populateStaticContent(); };
+</script>
+<script src = "../eventSender.js"></script>
+</body>
+</html>
