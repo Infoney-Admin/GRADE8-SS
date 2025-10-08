@@ -10,18 +10,25 @@
         font-family: 'Fredoka';
         src: url('../assets/Fredoka-VariableFont_wdth\,wght.ttf') format('truetype');
     }
-    @keyframes glow-pulse-white {
-        0%, 100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.5); transform: scale(1); }
-        50% { box-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 30px rgba(255, 255, 255, 0.7); transform: scale(1.1); }
-    }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideIn { from { transform: translateY(30px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+    @keyframes glow-pulse {
+        0%, 100% { box-shadow: 0 0 10px rgba(251, 176, 59, 0.5), 0 0 20px rgba(251, 176, 59, 0.3); transform: scale(1); }
+        50% { box-shadow: 0 0 20px rgba(251, 176, 59, 0.8), 0 0 30px rgba(251, 176, 59, 0.5); transform: scale(1.1); }
+    }
+    @keyframes glow-pulse-white {
+        0%, 100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.5); transform: scale(1); }
+        50% { box-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 30px rgba(255, 255, 255, 0.7); transform: scale(1.05); }
+    }
+    ::-webkit-scrollbar{
+        display: none;
+    }
 
     /* Root Variables */
     :root {
         --font-xs: 1.1rem;
         --font-sm: 1.4rem;
-        --font-md: 1.5rem;
+        --font-md: 1.6rem;
         --font-lg: 2rem;
         --font-xl: 4rem;
         --pad-sm: 1rem;
@@ -30,7 +37,6 @@
         --primary-color: #5D04B2;
         --secondary-color: #fbb03b;
         --correct-color: #4caf50;
-        --incorrect-color: #e74c3c;
         --text-color-dark: #333;
         --text-color-light: #fff;
         --card-background-light: #ffffff;
@@ -118,13 +124,13 @@
     
     .start-button:hover { transform: scale(1.06); }
 
-    #game-screen { background: #f8f9ff; }
+    #game-screen { background: #f8f9ff; justify-content: flex-start; }
 
     .game-top-section {
         width: 100%; flex-shrink: 0; display: flex; justify-content: space-between;
-        align-items: center; background-color: var(--primary-color);
+        align-items: center; background-color: var(--primary-color); z-index: 10;
         color: var(--text-color-light); padding: clamp(0.5rem, 1.5vmin, 0.75rem) clamp(0.75rem, 2vmin, 1.25rem);
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2); gap: 1rem; flex-wrap: wrap;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2); gap: 1rem;
     }
     
     #game-title {
@@ -132,7 +138,7 @@
         text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex: 1 1 300px; min-width: 0;
     }
 
-    .progress-area { display: flex; align-items: center; gap: clamp(0.5rem, 1.5vw, 1rem); flex-shrink: 0; }
+    .top-right-controls { display: flex; align-items: center; gap: 1rem; }
     #progress-container {
         width: clamp(100px, 20vw, 200px); background-color: rgba(255,255,255,0.3);
         border-radius: 1rem; height: clamp(15px, 2.5vmin, 20px);
@@ -143,64 +149,84 @@
         border-radius: 0.8rem; transition: width 0.5s ease;
     }
     #progress-text {
-        color: var(--text-color-light); font-weight: 700;
+        color: var(--text-color-light); font-weight: 600;
         font-size: clamp(0.75rem, 2vmin, 1rem); text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
     }
-
+    
     .instructions-icon {
-        width: 40px; height: 40px; background: rgba(255, 255, 255, 0.2); border-radius: 50%;
-        display: flex; align-items: center; justify-content: center; cursor: pointer;
-        transition: all 0.3s ease; flex-shrink: 0; animation: glow-pulse-white 2s infinite;
+        width: 2.5rem; height: 2.5rem; background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 50%; display: flex;
+        align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease;
+        z-index: 15; flex-shrink: 0;
+        animation: glow-pulse-white 2s infinite;
     }
     .instructions-icon:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.1); }
-    .instructions-icon svg { fill: white; width: 20px; height: 20px; }
+    .instructions-icon svg { width: 1.25rem; height: 1.25rem; fill: white;}
 
     .game-content {
         flex: 1; display: flex; padding: clamp(1rem, 2vw, 2rem);
         overflow-y: auto; position: relative;
-        align-items: center; justify-content: center;
+        align-items: flex-start; justify-content: center;
     }
+    
+    #hint-button {
+        position: absolute; bottom: 2rem; right: 2rem; z-index: 20;
+        width: 4rem; height: 4rem; background: var(--secondary-color);
+        border: 0.3rem solid white; border-radius: 50%; display: flex;
+        align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease;
+        box-shadow: 0 0.4rem 1.5rem rgba(251, 176, 59, 0.4);
+        animation: glow-pulse 2.5s infinite ease-in-out;
+    }
+    #hint-button:hover { animation: none; transform: scale(1.1); box-shadow: 0 0.6rem 2.5rem rgba(251, 176, 59, 0.8); }
+    #hint-button svg { width: 2rem; height: 2rem; fill: white; }
+    #hint-button.hidden { display: none; }
 
     /* --- Goal Explorer Styles --- */
     #goal-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: clamp(1rem, 2vw, 1.5rem);
+        gap: clamp(1.5rem, 3vw, 2.5rem);
         width: 100%;
-        max-width: 1000px;
+        max-width: 1100px;
         padding: 1rem;
     }
 
     .category-card {
         background: #fff;
         border-radius: var(--border-radius);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
         cursor: pointer;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-width 0.3s ease;
         overflow: hidden;
-        border-left: 6px solid var(--primary-color);
+        border-left: 8px solid; /* color set by JS */
+        min-height: 20vh;
     }
-
+    .category-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
     .category-card.active {
         transform: scale(1.02);
-        box-shadow: 0 8px 30px rgba(93, 4, 178, 0.3);
+        box-shadow: 0 8px 30px rgba(93, 4, 178, 0.2);
+        border-left-width: 12px;
+        position: relative; z-index: 5;
     }
 
     .card-header {
         display: flex;
         align-items: center;
         gap: 1rem;
-        padding: clamp(0.75rem, 2vmin, 1.25rem);
-        pointer-events: none; /* So click goes to parent card */
+        padding: clamp(1rem, 2.5vmin, 1.5rem);
+        pointer-events: none;
     }
-    .card-title { font-size: clamp(1.1rem, 3vmin, 1.4rem); font-weight: 600; color: var(--text-color-dark); }
+    .card-title { font-size: clamp(1.2rem, 3vmin, 1.6rem); font-weight: 600; color: var(--text-color-dark); }
     
     .card-content {
         max-height: 0;
         opacity: 0;
         overflow: hidden;
         transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, padding 0.5s ease;
-        padding: 0 clamp(0.75rem, 2vmin, 1.25rem);
+        padding: 0 clamp(1rem, 2.5vmin, 1.5rem);
         pointer-events: none;
         background-color: #f8f9fa;
         border-top: 1px solid #eee;
@@ -208,34 +234,25 @@
     .category-card.active .card-content {
         max-height: 200px;
         opacity: 1;
-        padding: clamp(0.75rem, 2vmin, 1.25rem);
+        padding: clamp(1rem, 2.5vmin, 1.5rem);
         pointer-events: auto;
     }
 
     .goal-item {
-        display: block;
-        width: 100%;
-        background-color: #fff;
-        border: 2px solid #ddd;
-        border-radius: 0.75rem;
-        padding: clamp(0.5rem, 1.5vmin, 0.8rem);
-        margin-bottom: 0.5rem;
-        text-align: center;
-        font-size: clamp(0.85rem, 2.2vmin, 1.1rem);
-        cursor: pointer;
-        transition: all 0.2s ease;
+        display: block; width: 100%; background-color: #fff;
+        border: 2px solid #ddd; border-radius: 0.75rem;
+        padding: clamp(0.6rem, 1.8vmin, 1rem); margin-bottom: 0.75rem;
+        text-align: center; font-size: clamp(0.9rem, 2.2vmin, 1.1rem);
+        cursor: pointer; transition: all 0.2s ease;
     }
     .goal-item:last-child { margin-bottom: 0; }
     .goal-item:hover {
-        border-color: var(--secondary-color);
-        background-color: #fff9f0;
+        border-color: var(--secondary-color); background-color: #fff9f0;
         transform: translateY(-2px);
     }
     .goal-item.selected {
-        background-color: var(--correct-color);
-        color: white;
-        border-color: var(--correct-color);
-        font-weight: bold;
+        background-color: var(--correct-color); color: white;
+        border-color: var(--correct-color); font-weight: bold;
         box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
     }
 
@@ -243,7 +260,7 @@
     .modal-overlay, .overlay {
         position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         background-color: rgba(0,0,0,0.4); backdrop-filter: blur(5px);
-        z-index: 3000; display: flex; justify-content: center; align-items: center;
+        z-index: 1000; display: flex; justify-content: center; align-items: center;
         animation: fadeIn 0.3s ease;
     }
     .modal-overlay.hidden, .overlay.hidden { display: none; }
@@ -262,7 +279,7 @@
      .modal ul {
         list-style-type: none; text-align: left; margin-top: 1rem; padding: 0;
     }
-    .modal li { margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative; font-size: 1.1em; line-height: 1.5; }
+    .modal li { margin-bottom: 0.8rem; font-size: 1.1em; line-height: 1.5; }
 
     .modal-btn {
         width: 100%; padding: 1rem; font-size: 1.2rem; font-weight: 700;
@@ -272,20 +289,28 @@
     }
     .modal-btn:hover { transform: scale(1.02); }
 
-    #activity-intro-overlay .modal-content, #instructions-overlay .modal-content { border-top: 8px solid var(--primary-color); }
+    #activity-intro-overlay .modal-content, #instructions-modal-overlay .modal-content { border-top: 8px solid var(--primary-color); }
     #activity-intro-overlay .modal-content p {
         text-align: center; background: #f8f9fa; padding: 1.5rem;
         border-radius: 0.75rem; border-left: 4px solid var(--primary-color);
-        line-height: 1.5; font-size: 1.2rem; color: var(--text-color-dark); font-style: italic;
+        line-height: 1.5; font-size: 1.2rem; color: var(--text-color-dark);
     }
-    #instructions-overlay .modal-content ul { padding: 0; }
-    #instructions-overlay .modal-content li::before { 
-        content: '•'; position: absolute; left: 0; font-size: 1.5em; 
-        color: var(--primary-color); line-height: 1;
-    }
-    #instructions-overlay .modal-content .hint-list { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; }
-    
-    /* Completion & Takeaways Overlay Styles */
+    /* Remove bullets and default indents for instruction/hint lists */
+    #instructions-modal-overlay ul,
+    #hint-modal ul { list-style: none; margin: 0; padding: 0; text-align: center; }
+    #instructions-modal-overlay li,
+    #hint-modal li { list-style: none; margin: 0 0 0.8rem 0; padding-left: 0; }
+    #hint-modal .hint-list { margin-top: 1.5rem; padding-top: 1.5rem;}
+     #hint-modal .modal-content{
+        border-top: 8px solid var(--secondary-color);
+     }
+     #hint-modal h2 { color: var(--secondary-color); }
+     #hint-modal p { font-size: 1.1rem; margin-bottom: 1rem; color: var(--text-color-dark); }
+     #hint-modal li { font-size: 1.1rem; margin-bottom: 0.75rem; line-height: 1.5; }
+     #hint-modal .modal-btn {
+        background-color: var(--secondary-color); font-size: 1.1rem; padding: 0.75rem;
+     }
+    /* Completion Overlay Styles */
     #completion-overlay { 
         background-image: url('images/gamebg.jpg'); background-size: cover; background-position: center;
         flex-direction: column; justify-content: center; align-items: center;
@@ -308,8 +333,8 @@
         box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-top: 0.5rem;
     }
     .completion-buttons {
-        position: absolute; bottom: 2rem; width: 100%; display: flex;
-        justify-content: center; gap: 1.5rem; padding: 0 2rem;
+        position: absolute; bottom: 1.5rem; width: 100%; display: flex;
+        justify-content: space-between; gap: 1.5rem; padding: 0 2rem;
     }
     .completion-btn {
       font-family: var(--header-font); background: var(--secondary-color); color: #fff;
@@ -324,26 +349,25 @@
         position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
         overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;
     }
-    
+
     @media (max-width: 991px) {
-       #game-wrapper {
-            width: 100vw !important; height: 100vh !important;
-            min-width: 100vw !important; min-height: 100vh !important;
-            border-radius: 0 !important; max-width: none !important;
-            aspect-ratio: unset !important; box-shadow: none;
-        }
         #goal-grid { grid-template-columns: repeat(2, 1fr); }
+        .category-card { min-height: 0; }
         #completion-image { max-width: 60%; }
         .completion-buttons {align-items: center; bottom: 1rem; gap: 1rem; flex-wrap: wrap; }
         .completion-btn{
             font-size: 1rem; padding: clamp(0.4rem, 1.2vmin, 0.6rem) clamp(1rem, 2.5vmin, 1.5rem);
         }
-        #instructions-overlay .modal-content { height: 90vh; overflow-y: auto; }
+        #hint-modal { height: 90vh; overflow-y: auto; }
     }
     
     @media (max-width: 768px) {
         body { padding: 0; }
-        #goal-grid { grid-template-columns: 1fr; gap: 0.8rem; padding: 0.8rem; }
+        #goal-grid {
+            grid-template-columns: repeat(2, auto);
+            gap: 0.8rem;
+            padding: 0.8rem;
+        }
         .card-title { font-size: 1.2rem; }
         .goal-item { font-size: 1rem; }
     }
@@ -360,49 +384,58 @@
         <div id="game-screen" class="screen hidden">
             <div class="game-top-section">
                <h1 id="game-title">Goal Explorer</h1>
-               <div class="progress-area">
+               <div class="top-right-controls">
                    <div id="progress-container"><div id="progress-bar"></div></div>
                    <div id="progress-text">0 / 6</div>
-               </div>
-               <div class="instructions-icon" id="instructions-icon" aria-label="Show instructions">
-                   <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+                   <div class="instructions-icon" id="instructions-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+                   </div>
                </div>
             </div>
             <div class="game-content">
                 <main id="goal-grid"></main>
             </div>
+            <button id="hint-button" class="hidden" title="Get a Hint">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M9 21c0 .5.4 1 1 1h4c.6 0 1-.5 1-1v-1H9v1zm3-19C8.1 2 5 5.1 5 9c0 2.4 1.2 4.5 3 5.7V17c0 .5.4 1 1 1h6c.6 0 1-.5 1-1v-2.3c1.8-1.3 3-3.4 3-5.7 0-3.9-3.1-7-7-7z"/></svg>
+            </button>
         </div>
 
         <div id="activity-intro-overlay" class="modal-overlay hidden">
             <div class="modal-content">
                 <h2>Activity Introduction</h2>
-                <p>"Goals come in many forms. In this activity, you will explore different types of goals and discover examples that inspire you to grow. Each branch will show you a goal you can relate to in your own life."</p>
+                <p>Goals come in many forms. In this activity, you will explore different types of goals and discover examples that inspire you to grow. Each branch will show you a goal you can relate to in your own life.</p>
                 <button class="modal-btn" id="intro-continue-btn">Continue</button>
             </div>
         </div>
 
-        <div id="instructions-overlay" class="modal-overlay hidden">
-           <div class="modal-content">
-               <h2>Learner Instructions</h2>
-               <ul>
-                   <li>Click on each category to see example goals.</li>
-                   <li>Choose one that connects with your interests.</li>
-               </ul>
+        <div id="instructions-modal-overlay" class="modal-overlay hidden">
+            <div class="modal-content">
+                <h2>Instructions</h2>
+                <ul>
+                    <li>Click on each category to see example goals.</li>
+                    <li>Choose one that connects with your interests.</li>
+                </ul>
+                <button class="modal-btn" id="close-instructions-btn">Got It!</button>
+            </div>
+        </div>
+
+        <div id="hint-modal-overlay" class="modal-overlay hidden">
+           <div id="hint-modal" class="modal-content">
+               <h2>Here is a hint</h2>
                <ul class="hint-list">
                    <li>Is your goal about learning, helping others, or improving health?</li>
                    <li>Think about what you want to achieve this term.</li>
                </ul>
-               <button class="modal-btn" id="close-instructions-btn">Got it!</button>
+               <button class="modal-btn" id="close-hint-btn">Got it!</button>
            </div>
         </div>
        
         <div id="completion-overlay" class="overlay hidden">
-            <div class="completion-title-banner">Great Exploring!</div>
+            <div class="completion-title-banner">Activity conclusion!</div>
             <div class="modal">
                 <img id="completion-image" src="images/complete.jpg" alt="Activity Complete" onerror="this.style.display='none'">
             </div>
             <div class="completion-buttons">
-                <button class="completion-btn btn-previous">Previous Activity</button>
                 <button class="completion-btn btn-restart">Restart Activity</button>
                 <button class="completion-btn btn-next">Next Activity</button>
             </div>
@@ -411,7 +444,6 @@
         <div id="aria-live-announcer" class="visually-hidden" aria-live="polite"></div>
         
     <audio id="ding-sound" src="audio/ding.mp3" preload="auto"></audio>
-    <audio id="buzz-sound" src="audio/buzz.mp3" preload="auto"></audio>
     <audio id="intro-sound" src="audio/intro.mp3" preload="auto"></audio>
     <audio id="outro-sound" src="audio/outro.mp3" preload="auto"></audio>
    </div>
@@ -419,14 +451,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Event Handling ---
-    const sendEvent = (eventName, eventData) => {
-        if (window.parent) {
-            const event = new CustomEvent('lessonEvent', { detail: { name: eventName, data: eventData } });
-            window.parent.document.dispatchEvent(event);
-        }
-    };
-    const ActivityEvent = { END_ACTIVITY: 'END_ACTIVITY' };
 
     // --- DOM Elements ---
     const startScreen = document.getElementById('start-screen'), gameScreen = document.getElementById('game-screen');
@@ -435,7 +459,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const announcer = document.getElementById('aria-live-announcer');
     const progressBar = document.getElementById('progress-bar'), progressText = document.getElementById('progress-text');
     const activityIntroOverlay = document.getElementById('activity-intro-overlay'), introContinueBtn = document.getElementById('intro-continue-btn');
-    const instructionsIcon = document.getElementById('instructions-icon'), instructionsOverlay = document.getElementById('instructions-overlay'), closeInstructionsBtn = document.getElementById('close-instructions-btn');
+    const instructionsIcon = document.getElementById('instructions-icon'), instructionsModalOverlay = document.getElementById('instructions-modal-overlay'), closeInstructionsBtn = document.getElementById('close-instructions-btn');
+    const hintButton = document.getElementById('hint-button'), hintModalOverlay = document.getElementById('hint-modal-overlay'), closeHintBtn = document.getElementById('close-hint-btn');
     const completionOverlay = document.getElementById('completion-overlay');
     const dingSound = document.getElementById('ding-sound'), introSound = document.getElementById('intro-sound'), outroSound = document.getElementById('outro-sound');
 
@@ -446,12 +471,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Data ---
     const goalData = [
-        { category: 'Academic', goals: ['Improve my grades in Social Studies', 'Read one book every two weeks'] },
-        { category: 'Social', goals: ['Speak to one new person weekly', 'Join a club at school'] },
-        { category: 'Health', goals: ['Play football twice weekly', 'Drink more water daily'] },
-        { category: 'Career', goals: ['Learn about careers in law', 'Shadow a local professional'] },
-        { category: 'Creativity', goals: ['Learn drawing techniques', 'Write a short poem monthly'] },
-        { category: 'Community', goals: ['Volunteer at a local event', 'Help organise a school clean-up'] }
+        { category: 'Academic', goals: ['Improve my grades in Social Studies', 'Read one book every two weeks'], color: '#3498db' },
+        { category: 'Social', goals: ['Speak to one new person weekly', 'Join a club at school'], color: '#f1c40f' },
+        { category: 'Health', goals: ['Play football twice weekly', 'Drink more water daily'], color: '#2ecc71' },
+        { category: 'Career', goals: ['Learn about careers in law', 'Shadow a local professional'], color: '#9b59b6' },
+        { category: 'Creativity', goals: ['Learn drawing techniques', 'Write a short poem monthly'], color: '#e74c3c' },
+        { category: 'Community', goals: ['Volunteer at a local event', 'Help organise a school clean-up'], color: '#1abc9c' }
     ];
 
     // --- Sound ---
@@ -486,6 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'category-card';
             card.dataset.index = index;
+            card.style.borderColor = item.color;
             
             let goalsHtml = item.goals.map(goal => `<button class="goal-item">${goal}</button>`).join('');
 
@@ -519,31 +545,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const clickedCard = event.currentTarget;
         const cardIndex = clickedCard.dataset.index;
 
-        // If it's already active, deactivate it
-        if (clickedCard.classList.contains('active')) {
-            clickedCard.classList.remove('active');
-            announce(`${clickedCard.querySelector('.card-title').textContent} category collapsed.`);
-        } else {
-            // Deactivate any other active card
-            const currentActive = document.querySelector('.category-card.active');
-            if (currentActive) {
-                currentActive.classList.remove('active');
-            }
-            // Activate the new one
-            clickedCard.classList.add('active');
-            announce(`${clickedCard.querySelector('.card-title').textContent} category expanded.`);
+        // Toggle the 'active' class on the clicked card only.
+        const isNowActive = clickedCard.classList.toggle('active');
 
-            // Update progress if this is the first time clicking it
+        if (isNowActive) {
+            announce(`${clickedCard.querySelector('.card-title').textContent} category expanded.`);
+            
+            // Scroll into view to prevent clipping by the header
+            setTimeout(() => {
+                clickedCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 400); // Delay to allow animation to start
+
             if (!exploredCards.has(cardIndex)) {
                 exploredCards.add(cardIndex);
                 playSound(dingSound);
                 updateProgress();
             }
+        } else {
+             announce(`${clickedCard.querySelector('.card-title').textContent} category collapsed.`);
         }
     }
 
+
     function handleGoalSelection(event) {
-        event.stopPropagation(); // Prevent card from toggling
+        event.stopPropagation();
         if (isPaused || activityCompleted) return;
         
         const selectedButton = event.currentTarget;
@@ -557,7 +582,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function completeActivity() {
-        sendEvent(ActivityEvent.END_ACTIVITY, { activityName: 'Goal Explorer' });
         completionOverlay.classList.remove('hidden');
         playSound(outroSound);
     }
@@ -572,10 +596,13 @@ document.addEventListener('DOMContentLoaded', () => {
         startBtn.addEventListener('click', () => {
             startScreen.classList.add('hidden');
             gameScreen.classList.remove('hidden');
+            instructionsIcon.classList.remove('hidden');
+            hintButton.classList.remove('hidden');
             activityIntroOverlay.classList.remove('hidden');
             isPaused = true;
             playSound(introSound);
             setupActivity();
+            sendEvent(ActivityEvent.START_ACTIVITY, { activityName: 'Goal Explorer' });
         });
 
         introContinueBtn.addEventListener('click', () => {
@@ -585,12 +612,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         instructionsIcon.addEventListener('click', () => {
-            instructionsOverlay.classList.remove('hidden');
+            instructionsModalOverlay.classList.remove('hidden');
             isPaused = true;
         });
 
         closeInstructionsBtn.addEventListener('click', () => {
-            instructionsOverlay.classList.add('hidden');
+            instructionsModalOverlay.classList.add('hidden');
+            if (!activityCompleted) {
+                isPaused = false;
+            }
+        });
+
+        hintButton.addEventListener('click', () => {
+            hintModalOverlay.classList.remove('hidden');
+            isPaused = true;
+        });
+
+        closeHintBtn.addEventListener('click', () => {
+            hintModalOverlay.classList.add('hidden');
             if (!activityCompleted) {
                 isPaused = false;
             }
@@ -599,17 +638,21 @@ document.addEventListener('DOMContentLoaded', () => {
         completionOverlay.querySelector('.btn-restart').addEventListener('click', () => {
             stopSound(outroSound);
             completionOverlay.classList.add('hidden');
+
+            // Ensure we are on the game screen
+            startScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            instructionsIcon.classList.remove('hidden');
+            hintButton.classList.remove('hidden');
+
+            // Re-initialize the game
             setupActivity();
         });
         
-        // Navigation buttons
-        completionOverlay.querySelector('.btn-previous').addEventListener('click', () => {
-            stopSound(outroSound);
-            window.location.href = '../ACTIVITY_PREVIOUS/index.html'; // Adjust link as needed
-        });
         completionOverlay.querySelector('.btn-next').addEventListener('click', () => {
             stopSound(outroSound);
-            window.location.href = '../ACTIVITY_NEXT/index.html'; // Adjust link as needed
+            window.location.href = '../ACTIVITY2/index.html'; // Adjust link as needed
+            sendEvent(ActivityEvent.END_ACTIVITY, { activityName: 'Goal Explorer' });
         });
     }
 

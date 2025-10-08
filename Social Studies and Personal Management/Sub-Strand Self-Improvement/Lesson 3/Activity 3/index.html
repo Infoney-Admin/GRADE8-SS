@@ -215,7 +215,7 @@
         #hint-overlay button { background-color: var(--secondary-color); }
 
         /* Feedback Modals */
-        .feedback-modal { max-width: 480px; }
+        .feedback-modal { max-width: 520px; } /* Increased width for more content */
         .feedback-header { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem; }
         .feedback-header h2 { font-size: 2rem; font-weight: 700; }
         .feedback-header.correct h2 { color: var(--correct-color); }
@@ -271,66 +271,6 @@
             box-shadow: 0 0.5rem 1.25rem rgba(0,0,0,0.2);
         }
     
-        /* ===== TAKEAWAYS OVERLAY ===== */
-        #takeaways-overlay {
-            background-image: url(images/gamebg.jpg); flex-direction: column; justify-content: center;
-        }
-        .takeaways-main-header {
-            font-family: var(--header-font); color: white; font-size: 2.5rem;
-            position: absolute; top: 5%; text-align: center; width: 100%;
-            text-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.3);
-        }
-        #takeaways-overlay .modal { max-width: 800px; padding: 2rem; display: flex; flex-direction: column; align-items: center; height: 45vh;
-            overflow-y: auto; margin-top: 3rem;
-        }
-        .takeaways-header { color:var(--primary-color); display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
-        .takeaways-header h3 { font-family: var(--header-font); font-size: 1.8rem; color: var(--primary-color); }
-        #takeaways-list { list-style-type: none; padding: 0; width: 100%; }
-        #takeaways-list li {
-            background: none;
-            border-left: none;
-            margin-bottom: 0rem;
-            padding: 1rem 1rem 1rem 2.5rem;
-            border-radius: 0.5rem;
-            font-size: 1.1rem;
-            text-align: left;
-            position: relative;
-        }
-        #takeaways-list li::before {
-            content: '';
-            display: inline-block;
-            position: absolute;
-            left: 0.8rem;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 1.2rem;
-            height: 1.2rem;
-            background: none;
-            /* SVG checkmark as background-image */
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%235cb85c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 10.8 17 4 10.8"/></svg>');
-            background-size: 1.2rem 1.2rem;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-        
-        .end-lesson-btn
-        {
-            background: var(--secondary-color);
-            font-family: var(--header-font);
-            color: #fff;
-            font-weight: 500;
-            font-size: 1.3rem;
-            border: 3px solid #fff;
-            border-radius: 3rem;
-            padding: clamp(0.5rem, 1.5vmin, 0.75rem) clamp(1.25rem, 3vmin, 2rem);
-            text-shadow: 0 2px 0 #b88b2a;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: auto;
-            min-width: 180px;
-            margin-top: 2rem;
-        }
-        .end-lesson-btn:hover { transform: scale(1.06); box-shadow: 0 6px 24px rgba(0,0,0,0.18); }
-
         /* ===== SCENARIO LAYOUT ===== */
         .scenario-title {
             font-family: var(--header-font); color: var(--primary-color);
@@ -361,6 +301,8 @@
             background-color: #f2f0f5;
             padding: 1.5rem;
             border-radius: var(--border-radius);
+            height: 50vh;
+            overflow-y: auto;
         }
         .question-section h3 { font-family: var(--header-font); color: var(--text-color-dark); font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center; font-weight: 500;}
         
@@ -407,21 +349,18 @@
         }
 
         @media (max-width: 1199px) {html { font-size: 2.5vmin; } }
-        @media (max-width: 1024px) {#game-wrapper { width: 100vw; height: 100vh; border-radius: 0; aspect-ratio: unset; 
+        @media (max-width: 1024px) {#game-wrapper { width: 100vw; height: 100vh; border-radius: 0; aspect-ratio: unset; }
             .question-section{
                 height: 50vh;
                 overflow-y: auto;
             }
         } 
- }
+ 
         @media (max-width: 991px) {
             html{ font-size: 3vmin; }
             .scenario-container { height: auto; max-height: 100%; overflow-y: auto; padding: 1.5rem; }
        
-            .completion-buttons { flex-direction: column; align-items: center; }
-            #takeaways-overlay .modal{
-                height: 60vh
-            }
+            .completion-buttons { align-items: center; }
             .completion-title-banner{
                 top:1%;
             }
@@ -446,6 +385,10 @@
                 height: 65vh;
                 overflow-y: auto;
             }
+            #completion-image {
+            max-width: 60%;
+            }
+
         }
         @media (max-width: 768px) {
             html { font-size: 3.3vmin; }
@@ -475,6 +418,12 @@
                 font-size: 1rem;    
                 padding: 1rem;
             }
+            .scenario-container{
+                height: 70vh;
+            }
+             #completion-image {
+            max-width: 85%;
+            }
         }
     </style>
 </head>
@@ -489,12 +438,12 @@
 
         <div id="game-screen" class="screen hidden">
             <div class="game-top-section">
-                <h1 id="game-title">Social Scenarios</h1>
+                <h1 id="game-title">Values in Action</h1>
                 <div class="top-right-controls">
                     <div id="progress-container">
                         <div id="progress-bar"></div>
                     </div>
-                    <span id="progress-text">0 / 3</span>
+                    <span id="progress-text">0 / 4</span>
                     <div class="instructions-icon" onclick="showInstructions()">
                         <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
                     </div>
@@ -521,24 +470,13 @@
         </div>
 
         <div id="completion-overlay" class="overlay hidden">
-            <h2 class="completion-title-banner">Activity Wrap Up!</h2>
+            <h2 class="completion-title-banner">Activity Complete!</h2>
             <img id="completion-image" src="images/complete.jpg" alt="Activity Complete Summary">
             <div class="completion-buttons">
                 <button class="completion-btn btn-prev" onclick="goToPreviousActivity()">Previous Activity</button>
                 <button class="completion-btn btn-restart" onclick="restartGame()">Restart Activity</button>
-                <button class="completion-btn btn-next" onclick="showTakeaways()">key Takeaways</button>
+                <button class="completion-btn btn-next" onclick="goToNextActivity()">Next Activity</button>
             </div>
-        </div>
-
-        <div id="takeaways-overlay" class="overlay hidden">
-            <h2 class="takeaways-main-header">Lesson Complete</h2>
-            <div class="modal">
-                <div class="takeaways-header">
-                    <h3>Key Takeaways</h3>
-                </div>
-                <ul id="takeaways-list"></ul>
-            </div>
-            <button class="end-lesson-btn" onclick="sendEvent(LessonEvent.END_LESSON, {lessonName: 'Sharing Goals for Self-Improvement in Social Life: Lesson 2'})">Exit Lesson</button>
         </div>
 
         <div id="activity-intro-overlay" class="overlay hidden">
@@ -567,23 +505,23 @@
         
         <div id="feedback-correct-overlay" class="overlay hidden">
             <div class="modal feedback-modal">
-                                <div class="feedback-header correct" style="justify-content:center;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--correct-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:2rem;height:2rem;margin-right:0.5rem;vertical-align:middle;display:inline-block;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                                    <h2 style="margin:0;align-self:center;text-align:center;">Correct!</h2>
-                                </div>
-                <p id="correct-feedback-text"></p>
-                <button class="feedback-btn correct" onclick="closeCorrectFeedbackAndCheck()">Continue</button>
+                <div class="feedback-header correct" style="justify-content:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--correct-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:2rem;height:2rem;margin-right:0.5rem;vertical-align:middle;display:inline-block;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <h2 style="margin:0;align-self:center;text-align:center;">Correct!</h2>
+                </div>
+                <div id="correct-feedback-text"></div>
+                <button class="feedback-btn correct">OK</button>
             </div>
         </div>
         
         <div id="feedback-incorrect-overlay" class="overlay hidden">
             <div class="modal feedback-modal">
-                                <div class="feedback-header incorrect" style="justify-content:center;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--incorrect-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:2rem;height:2rem;margin-right:0.5rem;vertical-align:middle;display:inline-block;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-                                    <h2 style="margin:0;align-self:center;text-align:center;">Not Quite</h2>
-                                </div>
-                <p id="incorrect-feedback-text"></p>
-                <button class="feedback-btn incorrect" onclick="closeModal('feedback-incorrect-overlay')">Try Again</button>
+                <div class="feedback-header incorrect" style="justify-content:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--incorrect-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:2rem;height:2rem;margin-right:0.5rem;vertical-align:middle;display:inline-block;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                    <h2 style="margin:0;align-self:center;text-align:center;">Not Quite...</h2>
+                </div>
+                <div id="incorrect-feedback-text"></div>
+                <button class="feedback-btn incorrect">Try Again</button>
             </div>
         </div>
     </div>
@@ -591,61 +529,64 @@
 
 <script>
     const activityData = {
-        introduction: "Life brings social challenges. In this activity, you will step into different scenarios and decide how to respond. Your choices will reveal the skills you use to solve problems.",
+        introduction: "Everyday life gives us tough choices. In this activity, you will face different situations and see how values guide your decisions.",
         instructions: [
             "Read each scenario carefully.",
-            "Select two of the labelled responses (A, B, C, or D) that represent the best course of action.",
-            "Review the outcome and the skills demonstrated by your choices.",
+            "Select the two best responses (A, B, C, or D).",
+            "Your choices will reveal the values demonstrated and the outcomes of your decisions.",
             "You must select both correct options to move to the next scenario."
         ],
         hints: [
-            "What would a respectful and responsible student do?",
-            "How can you solve the issue without blaming others?",
-            "Think about the long-term effect of your choice."
+            "Integrity means honesty, even when it is difficult.",
+            "Empathy means trying to understand another person’s feelings.",
+            "Responsibility is shown when you take action to solve problems.",
+            "Respect is reflected in how you treat others fairly."
         ],
-        conclusion: "Real social growth happens through practice. Each decision you make builds skills that help you solve problems respectfully, support others, and strengthen relationships in school and beyond.",
-        keyTakeaways: [
-            "<strong>Self-improvement</strong> is the process of growing in skills, values, and relationships.",
-            "<strong>SMART goals</strong> are Specific, Measurable, Achievable, Realistic, and Time-bound.",
-            "<strong>Social goals</strong> strengthen teamwork, empathy, and confidence.",
-            "<strong>Sharing and reflecting</strong> on goals makes them more powerful."
-        ],
+        conclusion: "Every choice you make reflects your values. Acting with honesty, empathy, respect, and responsibility builds trust and strengthens your personality.",
         scenarios: [
             {
-                title: "Scenario 1: Group Project",
-                story: "In your group project, one member is not contributing to the work, and the deadline is approaching.",
+                title: "Scenario 1: Cheating in an Exam",
+                story: "You see a classmate cheating in an exam.",
+                question: "What are the two best ways to uphold academic integrity?",
+                options: [
+                    { text: "Report to teacher immediately", value: "Integrity", outcome: "Shows honesty but may damage friendship", feedback: "Good. Reporting shows honesty, but it may harm your friendship. Think about whether a private approach could help first.", isCorrect: true },
+                    { text: "Ignore the behaviour", value: "Avoidance", outcome: "Protects peace temporarily but allows dishonesty", feedback: "Not the best choice. Ignoring allows dishonesty to continue.", isCorrect: false },
+                    { text: "Talk to classmate privately", value: "Empathy and Courage", outcome: "Learns reasons, offers help, prevents future cheating", feedback: "Excellent. Talking privately shows empathy and courage. You help your classmate while protecting honesty.", isCorrect: true },
+                    { text: "Join in the cheating", value: "Dishonesty", outcome: "Gains marks unfairly but risks punishment", feedback: "This choice is dishonest. It may seem easy, but it risks your integrity and can bring punishment.", isCorrect: false }
+                ]
+            },
+            {
+                title: "Scenario 2: Uncooperative Group Member",
+                story: "A group member refuses to do their share of a project.",
                 question: "What are the two most constructive ways to handle this?",
                 options: [
-                    { text: "Confront kindly", feedback: "Good choice. You spoke firmly but with respect, which encourages teamwork." },
-                    { text: "Ignore the member", feedback: "This avoids the problem. The workload will increase for you and tension will grow." },
-                    { text: "Report immediately to the teacher", feedback: "The teacher helps, but the student feels embarrassed. Think if there was a kinder way first." },
-                    { text: "Invite to talk privately", feedback: "Excellent. You listened to the learner’s struggles and the group improved." }
-                ],
-                correctIndices: [0, 3]
+                    { text: "Take over all the work alone", value: "Responsibility but Lack of Fairness", outcome: "Work is done but unfair burden on one learner", feedback: "You showed responsibility, but it is unfair to take all the work. Teamwork requires balance.", isCorrect: false },
+                    { text: "Blame them loudly in front of others", value: "Disrespect", outcome: "Creates conflict and weakens teamwork", feedback: "This creates disrespect and weakens trust. Blaming loudly is not the best solution.", isCorrect: false },
+                    { text: "Invite them to share ideas privately", value: "Respect and Empathy", outcome: "Learner explains struggles and begins to contribute", feedback: "Correct. Respecting the learner and asking privately helps solve the problem.", isCorrect: true },
+                    { text: "Report the issue to the teacher calmly", value: "Responsibility and Integrity", outcome: "Teacher supports fair sharing of work", feedback: "Good. Reporting calmly to the teacher shows responsibility and fairness.", isCorrect: true }
+                ]
             },
             {
-                title: "Scenario 2: Playground Disagreement",
-                story: "You see two of your classmates arguing loudly over a game during recess.",
-                question: "What are the two best ways you can help?",
+                title: "Scenario 3: Lost Money",
+                story: "You find lost money in the school corridor.",
+                question: "What are the two most honest and responsible actions to take?",
                 options: [
-                    { text: "Step in calmly and mediate", feedback: "You acted responsibly by helping both sides calm down. Mediation is a strong conflict resolution skill." },
-                    { text: "Walk away without helping", feedback: "Walking away does not solve the issue. The conflict may continue or get worse." },
-                    { text: "Shout at them to stop", feedback: "Shouting adds to the tension. Conflict needs calm solutions, not more noise." },
-                    { text: "Ask a teacher for support", feedback: "You showed maturity by seeking help. Teachers can provide fair solutions." }
-                ],
-                correctIndices: [0, 3]
+                    { text: "Keep the money", value: "Dishonesty", outcome: "You gain now but lose trust if discovered", feedback: "This is dishonest. Keeping what is not yours harms trust.", isCorrect: false },
+                    { text: "Ask around if anyone lost it", value: "Responsibility and Respect", outcome: "Builds trust but may not find owner", feedback: "Good choice. Asking around shows responsibility, even if you cannot find the owner.", isCorrect: true },
+                    { text: "Give it to the teacher", value: "Integrity", outcome: "Ensures money reaches rightful owner", feedback: "Excellent. Giving the money to the teacher is honest and responsible.", isCorrect: true },
+                    { text: "Spend it with friends", value: "Irresponsibility", outcome: "Temporary gain but long-term guilt or punishment", feedback: "This is irresponsible. Spending what is not yours will bring guilt or punishment.", isCorrect: false }
+                ]
             },
             {
-                title: "Scenario 3: Online Group Chat",
-                story: "In your class group chat, someone posts a hurtful message about a classmate who is not in the group.",
-                question: "What are the two most responsible actions to take?",
+                title: "Scenario 4: A Lonely Student",
+                story: "A new student is sitting alone during lunch.",
+                question: "What are the two most welcoming and empathetic things to do?",
                 options: [
-                    { text: "Defend the classmate politely", feedback: "Well done. You supported your classmate respectfully and encouraged others to reflect." },
-                    { text: "Say nothing and scroll on", feedback: "Silence allows the hurtful message to spread further. Speaking up or acting is better." },
-                    { text: "Reply with anger", feedback: "Responding with anger increases conflict. It can make the situation worse for everyone." },
-                    { text: "Report to group admin or teacher", feedback: "You chose wisely. Reporting ensures the harmful message is removed and guidance is provided." }
-                ],
-                correctIndices: [0, 3]
+                    { text: "Sit with them and introduce yourself", value: "Empathy and Friendship", outcome: "Student feels welcomed and included", feedback: "Well done. Sitting with the student shows empathy and kindness.", isCorrect: true },
+                    { text: "Laugh at them with friends", value: "Disrespect", outcome: "Hurts the student and isolates them more", feedback: "This is disrespectful. Making fun of someone increases loneliness.", isCorrect: false },
+                    { text: "Do nothing and continue with your group", value: "Avoidance", outcome: "Problem is ignored, loneliness remains", feedback: "Doing nothing does not help. The student will remain isolated.", isCorrect: false },
+                    { text: "Invite them to join your group", value: "Inclusion and Respect", outcome: "Student feels accepted and part of the school", feedback: "Good choice. Inviting them to your group shows respect and inclusion.", isCorrect: true }
+                ]
             }
         ]
     };
@@ -685,7 +626,6 @@
         optionsContainer.innerHTML = '';
         const optionLabels = ['A', 'B', 'C', 'D'];
 
-        // Create a copy of options with original index, then shuffle them
         let indexedOptions = scenario.options.map((option, index) => ({
             ...option,
             originalIndex: index
@@ -700,28 +640,33 @@
             const button = document.createElement('button');
             button.className = 'option-button';
             button.innerHTML = `<strong>${optionLabels[loopIndex]}.</strong> ${optionData.text}`;
-            button.onclick = () => handleOptionClick(optionData.originalIndex, button);
+            button.onclick = () => handleOptionClick(optionData, button);
             optionsContainer.appendChild(button);
         });
         
         updateProgress();
     }
     
-    function handleOptionClick(originalIndex, clickedButton) {
-        const scenario = activityData.scenarios[currentScenarioIndex];
+    function handleOptionClick(optionData, clickedButton) {
         clickedButton.disabled = true;
 
-        const isCorrect = scenario.correctIndices.includes(originalIndex);
-        const feedback = scenario.options[originalIndex].feedback;
+        const isCorrect = optionData.isCorrect;
+        
+        const feedbackMessage = `
+            <p style="text-align:left; font-size: 1.1rem;"><strong>Value Demonstrated:</strong> ${optionData.value}</p>
+            <p style="text-align:left; font-size: 1.1rem; margin-top: 0.5rem;"><strong>Outcome:</strong> ${optionData.outcome}</p>
+            <hr style="margin: 1rem 0;">
+            <p style="text-align:left; font-size: 1.1rem;">${optionData.feedback}</p>
+        `;
 
         if (isCorrect) {
             playSound(dingAudio);
             clickedButton.classList.add('correct');
-            showFeedbackPopup('correct', feedback);
+            showFeedbackPopup('correct', feedbackMessage);
         } else {
             playSound(buzzAudio);
             clickedButton.classList.add('incorrect');
-            showFeedbackPopup('incorrect', feedback);
+            showFeedbackPopup('incorrect', feedbackMessage);
         }
     }
 
@@ -736,7 +681,7 @@
             } else {
                 endActivity();
             }
-        }, 300);
+        }, 500);
     }
     
     function updateProgress() {
@@ -764,13 +709,6 @@
         document.getElementById('hint-overlay').classList.remove('hidden');
     }
 
-    function showTakeaways() { 
-        document.getElementById('completion-overlay').classList.add('hidden');
-        stopSound(outroAudio);
-        document.getElementById('takeaways-overlay').classList.remove('hidden'); 
-        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'The Social Challenge Simulator'});
-    }
-    
     function closeModal(id) {
         document.getElementById(id).classList.add('hidden');
         if (id === 'activity-intro-overlay') { 
@@ -778,16 +716,19 @@
             initGame(); 
         }
     }
-
+    
     function closeCorrectFeedbackAndCheck() {
         closeModal('feedback-correct-overlay');
-        // Check if both correct answers have been found
-        const correctAnswersSelected = document.querySelectorAll('.option-button.correct').length;
-        if (correctAnswersSelected === 2) {
-            goToNextScenario();
+        const scenario = activityData.scenarios[currentScenarioIndex];
+        const totalCorrectOptions = scenario.options.filter(opt => opt.isCorrect).length;
+        const selectedCorrectOptions = document.querySelectorAll('.option-button.correct').length;
+
+        if (selectedCorrectOptions === totalCorrectOptions) {
+                goToNextScenario();
+     
         }
     }
-    
+
     function endActivity() {
         document.getElementById('progress-bar').style.width = `100%`;
         document.getElementById('progress-text').textContent = `${totalScenarios} / ${totalScenarios}`;
@@ -799,7 +740,6 @@
     function restartGame() {
         stopSound(outroAudio);
         document.getElementById('completion-overlay').classList.add('hidden');
-        document.getElementById('takeaways-overlay').classList.add('hidden');
         currentScenarioIndex = 0;
         document.getElementById('game-screen').classList.remove('hidden');
         document.getElementById('scenario-container').classList.remove('fade-out');
@@ -808,6 +748,12 @@
 
     function goToPreviousActivity() { 
         window.location.href = "../ACTIVITY2/index.html"; 
+        stopSound(outroAudio);
+        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'The Social Challenge Simulator'});
+    }
+    
+    function goToNextActivity() {
+        window.location.href = "../ACTIVITY4/index.html";
         stopSound(outroAudio);
         sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'The Social Challenge Simulator'});
     }
@@ -821,17 +767,12 @@
         const hintList = document.getElementById('hint-list');
         hintList.innerHTML = activityData.hints.map(item => `<li>${item}</li>`).join('');
 
-        const takeawaysList = document.getElementById('takeaways-list');
-        takeawaysList.innerHTML = activityData.keyTakeaways.map(item => `<li>${item}</li>`).join('');
-
         document.getElementById('progress-text').textContent = `0 / ${totalScenarios}`;
 
-        // Update feedback modal buttons
         const correctBtn = document.querySelector('#feedback-correct-overlay .feedback-btn');
         correctBtn.onclick = () => closeCorrectFeedbackAndCheck();
 
         const incorrectBtn = document.querySelector('#feedback-incorrect-overlay .feedback-btn');
-        incorrectBtn.textContent = 'OK';
         incorrectBtn.onclick = () => closeModal('feedback-incorrect-overlay');
     }
 

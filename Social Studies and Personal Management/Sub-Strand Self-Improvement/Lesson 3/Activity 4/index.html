@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activity: SMART Goal Builder</title>
+    <title>Activity: Build Your Values Pledge</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
@@ -159,7 +159,7 @@
         
         #completion-image {
             width: 100%;
-            max-width: 35vw;
+            max-width: 45vw;
             height: auto;
             min-height: 200px;
             background: rgba(255, 255, 255, 0.9);
@@ -201,7 +201,7 @@
         }
         .completion-btn:hover { transform: scale(1.05); box-shadow: 0 0.5rem 1.25rem rgba(0,0,0,0.2); }
         
-        /* --- GAME SCREEN & LAYOUT (SMART GOAL BUILDER) --- */
+        /* --- GAME SCREEN & LAYOUT (VALUES PLEDGE) --- */
         #game-screen {
             justify-content: flex-start; padding: 0; overflow: hidden;
             background-color: #e9eef2;
@@ -221,34 +221,63 @@
             font-family: var(--header-font); color: var(--primary-color);
             margin-bottom: var(--pad-md); text-align: center; font-size: var(--font-lg);
         }
-        .smart-form-field { margin-bottom: var(--pad-md); }
-        .field-header { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem; }
-        .field-header label { font-size: var(--font-md); font-weight: 700; color: var(--text-color-dark); }
-        .tooltip-icon {
-            cursor: pointer; color: #aaa; position: relative;
-            display: inline-block; font-size: var(--font-sm);
+        
+        #pledge-form {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
         }
-        .tooltip-text {
-            visibility: hidden; width: 25rem; background-color: #333; color: #fff;
-            text-align: center; border-radius: 0.6rem; padding: 0.8rem;
-            position: absolute; z-index: 1001; bottom: 125%; left: 50%;
-            margin-left: -12.5rem; opacity: 0; transition: opacity 0.3s;
-            font-size: var(--font-xs); pointer-events: none;
+        .pledge-sentence {
+            font-size: var(--font-lg);
+            line-height: 2.5;
+            margin-bottom: var(--pad-lg);
+            flex-grow: 1;
+            text-align: center;
+            padding-top: var(--pad-lg);
         }
-        .tooltip-icon:hover .tooltip-text { visibility: visible; opacity: 1; }
-        .smart-form-field textarea {
-            width: 100%; padding: 0.5rem var(--pad-sm); border-radius: 0.8rem;
-            border: 2px solid #ddd; font-family: var(--body-font);
-            font-size: var(--font-sm); resize: vertical;
-            background-image: linear-gradient(to bottom, transparent 95%, #a2d2ff 95%);
-            line-height: 2.2rem;
-            background-size: 100% 2.2rem;
-            transition: border-color 0.3s, box-shadow 0.3s;
+        .pledge-sentence textarea {
+            font-family: var(--body-font);
+            font-size: inherit;
+            border: none;
+            border-bottom: 2px dotted var(--primary-color);
+            background: transparent;
+            padding: 0.2rem 0.5rem;
+            resize: none;
+            text-align: center;
+            width: 15ch;
+            vertical-align: baseline;
+            transition: background-color 0.3s;
+            overflow: hidden;
+            line-height: 1.2;
         }
-        .smart-form-field textarea:focus {
-            border-color: var(--secondary-color); outline: none;
-            box-shadow: 0 0 0 3px rgba(251, 176, 59, 0.4);
+        .pledge-sentence textarea:focus {
+            outline: none;
+            background: rgba(93, 4, 178, 0.05);
         }
+        .signature-field {
+            margin-top: auto;
+            padding-top: var(--pad-md);
+            text-align: right;
+            font-size: var(--font-md);
+        }
+        .signature-field label {
+            font-weight: 700;
+        }
+        .signature-field input {
+            width: 25ch;
+            font-family: var(--body-font);
+            font-size: inherit;
+            border: none;
+            border-bottom: 2px dotted var(--text-color-dark);
+            background: transparent;
+            padding: 0.2rem 0.5rem;
+            transition: background-color 0.3s;
+        }
+        .signature-field input:focus {
+            outline: none;
+            background: rgba(51, 51, 51, 0.05);
+        }
+        
         .example-container {
             width: 35%; height: 100%; background: rgba(255,255,255,0.85);
             backdrop-filter: blur(5px); padding: var(--pad-md); border-radius: var(--border-radius);
@@ -258,17 +287,62 @@
             font-family: var(--header-font); color: var(--secondary-color); margin-bottom: var(--pad-sm);
             border-bottom: 2px solid var(--secondary-color); padding-bottom: 0.5rem; text-align: center;
         }
-        .example-entry { margin-bottom: 0.8rem; font-size: var(--font-sm); }
-        .example-entry strong { color: var(--primary-color); display: block; }
+        .example-entry { margin-bottom: var(--pad-md); font-size: var(--font-sm); font-style: italic;}
+        .example-entry strong { color: var(--primary-color); font-style: normal; }
 
-        #submit-goal-btn {
+        #submit-pledge-btn {
             background: var(--correct-color); color: var(--text-color-light); font-family: var(--header-font);
             font-size: var(--font-md); padding: var(--pad-sm) var(--pad-lg); border: none;
             border-radius: 3rem; cursor: pointer; margin-top: auto; /* Push to bottom */
             font-weight: 700; align-self: center; transition: transform 0.2s, box-shadow 0.2s;
-            width: 60%;
+            width: 60%; margin-top: 1.5rem;
         }
-        #submit-goal-btn:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(92, 184, 92, 0.5); }
+        #submit-pledge-btn:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(92, 184, 92, 0.5); }
+        
+        /* ===== TAKEAWAYS OVERLAY ===== */
+        #takeaways-overlay {
+            background-image: url('images/gamebg.jpg'); 
+            background-size: cover; background-position: center;
+            flex-direction: column; 
+            justify-content: center;
+        }
+        .takeaways-main-header {
+            font-family: var(--header-font); color: white; font-size: 3.5rem;
+            position: absolute; top: 5%; text-align: center; width: 100%;
+            text-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.3);
+        }
+        #takeaways-overlay .modal { 
+            max-width: 800px; padding: 2rem; display: flex; 
+            flex-direction: column; align-items: center; height: 50vh;
+            overflow-y: auto;
+            margin-top: 4rem;
+            background: var(--card-background-light);
+            border-radius: var(--border-radius);
+            width: 90%;
+        }
+        .takeaways-header { color:var(--primary-color); display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+        .takeaways-header h3 { font-family: var(--header-font); font-size: 1.8rem; color: var(--primary-color); }
+        #takeaways-list { list-style-type: none; padding: 0; width: 100%; }
+        #takeaways-list li {
+            margin-bottom: 0.75rem; 
+            padding: 1rem; 
+            border-radius: 0.5rem; 
+            font-size: 1.1rem; 
+            text-align: left;
+            background: #f0f4f8;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .end-lesson-btn {
+            background: var(--secondary-color); font-family: var(--header-font); color: #fff; font-weight: 900;
+            font-size: 1.3rem; border: 3px solid #fff; border-radius: 3rem;
+            padding: clamp(0.5rem, 1.5vmin, 0.75rem) clamp(1.25rem, 3vmin, 2rem);
+            text-shadow: 0 2px 0 #b88b2a; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            width: auto; min-width: 180px; margin-top: 2rem;
+            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .end-lesson-btn:hover { transform: scale(1.06); box-shadow: 0 6px 24px rgba(0,0,0,0.18); }
+        
 
         /* --- BUTTONS & MODALS --- */
         #help-button, .hint-icon { animation: glow-pulse-white 2.5s infinite ease-in-out; }
@@ -343,6 +417,7 @@
                 width: 100%;
                 margin-top: 3rem;
             }
+            #takeaways-overlay .modal{ height: 60vh; }
         }
         @media (max-width: 768px), (max-height: 500px) {
             body { padding: 0; }
@@ -353,6 +428,7 @@
             .notebook-container { flex-grow: 1; }
             .example-container { display: none; } /* Hide example on small screens to save space */
             .completion-buttons { gap: 0.75rem; position: static; padding: 1rem; }
+            .pledge-sentence { font-size: var(--font-md); }
         }
     </style>
 </head>
@@ -360,7 +436,7 @@
     <div id="game-wrapper">
         <div id="game-container">
             <div class="game-header">
-                <h1>SMART Goal Builder</h1>
+                <h1>Build Your Values Pledge</h1>
                 <div class="header-controls">
                     <button id="help-button" class="help-icon" title="Help">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
@@ -369,7 +445,7 @@
             </div>
 
             <div id="start-screen" class="screen">
-                <h1>Build Your SMART Goal</h1>
+                <h1>Build Your Values Pledge</h1>
                 <button class="start-button">Start Activity</button>
             </div>
 
@@ -382,14 +458,25 @@
             </div>
 
             <div id="completion-overlay" class="screen hidden">
-                <h2 class="completion-title-banner">Activity conclusion</h2>
+                <h2 class="completion-title-banner">Activity Conclusion</h2>
                 <div id="completion-image">
                     </div>
                 <div class="completion-buttons">
                     <button class="completion-btn" id="previous-activity-btn">Previous Activity</button>
                     <button class="completion-btn" id="restart-activity-btn">Restart Activity</button>
-                    <button class="completion-btn" id="next-activity-btn">Next Activity</button>
+                    <button class="completion-btn" id="key-takeaways-btn">Key Takeaways</button>
                 </div>
+            </div>
+
+            <div id="takeaways-overlay" class="screen hidden">
+                <h2 class="takeaways-main-header">Lesson Complete!</h2>
+                <div class="modal">
+                    <div class="takeaways-header">
+                        <h3>Key Takeaways</h3>
+                    </div>
+                    <ul id="takeaways-list"></ul>
+                </div>
+                <button class="end-lesson-btn" onclick="sendEvent(LessonEvent.END_LESSON, {lessonName: 'Appreciating the Role of Values in Personality Development: Lesson 3'})">Exit Lesson</button>
             </div>
 
             <div id="feedback-modal-overlay" class="modal-overlay hidden">
@@ -443,6 +530,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameContentContainer = gameScreen.querySelector('.game-content');
     const completionOverlay = document.getElementById('completion-overlay');
     const completionImageContainer = document.getElementById('completion-image');
+    const takeawaysOverlay = document.getElementById('takeaways-overlay');
+    const takeawaysList = document.getElementById('takeaways-list');
     const gameHeader = document.querySelector('.game-header');
     const startBtn = document.querySelector('.start-button');
     const narrationModalOverlay = document.getElementById('narration-modal-overlay');
@@ -462,6 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const hintModalText = document.getElementById('hint-modal-text');
     const hintModalBtn = document.getElementById('hint-modal-btn');
     const restartActivityBtn = document.getElementById('restart-activity-btn');
+    const keyTakeawaysBtn = document.getElementById('key-takeaways-btn');
     const introAudio = document.getElementById('intro-audio');
     const outroAudio = document.getElementById('outro-audio');
     const correctAudio = document.getElementById('correct-audio');
@@ -469,31 +559,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- ACTIVITY DATA ---
     const activityContent = {
-        intro: "A dream becomes a plan when it is SMART. In this activity, you will build a goal that is Specific, Measurable, Achievable, Realistic, and Time-bound.",
-        instructions: "<p>Fill in each section of the SMART form to create your personal goal.</p><p>Use the guiding tooltips (the '?' icons) and the example to make your entries clear and focused.</p>",
+        intro: "It is now your turn to make a promise. In this activity, you will create a values pledge that guides how you live at school, home, and in the community.",
+        instructions: "<p>Fill in the pledge by choosing one value, explaining why it matters, and writing how you will live it out.</p>",
         hints: `
             <ul>
-                <li><strong>Specific:</strong> What exactly will you do?</li>
-                <li><strong>Measurable:</strong> How will you know you have achieved it?</li>
-                <li><strong>Achievable:</strong> Can you realistically reach this goal with your resources?</li>
-                <li><strong>Realistic:</strong> Does this goal fit into your life and abilities?</li>
-                <li><strong>Time-bound:</strong> When will you complete it?</li>
+                <li>Think of a value that is important to you, such as <strong>respect, honesty, or responsibility</strong>.</li>
+                <li>How will you show this value at home, in school, or in your community?</li>
             </ul>
         `,
-        conclusion: "You have transformed a simple wish into a SMART goal. Keep it written down and review it regularly to stay on track and motivated.",
         feedback: {
-            incomplete: "Your SMART goal is not complete. One or more sections are too vague or left empty. Revisit your entries and make sure you have added clear details for each part: what you will do, how you will measure it, how it is achievable, why it is realistic, and when you will complete it.",
-            complete: "Excellent! You've successfully built a well-defined SMART goal. This clear plan will make it much easier to achieve."
-        }
+            incomplete: "Your pledge is not complete. Please fill in all the blank sections and add your signature to create your personal promise.",
+            complete: "Excellent! You've created a meaningful values pledge. This promise will help guide your actions."
+        },
+        takeaways: [
+            "Values are beliefs that guide choices and behaviour.",
+            "Values like empathy, integrity, and responsibility shape positive personality traits.",
+            "Stories of people such as Thandi show that values can change entire communities.",
+            "Creating pledges and sharing values helps you live with purpose and confidence."
+        ]
     };
-
-    const smartFields = [
-        { id: 'specific', emoji: '', label: 'Specific', tooltip: 'What exactly will you do?', example: 'Speak up in class twice each week' },
-        { id: 'measurable', emoji: '', label: 'Measurable', tooltip: 'How will you know you have achieved it?', example: 'Count the number of times I contribute' },
-        { id: 'achievable', emoji: '', label: 'Achievable', tooltip: 'Can you realistically reach this goal with your resources?', example: 'I can prepare answers at home' },
-        { id: 'realistic', emoji: '', label: 'Realistic', tooltip: 'Does this goal fit into your life and abilities?', example: 'I have time to do this in every lesson' },
-        { id: 'time-bound', emoji: '', label: 'Time-bound', tooltip: 'When will you complete it?', example: 'I will do this for four weeks' }
-    ];
 
     const icons = {
         correct: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
@@ -510,32 +594,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const notebook = document.createElement('div');
         notebook.className = 'notebook-container';
-        notebook.innerHTML = '<h2>My SMART Goal</h2>';
         
         const form = document.createElement('form');
-        form.id = 'smart-form';
+        form.id = 'pledge-form';
         form.addEventListener('submit', e => e.preventDefault());
-
-        smartFields.forEach(field => {
-            const fieldDiv = document.createElement('div');
-            fieldDiv.className = 'smart-form-field';
-            fieldDiv.innerHTML = `
-                <div class="field-header">
-                    <label for="${field.id}">${field.label}</label>
-                    <div class="tooltip-icon">
-                        ❔
-                        <span class="tooltip-text">${field.tooltip}</span>
-                    </div>
-                </div>
-                <textarea id="${field.id}" name="${field.id}"></textarea>
-            `;
-            form.appendChild(fieldDiv);
-        });
+        form.innerHTML = `
+            <h2>My Values Pledge</h2>
+            <div class="pledge-sentence">
+                I value <textarea id="pledge-value" rows="1" placeholder="a value"></textarea> 
+                because <textarea id="pledge-reason" rows="1" placeholder="a reason"></textarea>. 
+                I will show it by <textarea id="pledge-action" rows="1" placeholder="an action"></textarea>.
+            </div>
+            <div class="signature-field">
+                <label for="pledge-signature">Signature:</label>
+                <input type="text" id="pledge-signature" name="pledge-signature" placeholder="Your Name">
+            </div>
+        `;
 
         const submitBtn = document.createElement('button');
-        submitBtn.id = 'submit-goal-btn';
+        submitBtn.id = 'submit-pledge-btn';
         submitBtn.type = 'button';
-        submitBtn.textContent = 'Check My Goal';
+        submitBtn.textContent = 'Make My Pledge';
         submitBtn.addEventListener('click', checkCompletion);
         
         notebook.appendChild(form);
@@ -543,23 +622,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const exampleContainer = document.createElement('div');
         exampleContainer.className = 'example-container';
-        let exampleHTML = '<h3>Example Goal</h3>';
-        smartFields.forEach(field => {
-            exampleHTML += `
-                <div class="example-entry">
-                    <strong>${field.label}:</strong>
-                    <span>${field.example}</span>
-                </div>
-            `;
-        });
-        exampleContainer.innerHTML = exampleHTML;
+        exampleContainer.innerHTML = `
+            <h3>Pledge Examples</h3>
+            <div class="example-entry">
+                <p>“I value <strong>respect</strong> because <strong>everyone deserves to be heard</strong>. I will show it by <strong>listening without interrupting</strong>.”</p>
+            </div>
+            <div class="example-entry">
+                <p>“I value <strong>responsibility</strong> because <strong>trust depends on it</strong>. I will show it by <strong>completing my duties on time</strong>.”</p>
+            </div>
+        `;
         
         gameContentContainer.appendChild(notebook);
         gameContentContainer.appendChild(exampleContainer);
     }
     
     function checkCompletion() {
-        const inputs = document.querySelectorAll('#smart-form textarea');
+        const inputs = document.querySelectorAll('#pledge-form textarea, #pledge-form input');
         let allFilled = true;
         inputs.forEach(input => {
             if (input.value.trim() === '') {
@@ -574,22 +652,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function generateGoalSummary() {
-        const s = document.getElementById('specific').value.trim();
-        const m = document.getElementById('measurable').value.trim();
-        const a = document.getElementById('achievable').value.trim();
-        const r = document.getElementById('realistic').value.trim();
-        const t = document.getElementById('time-bound').value.trim();
+    function generatePledgeSummary() {
+        const value = document.getElementById('pledge-value').value.trim();
+        const reason = document.getElementById('pledge-reason').value.trim();
+        const action = document.getElementById('pledge-action').value.trim();
+        const signature = document.getElementById('pledge-signature').value.trim();
 
         const summaryHTML = `
-            <p>
-                My goal is to <strong>${s}</strong>. I will track my progress by <strong>${m}</strong>. 
-                This is achievable because <strong>${a}</strong> and realistic for me because <strong>${r}</strong>. 
-                I will achieve this by <strong>${t}</strong>.
+            <p style="font-size: var(--font-lg); line-height: 1.5;">
+                I value <strong>${value}</strong> because <strong>${reason}</strong>. 
+                I will show it by <strong>${action}</strong>.
+            </p>
+            <p style="text-align: right; margin-top: 2rem; font-style: italic; font-size: var(--font-md);">
+                Signed: <strong>${signature}</strong>
             </p>
         `;
         completionImageContainer.innerHTML = summaryHTML;
     }
+
 
     function switchScreen(hideScreen, showScreen) {
         hideScreen.classList.add('hidden');
@@ -607,7 +687,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let titleText;
         let sound;
         if (isCorrect) {
-            titleText = "Goal Complete!";
+            titleText = "Pledge Made!";
             sound = correctAudio;
             modal.className = 'correct-feedback';
             feedbackTitle.innerHTML = `${icons.correct} ${titleText}`;
@@ -628,7 +708,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const handleFinishClick = () => {
         modalOverlay.classList.add('hidden');
-        generateGoalSummary(); // Generate summary before switching screen
+        generatePledgeSummary(); // Generate summary before switching screen
         setTimeout(() => {
             switchScreen(gameScreen, completionOverlay);
             outroAudio.play().catch(e => console.log("Outro audio play failed.", e));
@@ -656,8 +736,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function restartGame() {
         stopAllAudio();
+        // Hide all overlays before restarting
+        [completionOverlay, takeawaysOverlay].forEach(screen => screen.classList.add('hidden'));
         initializeGame();
-        switchScreen(completionOverlay, gameScreen);
+        switchScreen(startScreen, gameScreen); // Go back to game, not start
+        // To restart from the very beginning (start screen), use:
+        // switchScreen(completionOverlay, startScreen);
+        // switchScreen(takeawaysOverlay, startScreen);
     }
 
     // --- EVENT LISTENERS ---
@@ -666,12 +751,33 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeGame();
         showNarration();
         if (typeof sendEvent !== 'undefined' && typeof ActivityEvent !== 'undefined') {
-            sendEvent(ActivityEvent.START_ACTIVITY, { activityName: 'SMART Goal Builder' });
+            sendEvent(ActivityEvent.START_ACTIVITY, { activityName: 'Build Your Values Pledge' });
         }
     });
 
-    restartActivityBtn.addEventListener('click', restartGame);
+    restartActivityBtn.addEventListener('click', () => {
+        // More robust restart logic
+        stopAllAudio();
+        const currentVisibleScreen = document.querySelector('.screen:not(.hidden)');
+        if (currentVisibleScreen) {
+            switchScreen(currentVisibleScreen, gameScreen);
+        } else {
+            gameScreen.classList.remove('hidden'); // Fallback
+        }
+        initializeGame();
+    });
     
+    keyTakeawaysBtn.addEventListener('click', () => {
+        stopAllAudio();
+        takeawaysList.innerHTML = ''; // Clear previous list
+        activityContent.takeaways.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            takeawaysList.appendChild(li);
+        });
+        switchScreen(completionOverlay, takeawaysOverlay);
+    });
+
     document.querySelectorAll('.completion-buttons button').forEach(button => {
         button.addEventListener('click', stopAllAudio);
     });
@@ -689,17 +795,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('previous-activity-btn').addEventListener('click', () => {
         if (typeof sendEvent !== 'undefined' && typeof ActivityEvent !== 'undefined') {
-            sendEvent(ActivityEvent.END_ACTIVITY, { activityName: 'SMART Goal Builder' });
+            sendEvent(ActivityEvent.END_ACTIVITY, { activityName: 'Build Your Values Pledge' });
         }
-        window.location.href = "../ACTIVITY1/index.html";
+        window.location.href = "../ACTIVITY3/index.html"; // Assuming previous is activity 3
     });
     
-    document.getElementById('next-activity-btn').addEventListener('click', () => {
-        if (typeof sendEvent !== 'undefined' && typeof ActivityEvent !== 'undefined') {
-            sendEvent(ActivityEvent.END_ACTIVITY, { activityName: 'SMART Goal Builder' });
-        }
-        window.location.href = "../ACTIVITY3/index.html";
-    });
+    // The next activity button is now the takeaways button, so no next activity navigation here.
 });
 </script>
 <script src = "../eventSender.js"></script>
