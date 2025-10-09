@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Social Challenge Simulator</title>
+    <title>Juma the President – Case Study Explorer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -195,7 +195,7 @@
         
         #instructions-overlay .modal { border-top: 8px solid var(--primary-color); }
         #instructions-overlay .modal h2 { color: var(--primary-color); }
-        #instructions-overlay .modal ol { text-align: left; padding-left: 2rem; font-size: 1.2rem; }
+        #instructions-overlay ol { text-align: left; padding-left: 2rem; font-size: 1.2rem; }
 
         #hint-overlay .modal { border-top: 8px solid var(--secondary-color); }
         #hint-overlay .modal h2 { 
@@ -218,11 +218,11 @@
         .feedback-modal { max-width: 520px; } /* Increased width for more content */
         .feedback-header { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem; }
         .feedback-header h2 { font-size: 2rem; font-weight: 700; }
-        .feedback-header.correct h2 { color: var(--correct-color); }
+        .feedback-header.correct h2 { color: var(--correct-color); } /* Changed to primary color */
         .feedback-header.incorrect h2 { color: var(--incorrect-color); }
-        .feedback-btn.correct { background-color: var(--correct-color); }
+        .feedback-btn.correct { background-color: var(--correct-color); } /* Changed to primary color */
         .feedback-btn.incorrect { background-color: var(--incorrect-color); }
-        #feedback-correct-overlay .modal { border-top: 8px solid var(--correct-color); }
+        #feedback-correct-overlay .modal { border-top: 8px solid var(--correct-color); } /* Changed to primary color */
         #feedback-incorrect-overlay .modal { border-top: 8px solid var(--incorrect-color); }
 
         /* ===== COMPLETION SCREEN ===== */
@@ -341,159 +341,60 @@
             flex: 1; padding: 1rem 2rem; overflow: auto; display: flex;
             justify-content: center; align-items: center; margin-top: 0;
         }
-        .scenario-container {
-            display: flex; gap: 2rem; align-items: center; width: 100%;
-            max-width: 80rem; padding: 1rem; background: #fff;
-            border-radius: var(--border-radius); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            opacity: 1; transition: opacity 0.3s ease-in-out; height: 55vh;
-        }
-        .scenario-container.fade-out { opacity: 0; }
-        
-        .scenario-details { flex: 1 1 50%; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
-        .scenario-story { font-size: 1.3rem; color: #444; line-height: 1.7; background: #f8f9fa; border-left: 0.25rem solid var(--primary-color); padding: 1.5rem; border-radius: 0.8rem; text-align: left; width: 100%; }
-        
-        .question-section {
-            flex: 1 1 50%;
+
+        /* ===== NEW CASE STUDY STYLES ===== */
+        #case-study-container {
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
             width: 100%;
-            background-color: #f2f0f5;
-            padding: 1.5rem;
+            height: 100%;
+            padding: 1rem;
+            opacity: 1; 
+            transition: opacity 0.3s ease-in-out;
+        }
+        #case-study-container.fade-out { opacity: 0; }
+        .case-study-image {
+            max-width: 65%;
+            max-height: 65vh;
             border-radius: var(--border-radius);
-            height: 50vh;
-            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 4px solid #fff;
         }
-        .question-section h3 { font-family: var(--header-font); color: var(--text-color-dark); font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center; font-weight: 500;}
+        .case-study-image:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 40px rgba(93, 4, 178, 0.3);
+        }
         
-        .options-container { display: flex; flex-direction: column; gap: 1rem; width: 100%; max-width: 450px; }
-        .option-button {
-            background: #fff; border: 2px solid #ddd; border-radius: 1rem; padding: 1.2rem; cursor: pointer;
-            transition: all 0.3s ease; font-size: 1.2rem; color: var(--text-color-dark); font-weight: 700;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05); text-align: left;
-        }
-        .option-button:hover:not(:disabled) { transform: translateY(-3px); border-color: var(--primary-color); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
-        .option-button.selected {
-            border-color: var(--secondary-color);
-            background-color: #fffaf0;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(251, 176, 59, 0.2);
-        }
-        .option-button.correct { background: var(--correct-color); color: white; border-color: #fff; transform: scale(1.02); }
-        .option-button.incorrect { background: var(--incorrect-color); color: white; animation: shake 0.5s; }
-        .option-button:disabled { cursor: not-allowed; opacity: 0.7; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
-
         /* ===== Glowing Pulsating Effect Keyframes ====== */
         @keyframes glow-pulse { 0%, 100% { box-shadow: 0 0 10px rgba(251,176,59,0.5), 0 0 20px rgba(251,176,59,0.3); transform: scale(1); } 50% { box-shadow: 0 0 20px rgba(251,176,59,0.8), 0 0 30px rgba(251,176,59,0.5); transform: scale(1.1); } }
         @keyframes glow-pulse-white { 0%, 100% { box-shadow: 0 0 10px rgba(255,255,255,0.7), 0 0 20px rgba(255,255,255,0.5); transform: scale(1); } 50% { box-shadow: 0 0 20px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.7); transform: scale(1.1); } }
 
         /* ===== RESPONSIVE DESIGN ===== */
-        @media screen and (min-width: 1400px) {
-            .scenario-story{
-                font-size: 1.8rem;
-            }
-        }
-        @media(min-width: 1200px) and (max-width:1399px) { 
-            .question-section {
-                height: 50vh;
-                overflow-y: auto;
-            }
-            .scenario-story {
-                font-size: 1.8rem;
-                color: #444;
-                line-height: 2;
-                background: #f8f9fa;
-                border-left: 0.25rem solid var(--primary-color);
-                padding: 1.5rem;
-                border-radius: 0.8rem;
-                text-align: left;
-                width: 100%;
-                height: 30vh;
-            }
-        }
-
-        @media (max-width: 1199px) {html { font-size: 2.5vmin; } }
-        @media (max-width: 1024px) {#game-wrapper { width: 100vw; height: 100vh; border-radius: 0; aspect-ratio: unset; }
-            .question-section{
-                height: 50vh;
-                overflow-y: auto;
-            }
-        } 
- 
+        @media (max-width: 1199px) { html { font-size: 2.5vmin; } }
+        @media (max-width: 1024px) { #game-wrapper { width: 100vw; height: 100vh; border-radius: 0; aspect-ratio: unset; } } 
         @media (max-width: 991px) {
             html{ font-size: 3vmin; }
-            .scenario-container { height: auto; max-height: 100%; overflow-y: auto; padding: 1.5rem; }
-       
             .completion-buttons { align-items: center; }
-            .completion-title-banner{
-                top:1%;
-            }
-            .completion-image {
-                width: 57%;
-            }
-            .options-container {
-                display: grid;      
-                flex-direction: column;
-                gap: 1rem;
-                width: 100%;
-                max-width: 100vw;
-                grid-template-columns: repeat(2, auto);
-                height: 45vh;
-                justify-items: flex-start;
-                overflow-y: auto;
-            }
-            .option-button {
-                width: 100%;
-            }
-            .question-section {
-                height: 65vh;
-                overflow-y: auto;
-            }
-            #completion-image {
-                max-width: 60%;
-            }
+            .completion-title-banner{ top:1%; }
+            #completion-image { width: 57%; }
              #takeaways-overlay .modal {
                 max-width: 80vw;
                 height: 67vh;
                 margin-top: 5rem;
             }
+            .case-study-image { max-width: 100%; }
         }
         @media (max-width: 768px) {
             html { font-size: 3.3vmin; }
             .scenario-title { font-size: 1.8rem; }
             .scenario-content { padding: 1rem; }
             .completion-title-banner { font-size: 1.8rem; }
-            #completion-image { max-width: 66%; }
+            #completion-image { max-width: 85%; }
             .completion-btn { min-width: 155px; }
-            .options-container {
-                display: grid;
-                gap: 1rem;
-                width: 100%;
-                max-width: 100vw;
-                grid-template-columns: repeat(2, auto);
-                height: 45vh;
-                justify-items: flex-start;
-                overflow-y: auto;
-            }
-            .question-section h3{
-                font-size: 1.2rem;
-            }
-            .question-section {
-                height: 66vh;
-                overflow-y: auto;
-            }
-            .option-button{
-                font-size: 1rem;    
-                padding: 1rem;
-            }
-            .scenario-container{
-                height: 70vh;
-            }
-             #completion-image {
-                max-width: 85%;
-            }
-           
+            .case-study-image { max-width: 100%; }
         }
     </style>
 </head>
@@ -502,13 +403,13 @@
 <div id="game-wrapper">
     <div id="game-container">
         <div id="start-screen" class="screen">
-            <h1>John’s New School</h1>
+            <h1>Juma the President</h1>
             <button class="start-button" onclick="showActivityIntro();">Start Activity</button>
         </div>
 
         <div id="game-screen" class="screen hidden">
             <div class="game-top-section">
-                <h1 id="game-title">Simulation Challenge</h1>
+                <h1 id="game-title">Case Study Explorer</h1>
                 <div class="top-right-controls">
                     <div id="progress-container">
                         <div id="progress-bar"></div>
@@ -523,15 +424,8 @@
             <h2 class="scenario-title" id="scenario-title"></h2>
             
             <div class="scenario-content">
-                <div class="scenario-container" id="scenario-container">
-                    <div class="scenario-details">
-                        <p class="scenario-story" id="scenario-story-text"></p>
+                <div id="case-study-container">
                     </div>
-                    <div class="question-section">
-                        <h3 id="question-text"></h3>
-                        <div class="options-container" id="options-container"></div>
-                    </div>
-                </div>
             </div>
             
             <div class="hint-icon" id="hint-icon" onclick="showHint()">
@@ -586,103 +480,73 @@
         
         <div id="feedback-correct-overlay" class="overlay hidden">
             <div class="modal feedback-modal">
-                <div class="feedback-header correct" style="justify-content:center;">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--correct-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:2rem;height:2rem;margin-right:0.5rem;vertical-align:middle;display:inline-block;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                    <h2 style="margin:0;align-self:center;text-align:center;">Correct!</h2>
+                <div class="feedback-header correct">
+                    <h2 id="feedback-header-text"></h2>
                 </div>
                 <div id="correct-feedback-text"></div>
                 <button class="feedback-btn correct">Continue</button>
             </div>
         </div>
-        
-        <div id="feedback-incorrect-overlay" class="overlay hidden">
-            <div class="modal feedback-modal">
-                <div class="feedback-header incorrect" style="justify-content:center;">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--incorrect-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:2rem;height:2rem;margin-right:0.5rem;vertical-align:middle;display:inline-block;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-                    <h2 style="margin:0;align-self:center;text-align:center;">Not Quite</h2>
-                </div>
-                <div id="incorrect-feedback-text"></div>
-                <button class="feedback-btn incorrect">Try Again</button>
-            </div>
-        </div>
+
     </div>
 </div>
 
 <script>
     const activityData = {
-        title: "John’s New School",
-        introduction: "John has joined a new school. Because of his height and voice, he feels different and isolated. In this activity, you will decide his actions and see how each choice shapes his self-esteem.",
+        title: "Juma the President",
+        introduction: "Juma is the School President who shows strong self-esteem in his leadership. In this activity, you will explore his actions and discover which traits reveal confidence, empathy, and humility.",
         instructions: [
-            "Read the situation John is in carefully.",
-            "Choose the action you think is best for him.",
-            "Observe how your choice affects his confidence and friendships.",
-            "You must find all correct options to move to the next scenario."
+            "Read the action Juma takes in each scenario.",
+            "Click on the image to reveal the self-esteem trait it demonstrates.",
+            "Read the explanation to understand the connection."
         ],
         hints: [
-            "Would hiding from people solve his problem or make it worse?",
-            "Could one kind friend make a difference?",
-            "What happens when you join groups with shared interests?"
+            "Confident people accept feedback without feeling attacked.",
+            "Assertiveness means speaking up clearly and kindly."
         ],
         conclusion: {
-            voiceOver: "John’s story shows that every decision shapes how confident you feel. Support, courage, and belonging are powerful builders of self-esteem.",
+            voiceOver: "Juma’s example shows that real leadership comes from believing in yourself, respecting others, and staying open to learning.",
             takeaways: [
-                "Making proactive choices, like greeting someone, builds confidence.",
-                "Contributing your ideas in a group helps you feel valued and builds self-worth.",
-                "Joining groups with shared interests is a great way to make friends and feel a sense of belonging.",
-                "Avoiding social situations or being passive can increase feelings of isolation."
+                "Listening carefully to others shows empathy and that you value their opinions.",
+                "Accepting correction shows humility and confidence.",
+                "Speaking clearly and respectfully with authority figures demonstrates assertiveness."
             ]
         },
         scenarios: [
             {
-                title: "Scenario 1: First Break Time",
-                story: "It's the first break time at the new school. John feels anxious and alone as students gather in groups, laughing and talking.",
-                question: "What should John do?",
-                options: [
-                    { text: "Avoids others and eats alone.", outcome: "John feels more isolated.", feedback: "Not correct. Avoiding others deepens isolation and prevents new friendships.", isCorrect: false },
-                    { text: "Greets a classmate confidently.", outcome: "The classmate responds kindly, John feels noticed.", feedback: "Correct. Greeting a classmate builds confidence and connection.", isCorrect: true },
-                    { text: "Joins a game without asking.", outcome: "John is rejected and feels embarrassed.", feedback: "Not correct. Joining without asking can feel forceful and may lead to rejection.", isCorrect: false },
-                    { text: "Waits quietly hoping to be invited.", outcome: "Nobody approaches, John feels invisible.", feedback: "Not correct. Waiting passively leaves John feeling ignored.", isCorrect: false }
-                ]
+                action: "Listens to learners",
+                trait: "Empathy",
+                explanation: "Listening carefully to learners shows he values their opinions and cares about their needs.",
+                image: "images/scenario 1.jpg"
             },
             {
-                title: "Scenario 2: Class Group Work",
-                story: "During a science class, the teacher puts John into a group for a project. He feels nervous about sharing his thoughts with strangers.",
-                question: "How should John participate?",
-                options: [
-                    { text: "Refuses to participate.", outcome: "The group struggles without his input, John feels useless.", feedback: "Not correct. Refusing to participate lowers self-esteem and teamwork.", isCorrect: false },
-                    { text: "Offers to share his ideas.", outcome: "The group listens, and John gains confidence.", feedback: "Correct. Sharing ideas shows contribution and builds confidence.", isCorrect: true },
-                    { text: "Copies others silently.", outcome: "The work is done, but John feels he added nothing.", feedback: "Not correct. Copying prevents growth and lowers self-worth.", isCorrect: false },
-                    { text: "Complains that nobody includes him.", outcome: "The group feels annoyed, and tension increases.", feedback: "Not correct. Complaining without action causes conflict instead of solutions.", isCorrect: false }
-                ]
+                action: "Accepts correction",
+                trait: "Humility and Confidence",
+                explanation: "Being willing to accept correction shows that he is humble and also confident enough not to feel threatened.",
+                image: "images/scenario 2.jpg"
             },
             {
-                title: "Scenario 3: After-School Clubs",
-                story: "The school is holding an after-school clubs fair. John sees many options like sports, music, and art, but is hesitant to join.",
-                question: "What is the best way for John to connect with others?",
-                options: [
-                    { text: "Joins a music club to meet new friends.", outcome: "John meets new friends with shared interests.", feedback: "Correct. Joining a club helps John build belonging and new friendships.", isCorrect: true },
-                    { text: "Avoids all clubs.", outcome: "John misses opportunities to connect.", feedback: "Not correct. Avoiding clubs increases loneliness.", isCorrect: false },
-                    { text: "Chooses a club only to impress others.", outcome: "John feels unhappy and unmotivated.", feedback: "Not correct. Pretending for approval does not build self-esteem.", isCorrect: false },
-                    { text: "Visits different clubs before choosing.", outcome: "John finds the best fit for him.", feedback: "Correct. Exploring options first shows confidence and wise choices.", isCorrect: true }
-                ]
+                action: "Speaks with teachers confidently",
+                trait: "Assertiveness",
+                explanation: "Speaking clearly with teachers shows that he is assertive, respectful, and sure of himself.",
+                image: "images/scenario 3.jpg"
             }
         ]
     };
 
     let currentScenarioIndex = 0;
-    const totalScenarios = activityData.scenarios.length;
-    let introAudio, dingAudio, buzzAudio, outroAudio;
+    let totalScenarios;
+    let introAudio, dingAudio, outroAudio;
 
     function initAudio() {
         try {
             introAudio = new Audio('audio/intro.mp3');
             dingAudio = new Audio('audio/ding.mp3');
-            buzzAudio = new Audio('audio/buzz.mp3');
             outroAudio = new Audio('audio/outro.mp3');
         } catch (e) {
             console.warn("Audio could not be loaded.");
             const mockAudio = { play: () => {}, pause: () => {}, currentTime: 0 };
-            introAudio = dingAudio = buzzAudio = outroAudio = mockAudio;
+            introAudio = dingAudio = outroAudio = mockAudio;
         }
     }
 
@@ -695,60 +559,44 @@
     
     function loadScenario() {
         const scenario = activityData.scenarios[currentScenarioIndex];
-        const optionsContainer = document.getElementById('options-container');
+        const container = document.getElementById('case-study-container');
         
-        document.getElementById('scenario-title').textContent = scenario.title;
-        document.getElementById('scenario-story-text').innerHTML = scenario.story;
-        document.getElementById('question-text').textContent = scenario.question;
+        document.getElementById('scenario-title').textContent = scenario.action;
         
-        optionsContainer.innerHTML = '';
-        const optionLabels = ['A', 'B', 'C', 'D'];
-
-        scenario.options.forEach((optionData, index) => {
-            const button = document.createElement('button');
-            button.className = 'option-button';
-            button.innerHTML = `<strong>${optionLabels[index]}.</strong> ${optionData.text}`;
-            button.onclick = () => handleOptionClick(optionData, button);
-            optionsContainer.appendChild(button);
-        });
+        container.innerHTML = '';
+        const image = document.createElement('img');
+        image.src = scenario.image;
+        image.alt = scenario.action;
+        image.className = 'case-study-image';
+        image.onclick = () => showTraitPopup(scenario);
         
+        container.appendChild(image);
         updateProgress();
     }
     
-    function handleOptionClick(optionData, clickedButton) {
-        clickedButton.disabled = true;
+    function showTraitPopup(scenarioData) {
+        playSound(dingAudio);
         
-        const isCorrect = optionData.isCorrect;
+        document.getElementById('feedback-header-text').textContent = scenarioData.trait;
+        document.getElementById('correct-feedback-text').innerHTML = `<p style="text-align:left; font-size: 1.1rem;">${scenarioData.explanation}</p>`;
         
-        const feedbackMessage = `
-            <p style="text-align:left; font-size: 1.1rem;"><strong>Outcome:</strong> ${optionData.outcome}</p>
-            <hr style="margin: 1rem 0;">
-            <p style="text-align:left; font-size: 1.1rem;">${optionData.feedback}</p>
-        `;
-
-        if (isCorrect) {
-            playSound(dingAudio);
-            clickedButton.classList.add('correct');
-            showFeedbackPopup('correct', feedbackMessage);
-        } else {
-            playSound(buzzAudio);
-            clickedButton.classList.add('incorrect');
-            showFeedbackPopup('incorrect', feedbackMessage);
-        }
+        document.getElementById('feedback-correct-overlay').classList.remove('hidden');
     }
 
     function goToNextScenario() {
-        const container = document.getElementById('scenario-container');
+        const container = document.getElementById('case-study-container');
         container.classList.add('fade-out');
+        
         setTimeout(() => {
-            if (currentScenarioIndex < totalScenarios - 1) {
-                currentScenarioIndex++;
+            currentScenarioIndex++;
+            updateProgress();
+            if (currentScenarioIndex < totalScenarios) {
                 loadScenario();
                 container.classList.remove('fade-out');
             } else {
                 endActivity();
             }
-        }, 500);
+        }, 300);
     }
     
     function updateProgress() {
@@ -756,28 +604,21 @@
         document.getElementById('progress-bar').style.width = `${(progress / totalScenarios) * 100}%`;
         document.getElementById('progress-text').textContent = `${progress} / ${totalScenarios}`;
     }
-
-    function showFeedbackPopup(type, message) {
-        document.getElementById(`${type}-feedback-text`).innerHTML = message;
-        document.getElementById(`feedback-${type}-overlay`).classList.remove('hidden');
-    }
     
     function showActivityIntro() {
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('game-screen').classList.remove('hidden');
         document.getElementById('activity-intro-overlay').classList.remove('hidden');
         playSound(introAudio);
-        sendEvent(ActivityEvent.START_ACTIVITY, {activityName: 'John’s New School – Simulation Challenge'});
+        sendEvent(ActivityEvent.START_ACTIVITY, {activityName: 'Juma the President – Case Study Explorer'});
     }
 
     function showInstructions() { document.getElementById('instructions-overlay').classList.remove('hidden'); }
-    
     function showHint() { document.getElementById('hint-overlay').classList.remove('hidden'); }
-
     function showTakeaways() {
         stopSound(outroAudio);
         document.getElementById('takeaways-overlay').classList.remove('hidden');
-        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'John’s New School – Simulation Challenge'});
+        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'Juma the President – Case Study Explorer'});
     }
 
     function closeModal(id) {
@@ -788,18 +629,9 @@
         }
     }
     
-    function closeCorrectFeedbackAndCheck() {
+    function closeFeedbackAndContinue() {
         closeModal('feedback-correct-overlay');
-        
-        const scenario = activityData.scenarios[currentScenarioIndex];
-        const totalCorrectOptions = scenario.options.filter(opt => opt.isCorrect).length;
-        const selectedCorrectOptions = document.querySelectorAll('.option-button.correct').length;
-
-        if (selectedCorrectOptions === totalCorrectOptions) {
-            // Enable all buttons before moving to the next scenario to avoid disabled state on restart
-            document.querySelectorAll('.option-button').forEach(btn => btn.disabled = false);
-            goToNextScenario();
-        }
+        goToNextScenario();
     }
 
     function endActivity() {
@@ -808,32 +640,28 @@
         document.getElementById('game-screen').classList.add('hidden');
         document.getElementById('completion-overlay').classList.remove('hidden');
         playSound(outroAudio);
-        
     }
     
     function restartGame() {
         stopSound(outroAudio);
-        speechSynthesis.cancel();
         document.getElementById('completion-overlay').classList.add('hidden');
         document.getElementById('takeaways-overlay').classList.add('hidden');
         currentScenarioIndex = 0;
         document.getElementById('game-screen').classList.remove('hidden');
-        document.getElementById('scenario-container').classList.remove('fade-out');
+        document.getElementById('case-study-container').classList.remove('fade-out');
         loadScenario();
     }
 
     function goToPreviousActivity() { 
         window.location.href = "../ACTIVITY2/index.html"; 
         stopSound(outroAudio);
-        speechSynthesis.cancel();
-        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'John’s New School – Simulation Challenge'});
+        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'Juma the President – Case Study Explorer'});
     }
 
     function goToNextActivity() {
         window.location.href = "../ACTIVITY4/index.html";
         stopSound(outroAudio);
-        speechSynthesis.cancel();
-        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'John’s New School – Simulation Challenge'});
+        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'Juma the President – Case Study Explorer'});
     }
 
     function ExitLesson() { 
@@ -841,6 +669,7 @@
     }
     
     function populateStaticContent() {
+        totalScenarios = activityData.scenarios.length;
         document.getElementById('game-title').textContent = activityData.title;
         document.getElementById('intro-text').innerHTML = activityData.introduction;
         
@@ -856,17 +685,7 @@
         document.getElementById('progress-text').textContent = `0 / ${totalScenarios}`;
 
         const correctBtn = document.querySelector('#feedback-correct-overlay .feedback-btn');
-        correctBtn.onclick = () => closeCorrectFeedbackAndCheck();
-
-        const incorrectBtn = document.querySelector('#feedback-incorrect-overlay .feedback-btn');
-        incorrectBtn.onclick = () => {
-            // Re-enable the button so the user can try again
-            const incorrectButton = document.querySelector('.option-button.incorrect:disabled');
-            if (incorrectButton) {
-                incorrectButton.disabled = false;
-            }
-            closeModal('feedback-incorrect-overlay');
-        };
+        correctBtn.onclick = closeFeedbackAndContinue;
     }
 
     window.onload = () => { initAudio(); populateStaticContent(); };

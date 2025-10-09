@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>John's Action Plan</title>
+<style>
+    @keyframes glow-pulse {
+        0%, 100% {
+            box-shadow: 0 0 0.625rem rgba(251, 176, 59, 0.5), 0 0 1.25rem rgba(251, 176, 59, 0.3);
+            transform: scale(1);
+        }
+        50% {
+            box-shadow: 0 0 1.25rem rgba(251, 176, 59, 0.8), 0 0 1.875rem rgba(251, 176, 59, 0.5);
+            transform: scale(1.1);
+        }
+    }
+    @keyframes glow-pulse-white {
+        0%, 100% {
+            box-shadow: 0 0 0.625rem rgba(255, 255, 255, 0.7), 0 0 1.25rem rgba(255, 255, 255, 0.5);
+            transform: scale(1);
+        }
+        50% {
+            box-shadow: 0 0 1.25rem rgba(255, 255, 255, 1), 0 0 1.875rem rgba(255, 255, 255, 0.7);
+            transform: scale(1.1);
+        }
+    }
+  
+
+    /* Font Imports */
+    @font-face {
+        font-family: 'Fredoka';
+        src: url('../assets/Fredoka-VariableFont_wdth\,wght.ttf') format('truetype');
+    }
+    ::-webkit-scrollbar{
+        display: none;
+    }
+    /* Root Variables */
+    :root {
+        --font-xs: 1.1rem;
+        --font-sm: 1.4rem;
+        --font-md: 1.6rem;
+        --font-lg: 2rem;
+        --font-xl: 4rem;
+        --pad-sm: 1rem;
+        --pad-md: 1.6rem;
+        --pad-lg: 2.4rem;
+        --primary-color: #5D04B2;
+        --secondary-color: #fbb03b;
+        --progress-color: #ffff00;
+        --correct-color: #4caf50;
+        --incorrect-color: #E74C3C; /* Softer Red */
+
+        --text-color-dark: #333;
+        --text-color-light: #fff;
+        --card-background-light: #ffffff;
+        --header-font: 'Fredoka', sans-serif;
+        --body-font: var(--header-font);
+    }
+
+    /* Global Reset & Base Styles */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    html {
+        font-size: 1.5vmin;
+    }
+    
+    body {
+        width: 100%;
+        height: 100vh;
+        overflow: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f0f4f8;
+        font-family: var(--body-font);
+        padding: 0.5rem;
+    }
+
+    #game-wrapper {
+        width: 100%;
+        max-width:1200px;
+        height: auto;
+        aspect-ratio: 16 / 9;
+        box-shadow: 0 0.9375rem 2.5rem var(--shadow-dark);
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+    }
+
+    #game-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .touch-clone {
+        position: fixed;
+        opacity: 0.8;
+        pointer-events: none;
+        z-index: 9999;
+        transform-origin: center center;
+        transition: transform 0.1s;
+    }
+
+    .screen {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        overflow: hidden;
+    }
+
+    .screen.hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(0.95);
+    }
+    
+    /* Start Screen */
+    #start-screen {
+       background-image: url('images/gamebg.jpg'), linear-gradient(135deg, var(--primary-color) 0%, #e67e22 100%);
+       background-size: cover;
+       background-position: center;
+       justify-content: center;
+       align-items: center;
+       padding: 2rem;
+    }
+
+    #start-screen h1 {
+       font-size: 4rem;
+       color: var(--text-color-light);
+       margin-bottom: 1.2rem;
+       text-align: center;
+       text-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.3);
+       font-weight: 500;
+    }
+
+    .start-button {
+        font-family: var(--header-font);
+        background: var(--secondary-color);
+        color: var(--text-color-light);
+        font-weight: 500;
+        font-size: 1.5rem;
+        border: 3px solid #fff;
+        border-radius: 4.8rem;
+        padding: var(--pad-sm) var(--pad-lg);
+        margin-top: 1.6rem;
+        cursor: pointer;
+        text-shadow: 0 0.2rem 0 #b88b2a;
+        transition: all 0.2s;
+    }
+
+    .start-button:hover {
+       transform: scale(1.06);
+       box-shadow: 0 0.375rem 1.5rem rgba(0,0,0,0.18);
+    }
+
+    #game-screen {
+        justify-content: flex-start;
+        background: linear-gradient(135deg, #fafbff 0%, #f0f4f8 100%);
+        padding-top: 3.75rem;
+    }
+
+    /* -------- Header / Top Bar -------- */
+    .game-top-section {
+        width: 100%;
+        background-color: var(--primary-color);
+        padding: 0.75rem 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #fff;
+        position: absolute;
+        top: 0; left: 0; z-index: 10;
+        box-shadow: 0 0.125rem 0.625rem rgba(0,0,0,0.2);
+    }
+
+    #game-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin: 0;
+        text-shadow: none;
+    }
+    
+    .header-right-group {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+    }
+
+    .progress-area {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-shrink: 0;
+    }
+
+    #progress-container {
+        width: 12.5rem;
+        background-color: rgba(255,255,255,0.3);
+        border-radius: 1rem;
+        height: 1.25rem;
+        border: 2px solid #fff;
+        position: relative;
+        overflow: hidden;
+    }
+
+    #progress-bar {
+        height: 100%;
+        width: 0%;
+        background: #FFFF00;
+        border-radius: 0.8rem;
+        transition: width 0.5s ease;
+    }
+
+    #progress-text {
+        color: var(--text-color-light);
+        font-weight: 600;
+        font-size: 1rem;
+        text-shadow: 0.0625rem 0.0625rem 0.125rem rgba(0,0,0,0.6);
+        white-space: nowrap;
+    }
+
+    .instructions-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+        animation: glow-pulse-white 2s infinite;
+    }
+    .instructions-icon:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+    }
+    .instructions-icon svg {
+        fill: white;
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    /* Game Content Area */
+    .game-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+        gap: 1rem;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    #game-board {
+        display: flex;
+        flex-direction: row; 
+        width: 100%;
+        flex-grow: 1;
+        gap: 1.5rem;
+        min-height: 0;
+        height: 100%;
+        justify-content: center;
+        align-items: stretch;
+    }
+
+    .experiment-panel {
+        flex: 1;
+        max-width: 1000px;
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(145deg, #f0f4f8, #e9eef6);
+        border-radius: 1rem;
+        padding: 1rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        gap: 1rem;
+        overflow: hidden;
+        border-top: 5px solid transparent;
+        transition: opacity 0.4s ease, transform 0.4s ease, border-top-color 0.5s ease-in-out;
+    }
+
+    .experiment-panel[data-experiment-id="johns-action-plan"] {
+        border-top-color: #e67e22;
+    }
+
+    .experiment-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        text-align: center;
+        color: var(--text-color-dark);
+        padding-bottom: 0.5rem;
+        flex-shrink: 0;
+    }
+    .experiment-panel.completed .experiment-title {
+        border-bottom-color: var(--correct-color);
+    }
+
+    .content-wrapper {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+        flex-grow: 1;
+        min-height: 0;
+   }
+    .sequence-container {
+        flex: 1;
+        display: flex;    
+        flex-direction: column;
+        gap: 1.5rem;
+        overflow-y: auto;
+        padding: 0.5rem;
+        background: #e1e8f0;
+        border-radius: 8px;
+    }
+
+    .sequence-slot {
+        width: 100%;
+        min-height: 4.5rem;
+        background: #fdfdff;
+        border: 2px dashed #b0b8d0;
+        border-radius: 8px;
+        display: flex;    
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #e67e22;
+        padding: 0.5rem;
+        height: 12vh;
+    }
+    .sequence-slot.drag-over {
+        border-color: var(--secondary-color);
+        background: #fffbe0;
+    }
+    .sequence-slot.filled {
+        justify-content: flex-start;
+        align-items: center;
+        border-style: solid;
+        border-color: #b0b8d0;
+        padding: 0 1rem;
+        gap: 0.75rem;
+    }
+    .sequence-slot.filled .sequence-number {
+        font-weight: bold;
+        color: #e67e22;
+        font-size: 1rem;
+    }
+
+    /* ensure the sequence number stays left-aligned and card content begins after it */
+    .sequence-number {
+        display: inline-block;
+        min-width: 2rem;
+        text-align: left;
+        margin-right: 0.75rem;
+        font-weight: 700;
+        color: #e67e22;
+    }
+
+    .steps-container
+    {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        overflow-y: auto;
+        padding: 0.5rem;
+        background: #e1e8f0;
+        border-radius: 8px;
+    }
+
+    .step-card {
+        width: 100%;
+        padding: 0.8rem;
+        font-size: 1.3rem;
+        display: flex;    
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background: linear-gradient(145deg, #f7faff, #ffffff);
+        color: #3D4767;
+        font-weight: 600;
+        border-radius: 8px;
+        border: 1px solid #E0E7FF;
+        border-bottom: 3px solid #BCC8E6;
+        box-shadow: 0 2px 4px rgba(61, 71, 103, 0.05);
+        transition: all 0.15s ease-out;
+        cursor: grab;
+        min-height: 4.5rem;
+        flex-shrink: 0;
+        height: 10vh;
+    }
+    
+    .step-card:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 6px 15px rgba(61, 71, 103, 0.1);
+        border-bottom-color: var(--primary-color);
+    }
+    .step-card.dragging {
+        opacity: 0.7;
+        cursor: grabbing;
+        transform: scale(1.05);
+        box-shadow: 0 8px 20px rgba(61, 71, 103, 0.2);
+        border-bottom-width: 2px;
+    }
+    .step-card.placed {
+        cursor: default;
+        flex-grow: 1;
+        height: 85%;
+        min-height: unset;
+        width: 100%;
+        padding: 0.5rem;
+        background: none;
+        border: none;
+        border-bottom: none;
+        box-shadow: none;
+        font-size: 1.3rem; /* Adjusted for placed */
+        color: #3D4767;
+        justify-content: flex-start;   
+    }
+    .step-card.placed:hover {
+        transform: none;
+        box-shadow: none;
+        border-bottom-color: transparent;
+    }
+
+    /* Hint Icon */
+    .hint-icon {
+        position: absolute;
+        bottom: 1rem;
+        right: 1rem;
+        width: 3.125rem;
+        height: 3.125rem;
+        background: var(--secondary-color);
+        border-radius: 50%;
+        border: 0.125rem solid white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 1001;
+        box-shadow: 0 0.25rem 0.9375rem rgba(251, 176, 59, 0.4);
+        animation: glow-pulse 2s infinite;
+    }
+    .hint-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0.375rem 1.5625rem rgba(251, 176, 59, 0.8);
+    }
+    .hint-icon svg {
+        fill: white;
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    /* ====== MODALS ====== */
+    .modal-overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.4);
+        backdrop-filter: blur(0.125rem);
+        z-index: 3000;
+        display: flex; justify-content: center; align-items: center;
+        animation: fadeIn 0.3s ease;
+        padding: 1rem;
+    }
+    .modal-overlay.hidden { display: none; }
+    
+    .modal-content {
+        background: var(--card-background-light, #fff);
+        padding: 2.5rem;
+        border-radius: 1rem;
+        text-align: center;
+        width: 90%; max-width: 37.5rem;
+        max-height: 90vh;
+        animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        display: flex; flex-direction: column;
+        overflow: hidden;
+    }
+    
+    .modal-title {
+        font-size: 1.8rem; 
+        font-weight: 600; 
+        margin-bottom: 1.5rem;
+        color: var(--primary-color);
+    }
+    .modal-text { 
+        font-size: 1.2rem; 
+        line-height: 1.6; 
+        color: var(--text-color-dark, #333); 
+    }
+    
+    .modal-body {
+        padding: 0;
+        overflow-y: auto;
+    }
+
+    #activity-description-overlay .modal-content { border-top: 0.5rem solid var(--primary-color); }
+    #activity-description-overlay .modal-title { color: var(--primary-color); }
+    #activity-description-overlay .modal-text {
+        text-align: left; background: #f8f9fa; padding: 1.5rem;
+        border-radius: 0.75rem; border-left: 0.25rem solid var(--primary-color);
+    }
+
+    #instructions-overlay .modal-content { border-top: 0.5rem solid var(--primary-color); }
+    #instructions-overlay .modal-title { color: var(--primary-color); }
+    #instructions-overlay ol { margin-top: 1rem; text-align: left; padding-left: 1.5rem; }
+    #instructions-overlay ol li { margin-bottom: 0.5rem; font-size: 1.1rem; }
+    
+    #hint-overlay .modal-content { border-top: 0.5rem solid var(--secondary-color); }
+    #hint-overlay .modal-title { color: var(--secondary-color); display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+    
+    .modal-buttons { padding-top: 1.5rem; }
+    .modal-btn {
+        width: 100%; padding: 1rem; font-size: 1.2rem; font-weight: 700;
+        border: none; border-radius: 0.75rem; cursor: pointer; color: #fff;
+        transition: transform 0.2s, box-shadow 0.2s;
+        background: var(--primary-color);
+    }
+    .modal-btn:hover { transform: scale(1.02); }
+    #hint-overlay .modal-btn { background: var(--secondary-color); }
+    
+    #feedback-modal-overlay .modal-content { 
+        max-width: 31.25rem; 
+        padding: 1.5rem; 
+        border-top: 0.3125rem solid transparent;
+    }
+    #feedback-modal.correct-feedback .modal-content { border-top-color: var(--correct-color); }
+    #feedback-modal.incorrect-feedback .modal-content { border-top-color: var(--incorrect-color); }
+    #feedback-title { display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+    #feedback-title svg { width: 2.2rem; height: 2.2rem; }
+    #feedback-modal.correct-feedback #feedback-title { color: var(--correct-color); }
+    #feedback-modal.incorrect-feedback #feedback-title { color: var(--incorrect-color); }
+    #feedback-button { width: 100%; }
+    #feedback-modal.correct-feedback #feedback-button { background-color: var(--correct-color); }
+    #feedback-modal.incorrect-feedback #feedback-button { background-color: var(--incorrect-color); }
+
+    /* --- Feedback modal: aligned with ACTIVITY2 styles --- */
+    #feedback-modal .modal-content {
+        background: var(--card-background-light);
+        padding: 2.5rem;
+        border-radius: 1rem;
+        text-align: center;
+        width: 90%;
+        max-width: 600px;
+        animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        border-top: 8px solid var(--primary-color);
+    }
+    #feedback-title { color: var(--primary-color); font-size: var(--font-lg); margin-bottom: 1.6rem; display: flex; align-items: center; justify-content: center; gap: 1rem; font-weight: 600; }
+    #feedback-modal-text { font-size: 1.2rem; line-height: 1.6; color: var(--text-color-dark); margin-bottom: 1.6rem; text-align: left; }
+    #feedback-button {
+        width: 100%; padding: 1rem; font-size: 1.25rem; font-weight: 700;
+        border: none; border-radius: 1.2rem; cursor: pointer; color: #ffffff;
+        transition: transform 0.2s, box-shadow 0.2s; background: var(--primary-color);
+    }
+    #feedback-button:hover { transform: scale(1.03); }
+    
+    #completion-overlay {
+        background-image: url('images/gamebg.jpg'), linear-gradient(135deg, var(--primary-color) 0%, #e67e22 100%);
+        background-size: cover;
+        background-position: center;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .completion-header {
+        color: var(--text-color-light); 
+        font-size: 3rem;
+        font-family: var(--header-font); 
+        text-shadow: 0 0.1875rem 0.375rem rgba(0,0,0,0.5);
+        margin-bottom: 1rem;
+        text-align: center;
+        font-weight: 600;
+    }
+    .completion-text {
+        color: var(--text-color-light);
+        font-size: 1.2rem;
+        text-align: center;
+        max-width: 600px;
+        margin: -1rem auto 1rem;
+        line-height: 1.5;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+    .completion-modal-content {
+        background: transparent;
+        box-shadow: none;
+        width: 80%;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+        overflow: visible;
+        margin-top: 0rem;
+        border: none;
+        margin-bottom: 0rem;
+    }
+    .completion-image {
+        display: block;
+        margin: 0 auto 1.5rem auto;
+        max-width: 60vw;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        animation: fadeIn 0.5s ease-out;
+        border: 2px solid var(--secondary-color);
+        border-radius: 1rem;
+    }
+    .completion-buttons {
+        position: static;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0 2rem 2rem 2rem;
+        box-sizing: border-box;
+        align-items: flex-end;
+        margin-top: 0;
+    }
+    
+    .completion-btn {
+        font-family: var(--header-font); background: var(--secondary-color); color: #fff;
+        font-weight: 500; 
+        font-size: 1.3rem;
+        border: 2px solid #fff;
+        border-radius: 3rem; 
+        padding: clamp(0.5rem, 1.5vmin, 0.75rem) clamp(1.25rem, 3vmin, 2rem);
+        cursor: pointer; transition: all 0.2s;
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+        text-shadow: 0 0.125rem 0 #b88b2a; text-decoration: none;
+        min-width: 8.75rem; /* 140px */
+    }
+    .completion-btn:hover { 
+        transform: scale(1.05); 
+        box-shadow: 0 0.5rem 1.25rem rgba(0,0,0,0.2);
+    }
+
+    /* Hide all scrollbars in the game */
+    html, body, #game-wrapper, #game-container, .game-content, #game-board {
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important; 
+    }
+    html::-webkit-scrollbar, body::-webkit-scrollbar, #game-wrapper::-webkit-scrollbar, #game-container::-webkit-scrollbar, .game-content::-webkit-scrollbar, #game-board::-webkit-scrollbar {
+        display: none !important;
+    }
+    
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideIn { from { transform: translateY(1.875rem) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+
+    /* Responsive Layout Adjustments */
+    @media (min-width:1400px){
+        html { font-size: 1.8vmin; }
+    }
+    @media (max-width: 1199px) {
+        html{ font-size: 2.3vmin; }
+        body { padding: 0; }
+        #game-wrapper {
+            width: 100vw !important; height: 100vh !important;
+            min-width: 100vw !important; min-height: 100vh !important;
+            border-radius: 0 !important; max-width: none !important;
+            aspect-ratio: unset !important; box-shadow: none;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        #completion-overlay {
+            position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+            max-width: 100%; max-height: 100%; margin: 0 auto;
+            box-sizing: border-box;
+        }
+    }
+    
+    @media (max-width: 991px) {
+        html { font-size: 2.8vmin; }
+        body { min-height: 100vh; height: 100vh; overflow-y: auto; }
+        #game-wrapper, #game-container { min-height: 100vh; height: 100vh; box-sizing: border-box; }
+        .game-content { padding: 1rem; }
+        
+        .completion-buttons {
+            position: fixed !important; left: 0; bottom: 0; width: 100vw;
+            padding: 0 1rem 1rem 1rem; z-index: 9999;
+            background: rgba(255,255,255,0.01);
+        }
+        .completion-btn { min-width: 7.5rem; font-size: 1rem; padding: 1rem 1.5rem; }
+        .completion-title { font-size: 2rem; margin-top: 1.5rem; }
+        .completion-image { max-width: 80vw; height: auto; }
+        .sequence-slot, .step-card {
+           min-height: 4rem;
+        }
+        .completion-modal-content{
+            margin-bottom: 5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        html{ font-size: 3vmin; }
+        #game-board {
+            overflow-y: auto;
+            gap: 1rem;
+            align-items: center;
+        }
+        .experiment-panel {
+            flex-basis: auto;
+            width: 95%;
+            min-height: 70vh;
+        }
+        .experiment-title {
+            font-size: 1.3rem;
+            margin-top:0rem;
+        }
+        .sequence-slot, .step-card {
+            font-size: 1rem;
+            min-height: 3.5rem;
+        }
+        
+        .completion-title { font-size: 1.8rem; }
+        .completion-image { max-width: 100%; height: auto; width: auto; } 
+        .completion-buttons { left: 1rem; right: 1rem; bottom: 1rem; }
+        .completion-btn { min-width: 7.5rem; }
+    }
+
+</style>
+</head>
+<body>
+<div id="game-wrapper">
+   <div id="game-container">
+       <div id="start-screen" class="screen">
+           <h1>John’s Action Plan</h1>
+           <button class="start-button">Start Activity</button>
+       </div>
+
+       <div id="game-screen" class="screen hidden">
+           <div class="game-top-section">
+               <h1 id="game-title">Ordering Puzzle</h1>
+               <div class="header-right-group">
+                   <div class="progress-area">
+                       <div id="progress-container">
+                           <div id="progress-bar"></div>
+                       </div>
+                       <div id="progress-text">0 / 4</div>
+                   </div>
+                   <div class="instructions-icon" id="instructions-icon">
+                       <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+                   </div>
+                </div>
+           </div>
+           <div class="game-content">
+               <div id="game-board"></div>
+                <button id="check-answer-btn" class="modal-btn" style="display: none; margin: 0rem auto 0; width: auto; padding: 1rem 2rem;">Check My Order</button>
+           </div>
+           <div class="hint-icon" id="hint-icon">
+               <svg viewBox="0 0 24 24"><path d="M9 21c0 .5.4 1 1 1h4c.6 0 1-.5 1-1v-1H9v1zm3-19C8.1 2 5 5.1 5 9c0 2.4 1.2 4.5 3 5.7V17c0 .5.4 1 1 1h6c.6 0 1-.5 1-1v-2.3c1.8-1.3 3-3.4 3-5.7 0-3.9-3.1-7-7-7z"></path></svg>
+           </div>
+       </div>
+
+        <div id="activity-description-overlay" class="modal-overlay hidden">
+           <div class="modal-content">
+               <div class="modal-body">
+                   <div class="modal-title">Activity Introduction</div>
+                   <p class="modal-text">A plan makes growth possible. In this activity, you will put John’s self-esteem steps in order and see how action creates progress.</p>
+               </div>
+               <div class="modal-buttons">
+                   <button class="modal-btn" id="continue-btn">Continue</button>
+               </div>
+           </div>
+       </div>
+
+        <div id="instructions-overlay" class="modal-overlay hidden">
+           <div class="modal-content">
+               <div class="modal-body">
+                   <div class="modal-title">Learner Instructions</div>
+                   <p class="modal-text" style="text-align: left;">Arrange John’s steps into the correct sequence to create a strong action plan.</p>
+               </div>
+               <div class="modal-buttons">
+                   <button class="modal-btn" id="close-instructions-btn">Got it!</button>
+               </div>
+           </div>
+       </div>
+
+        <div id="hint-overlay" class="modal-overlay hidden">
+           <div class="modal-content">
+               <div class="modal-body">
+                   <div class="modal-title">Here's a Hint</div>
+                   <p class="modal-text">Think about what comes first: belief, goals, actions, or seeking help. A plan begins with mindset and grows into action.</p>
+               </div>
+               <div class="modal-buttons">
+                   <button class="modal-btn" id="close-hint-btn">Got it</button>
+               </div>
+           </div>
+       </div>
+
+        <div id="feedback-modal-overlay" class="modal-overlay hidden">
+           <div id="feedback-modal">
+                <div class="modal-content">
+                    <div class="modal-body">
+                       <div id="feedback-title" class="modal-title"></div>
+                       <p id="feedback-modal-text" class="modal-text"></p>
+                    </div>
+                    <div class="modal-buttons">
+                       <button id="feedback-button" class="modal-btn">Continue</button>
+                    </div>
+                </div>
+            </div>
+       </div>
+
+        <div id="completion-overlay" class="modal-overlay hidden">
+            <h2 class="completion-header">Activity Conclusion</h2>
+            <div class="modal-content completion-modal-content">
+                <img src="images/complete.jpg" alt="An illustrated action plan" class="completion-image" onerror="this.src='https://placehold.co/400x300/e67e22/ffffff?text=Complete!'; this.onerror=null;">
+            </div>
+            <div class="completion-buttons">
+                <button class="completion-btn" id="prev-activity-btn">Previous Activity</button>
+                <button class="completion-btn" id="restart-activity-btn">Restart Activity</button>
+                <button class="completion-btn" id="next-activity-btn">Next Activity</button>
+            </div>
+       </div>
+
+   </div>
+</div>
+
+ <audio id="intro-audio" src="audio/intro.mp3" preload="auto"></audio>
+<audio id="complete-audio" src="audio/outro.mp3" preload="auto"></audio>
+<audio id="ding-sound" src="audio/ding.mp3" preload="auto"></audio>
+<audio id="buzz-sound" src="audio/buzz.mp3" preload="auto"></audio>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- DOM Elements ---
+    const startScreen = document.getElementById('start-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const startBtn = document.querySelector('.start-button');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const gameBoard = document.getElementById('game-board');
+    const checkAnswerBtn = document.getElementById('check-answer-btn');
+
+    // --- Modal Elements ---
+    const activityDescriptionOverlay = document.getElementById('activity-description-overlay');
+    const instructionsOverlay = document.getElementById('instructions-overlay');
+    const hintOverlay = document.getElementById('hint-overlay');
+    const feedbackModalOverlay = document.getElementById('feedback-modal-overlay');
+    const completionOverlay = document.getElementById('completion-overlay');
+
+    // --- Button Elements ---
+    const continueBtn = document.getElementById('continue-btn');
+    const instructionsIcon = document.getElementById('instructions-icon');
+    const closeInstructionsBtn = document.getElementById('close-instructions-btn');
+    const hintIcon = document.getElementById('hint-icon');
+    const closeHintBtn = document.getElementById('close-hint-btn');
+    const feedbackBtn = document.getElementById('feedback-button');
+    const prevActivityBtn = document.getElementById('prev-activity-btn');
+    const restartActivityBtn = document.getElementById('restart-activity-btn');
+    const nextActivityBtn = document.getElementById('next-activity-btn');
+
+    // --- Feedback Elements ---
+    const feedbackModal = document.getElementById('feedback-modal');
+    const feedbackTitle = document.getElementById('feedback-title');
+    const feedbackText = document.getElementById('feedback-modal-text');
+
+    // --- Audio Elements ---
+    const introAudio = document.getElementById('intro-audio');
+    const completeAudio = document.getElementById('complete-audio');
+    const dingSound = document.getElementById('ding-sound');
+    const buzzSound = document.getElementById('buzz-sound');
+
+    const icons = {
+        correct: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
+        incorrect: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`
+    };
+
+    // --- Game Data ---
+    const gameData = [
+        {
+            id: 'johns-action-plan',
+            title: "Arrange John's Action Plan",
+            steps: [
+                { id: 1, text: 'Believe in myself' },
+                { id: 2, text: 'Value myself' },
+                { id: 3, text: 'Set goals' },
+                { id: 4, text: 'Seek help when needed' }
+            ],
+            feedback: {
+                correct: "Well done! You placed the steps in the right order. Building self-esteem begins with belief, then valuing yourself, before setting goals and seeking help.",
+                incorrect: "Take another look. Think carefully: Can you set goals or ask for help before first believing and valuing yourself? Try arranging the steps again."
+            }
+        }
+    ];
+    
+    // --- Game State ---
+    let totalTasks = gameData[0].steps.length;
+    let completedTasks = 0;
+    let draggedItem = null;
+    let touchClone = null;
+
+    // --- Core Functions ---
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    function initializeGame() {
+        completedTasks = 0;
+        updateProgressBar();
+        renderExperiment();
+        progressText.textContent = `0 / ${totalTasks}`;
+        checkAnswerBtn.style.display = 'none';
+    }
+    
+    function renderExperiment() {
+        gameBoard.innerHTML = '';
+        const experiment = gameData[0];
+
+        const panel = document.createElement('div');
+        panel.className = 'experiment-panel';
+        panel.dataset.experimentId = experiment.id;
+        
+        const title = document.createElement('h3');
+        title.className = 'experiment-title';
+        title.textContent = experiment.title;
+        panel.appendChild(title);
+
+        const contentWrapper = document.createElement('div');
+        contentWrapper.className = 'content-wrapper';
+
+        const sequenceContainer = document.createElement('div');
+        sequenceContainer.className = 'sequence-container';
+        experiment.steps.forEach((step, index) => {
+            const slot = document.createElement('div');
+            slot.className = 'sequence-slot';
+            slot.dataset.sequenceIndex = index;
+            // show the slot number (will be styled when filled)
+            slot.innerHTML = `<span class="sequence-number">${index + 1}</span>`;
+            addDropListeners(slot);
+            sequenceContainer.appendChild(slot);
+        });
+        contentWrapper.appendChild(sequenceContainer);
+
+        const stepsContainer = document.createElement('div');
+        stepsContainer.className = 'steps-container';
+        let shuffledSteps = [...experiment.steps];
+        shuffleArray(shuffledSteps);
+        shuffledSteps.forEach(step => {
+            const card = document.createElement('div');
+            card.className = 'step-card';
+            card.draggable = true;
+            card.dataset.stepId = step.id;
+            card.textContent = step.text;
+            addDragListeners(card);
+            stepsContainer.appendChild(card);
+        });
+        contentWrapper.appendChild(stepsContainer);
+
+        panel.appendChild(contentWrapper);
+        
+        panel.style.opacity = '0';
+        panel.style.transform = 'scale(0.95)';
+        gameBoard.appendChild(panel);
+
+        setTimeout(() => {
+            panel.style.opacity = '1';
+            panel.style.transform = 'scale(1)';
+        }, 50);
+    }
+
+    function addDragListeners(item) {
+        item.addEventListener('dragstart', (e) => {
+            draggedItem = item;
+            setTimeout(() => item.classList.add('dragging'), 0);
+        });
+
+        item.addEventListener('dragend', () => {
+            item.classList.remove('dragging');
+            draggedItem = null;
+        });
+        
+        let offsetX, offsetY;
+        item.addEventListener('touchstart', (e) => {
+            if (e.cancelable) e.preventDefault();
+            draggedItem = item;
+
+            const touch = e.touches[0];
+            const rect = item.getBoundingClientRect();
+            offsetX = touch.clientX - rect.left;
+            offsetY = touch.clientY - rect.top;
+
+            touchClone = item.cloneNode(true);
+            touchClone.classList.add('touch-clone');
+            touchClone.style.width = `${rect.width}px`;
+            touchClone.style.height = `${rect.height}px`;
+            touchClone.style.left = `${touch.clientX - offsetX}px`;
+            touchClone.style.top = `${touch.clientY - offsetY}px`;
+            document.body.appendChild(touchClone);
+            item.classList.add('dragging');
+        }, { passive: false });
+
+        item.addEventListener('touchmove', (e) => {
+            if (!touchClone) return;
+            if (e.cancelable) e.preventDefault();
+
+            const touch = e.touches[0];
+            touchClone.style.left = `${touch.clientX - offsetX}px`;
+            touchClone.style.top = `${touch.clientY - offsetY}px`;
+
+            let elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+            let dropZoneUnderTouch = elementUnderTouch ? elementUnderTouch.closest('.sequence-slot') : null;
+
+            document.querySelectorAll('.sequence-slot').forEach(zone => {
+                zone.classList.toggle('drag-over', zone === dropZoneUnderTouch);
+            });
+        }, { passive: false });
+
+        item.addEventListener('touchend', (e) => {
+            if (!draggedItem) return;
+
+            const touch = e.changedTouches[0];
+            let dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+            let dropZone = dropTarget ? dropTarget.closest('.sequence-slot') : null;
+
+            if (dropZone) handleDrop(dropZone);
+            
+            if (touchClone) touchClone.remove();
+            touchClone = null;
+            if (draggedItem) draggedItem.classList.remove('dragging');
+            draggedItem = null;
+            document.querySelectorAll('.sequence-slot').forEach(zone => zone.classList.remove('drag-over'));
+        });
+    }
+
+    function addDropListeners(zone) {
+        zone.addEventListener('dragover', e => {
+            e.preventDefault();
+            if (zone.children.length === 1) zone.classList.add('drag-over');
+        });
+        zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+        zone.addEventListener('drop', e => {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+            handleDrop(zone);
+        });
+    }
+
+    function handleDrop(zone) {
+        if (!draggedItem || zone.children.length > 1) return;
+        
+        // If the item came from another slot, move it back to the steps container first
+        const originalParent = draggedItem.parentElement;
+        if (originalParent.classList.contains('sequence-slot')) {
+            originalParent.innerHTML = `<span class="sequence-number">${parseInt(originalParent.dataset.sequenceIndex) + 1}</span>`;
+            originalParent.classList.remove('filled');
+        }
+
+    // clear zone but keep sequence number element
+    const seqIndex = parseInt(zone.dataset.sequenceIndex, 10) + 1;
+    zone.innerHTML = '';
+    const numSpan = document.createElement('span');
+    numSpan.className = 'sequence-number';
+    numSpan.textContent = seqIndex;
+    zone.appendChild(numSpan);
+    zone.classList.add('filled');
+
+    // mark and append the dragged item
+    draggedItem.classList.add('placed');
+    // ensure placed card is left aligned
+    draggedItem.style.textAlign = 'left';
+    zone.appendChild(draggedItem);
+            
+        const filledCount = document.querySelectorAll('.sequence-slot.filled').length;
+        if (filledCount === totalTasks) {
+            checkAnswerBtn.style.display = 'block';
+        }
+    }
+    
+    function checkSequence() {
+        const sequenceSlots = document.querySelectorAll('.sequence-slot');
+        const currentSequenceIds = Array.from(sequenceSlots).map(slot => {
+            const card = slot.querySelector('.step-card');
+            return card ? parseInt(card.dataset.stepId) : null;
+        });
+        
+        const correctSequenceIds = gameData[0].steps.map(step => step.id);
+        const isCorrect = JSON.stringify(currentSequenceIds) === JSON.stringify(correctSequenceIds);
+
+        if (isCorrect) {
+            completedTasks = totalTasks;
+            updateProgressBar();
+            showFeedback(true, gameData[0].feedback.correct);
+            checkAnswerBtn.style.display = 'none';
+        } else {
+            showFeedback(false, gameData[0].feedback.incorrect);
+        }
+    }
+    
+    function resetBoard() {
+        const stepsContainer = document.querySelector('.steps-container');
+        const sequenceSlots = document.querySelectorAll('.sequence-slot');
+        
+        let cardsToReset = [];
+        sequenceSlots.forEach((slot, index) => {
+            const card = slot.querySelector('.step-card');
+            if (card) {
+                card.classList.remove('placed');
+                card.draggable = true;
+                cardsToReset.push(card);
+            }
+            slot.innerHTML = `<span class="sequence-number">${index + 1}</span>`;
+            slot.classList.remove('filled');
+        });
+        
+        shuffleArray(cardsToReset);
+        cardsToReset.forEach(card => stepsContainer.appendChild(card));
+        
+        checkAnswerBtn.style.display = 'none';
+    }
+
+
+    function updateProgressBar() {
+        const percentage = (completedTasks / totalTasks) * 100;
+        progressBar.style.width = `${percentage}%`;
+        progressText.textContent = `${completedTasks} / ${totalTasks}`;
+    }
+
+    function showFeedback(isCorrect, message) {
+        const titleText = isCorrect ? "Correct!" : "Not Quite...";
+        feedbackBtn.textContent = isCorrect ? "Continue" : "Try Again";
+        feedbackTitle.innerHTML = `${isCorrect ? icons.correct : icons.incorrect} ${titleText}`;
+        feedbackText.textContent = message;
+        feedbackModal.className = isCorrect ? 'correct-feedback' : 'incorrect-feedback';
+        playSound(isCorrect ? dingSound : buzzSound);
+        feedbackModalOverlay.classList.remove('hidden');
+    }
+    
+    function checkGameCompletion() {
+        if (completedTasks === totalTasks) {
+            setTimeout(() => {
+                completionOverlay.classList.remove('hidden');
+                playSound(completeAudio);
+            }, 500);
+        }
+    }
+    
+    function playSound(sound) {
+        if (sound) {
+            sound.currentTime = 0;
+            sound.play().catch(e => console.error('Audio play failed:', e));
+        }
+    }
+    
+    function stopAllAudio() {
+        [introAudio, completeAudio, dingSound, buzzSound].forEach(audio => {
+            if (audio) {
+                audio.pause();
+                audio.currentTime = 0;
+            }
+        });
+    }
+
+    // --- Event Listeners Setup ---
+    startBtn.addEventListener('click', () => {
+        startScreen.classList.add('hidden');
+        gameScreen.classList.remove('hidden');
+        initializeGame(); 
+        
+        activityDescriptionOverlay.classList.remove('hidden');
+        playSound(introAudio);
+
+        if (typeof sendEvent !== 'undefined' && typeof ActivityEvent !== 'undefined') {
+            sendEvent(ActivityEvent.START_ACTIVITY, {activityName : 'John’s Action Plan – Sequencing Task'});
+        }
+    });
+
+    continueBtn.addEventListener('click', () => {
+        stopAllAudio();
+        activityDescriptionOverlay.classList.add('hidden');
+    });
+
+    instructionsIcon.addEventListener('click', () => instructionsOverlay.classList.remove('hidden'));
+    closeInstructionsBtn.addEventListener('click', () => instructionsOverlay.classList.add('hidden'));
+
+    hintIcon.addEventListener('click', () => hintOverlay.classList.remove('hidden'));
+    closeHintBtn.addEventListener('click', () => hintOverlay.classList.add('hidden'));
+
+    checkAnswerBtn.addEventListener('click', checkSequence);
+
+    feedbackBtn.addEventListener('click', () => {
+        feedbackModalOverlay.classList.add('hidden');
+        const isCorrect = feedbackModal.classList.contains('correct-feedback');
+        if (isCorrect) {
+            checkGameCompletion();
+        } else {
+            resetBoard();
+        }
+    });
+    
+    restartActivityBtn.addEventListener('click', () => {
+        stopAllAudio();
+        completionOverlay.classList.add('hidden');
+        initializeGame();
+    });
+
+    nextActivityBtn.addEventListener('click', () => {
+        window.location.href = '../ACTIVITY4/index.html';
+        sendEvent(ActivityEvent.END_ACTIVITY, {activityName : 'John’s Action Plan – Sequencing Task'});
+    });
+    
+    prevActivityBtn.addEventListener('click', () => {
+        if (typeof sendEvent !== 'undefined' && typeof ActivityEvent !== 'undefined') {
+            sendEvent(ActivityEvent.END_ACTIVITY, {activityName : 'John’s Action Plan – Sequencing Task'});
+        }
+        window.location.href = '../ACTIVITY2/index.html'; 
+    });
+
+    [activityDescriptionOverlay, instructionsOverlay, hintOverlay].forEach(overlay => {
+        overlay.addEventListener('click', e => {
+            if (e.target === overlay) {
+                overlay.classList.add('hidden');
+                if (overlay === activityDescriptionOverlay) stopAllAudio();
+            }
+        });
+    });
+});
+</script>
+<script src = "../eventSender.js"></script>
+</body>
+</html>

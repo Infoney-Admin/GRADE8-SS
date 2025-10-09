@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Social Challenge Simulator</title>
+    <title>Problem or Not? – Interactive Quiz</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -224,6 +224,7 @@
         .feedback-btn.incorrect { background-color: var(--incorrect-color); }
         #feedback-correct-overlay .modal { border-top: 8px solid var(--correct-color); }
         #feedback-incorrect-overlay .modal { border-top: 8px solid var(--incorrect-color); }
+        .feedback-text { font-size: 1.2rem; line-height: 1.6; text-align: left; }
 
         /* ===== COMPLETION SCREEN ===== */
         #completion-overlay { 
@@ -352,7 +353,8 @@
         .scenario-details { flex: 1 1 50%; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
         .scenario-story { font-size: 1.3rem; color: #444; line-height: 1.7; background: #f8f9fa; border-left: 0.25rem solid var(--primary-color); padding: 1.5rem; border-radius: 0.8rem; text-align: left; width: 100%; }
         
-        .question-section {
+        .question-section
+        {
             flex: 1 1 50%;
             display: flex;
             flex-direction: column;
@@ -361,8 +363,9 @@
             background-color: #f2f0f5;
             padding: 1.5rem;
             border-radius: var(--border-radius);
-            height: 50vh;
+            height: 45vh;
             overflow-y: auto;
+            justify-content: center;
         }
         .question-section h3 { font-family: var(--header-font); color: var(--text-color-dark); font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center; font-weight: 500;}
         
@@ -433,12 +436,11 @@
                 width: 57%;
             }
             .options-container {
-                display: grid;      
+                display: flex;      
                 flex-direction: column;
                 gap: 1rem;
                 width: 100%;
                 max-width: 100vw;
-                grid-template-columns: repeat(2, auto);
                 height: 45vh;
                 justify-items: flex-start;
                 overflow-y: auto;
@@ -467,11 +469,11 @@
             #completion-image { max-width: 66%; }
             .completion-btn { min-width: 155px; }
             .options-container {
-                display: grid;
+                display: flex;
+                flex-direction: column;
                 gap: 1rem;
                 width: 100%;
                 max-width: 100vw;
-                grid-template-columns: repeat(2, auto);
                 height: 45vh;
                 justify-items: flex-start;
                 overflow-y: auto;
@@ -493,7 +495,6 @@
              #completion-image {
                 max-width: 85%;
             }
-           
         }
     </style>
 </head>
@@ -502,18 +503,18 @@
 <div id="game-wrapper">
     <div id="game-container">
         <div id="start-screen" class="screen">
-            <h1>John’s New School</h1>
+            <h1>Problem or Not?</h1>
             <button class="start-button" onclick="showActivityIntro();">Start Activity</button>
         </div>
 
         <div id="game-screen" class="screen hidden">
             <div class="game-top-section">
-                <h1 id="game-title">Simulation Challenge</h1>
+                <h1 id="game-title">Problem or Not?</h1>
                 <div class="top-right-controls">
                     <div id="progress-container">
                         <div id="progress-bar"></div>
                     </div>
-                    <span id="progress-text">0 / 3</span>
+                    <span id="progress-text">0 / 6</span>
                     <div class="instructions-icon" onclick="showInstructions()">
                         <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
                     </div>
@@ -528,7 +529,7 @@
                         <p class="scenario-story" id="scenario-story-text"></p>
                     </div>
                     <div class="question-section">
-                        <h3 id="question-text"></h3>
+                        <h3 id="question-text">Is this a problem or not?</h3>
                         <div class="options-container" id="options-container"></div>
                     </div>
                 </div>
@@ -588,9 +589,9 @@
             <div class="modal feedback-modal">
                 <div class="feedback-header correct" style="justify-content:center;">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--correct-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:2rem;height:2rem;margin-right:0.5rem;vertical-align:middle;display:inline-block;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                    <h2 style="margin:0;align-self:center;text-align:center;">Correct!</h2>
+                    <h2 style="margin:0;align-self:center;text-align:center;">Good Choice!</h2>
                 </div>
-                <div id="correct-feedback-text"></div>
+                <div id="correct-feedback-text" class="feedback-text"></div>
                 <button class="feedback-btn correct">Continue</button>
             </div>
         </div>
@@ -601,7 +602,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--incorrect-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:2rem;height:2rem;margin-right:0.5rem;vertical-align:middle;display:inline-block;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
                     <h2 style="margin:0;align-self:center;text-align:center;">Not Quite</h2>
                 </div>
-                <div id="incorrect-feedback-text"></div>
+                <div id="incorrect-feedback-text" class="feedback-text"></div>
                 <button class="feedback-btn incorrect">Try Again</button>
             </div>
         </div>
@@ -610,65 +611,77 @@
 
 <script>
     const activityData = {
-        title: "John’s New School",
-        introduction: "John has joined a new school. Because of his height and voice, he feels different and isolated. In this activity, you will decide his actions and see how each choice shapes his self-esteem.",
-        instructions: [
-            "Read the situation John is in carefully.",
-            "Choose the action you think is best for him.",
-            "Observe how your choice affects his confidence and friendships.",
-            "You must find all correct options to move to the next scenario."
-        ],
+        title: "Problem or Not?",
+        introduction: "Not everything you see in a community is a problem. In this activity, you will decide which situations require action and which are part of normal daily life.",
         hints: [
-            "Would hiding from people solve his problem or make it worse?",
-            "Could one kind friend make a difference?",
-            "What happens when you join groups with shared interests?"
+            "Ask: Does this harm people’s health, safety, or education?",
+            "Is something important missing that should be there?",
+            "Some situations are ordinary daily activities, not problems."
         ],
-        conclusion: {
-            voiceOver: "John’s story shows that every decision shapes how confident you feel. Support, courage, and belonging are powerful builders of self-esteem.",
-            takeaways: [
-                "Making proactive choices, like greeting someone, builds confidence.",
-                "Contributing your ideas in a group helps you feel valued and builds self-worth.",
-                "Joining groups with shared interests is a great way to make friends and feel a sense of belonging.",
-                "Avoiding social situations or being passive can increase feelings of isolation."
-            ]
-        },
+        takeaways: [
+            "You can identify problems that require action.",
+            "You can distinguish between problems and normal daily activities.",
+            "You know how to use key questions to evaluate a situation."
+        ],
+        instructions: [
+            "Read the scenario carefully.",
+            "Decide whether it is a problem or not based on safety, health, or access to rights like education.",
+            "Use the hint button if you're unsure.",
+            "Click Continue after viewing feedback to move to the next scenario."
+        ],
+        conclusion: "You have learned to tell the difference between normal situations and real problems. This skill helps communities focus on urgent challenges.",
         scenarios: [
             {
-                title: "Scenario 1: First Break Time",
-                story: "It's the first break time at the new school. John feels anxious and alone as students gather in groups, laughing and talking.",
-                question: "What should John do?",
-                options: [
-                    { text: "Avoids others and eats alone.", outcome: "John feels more isolated.", feedback: "Not correct. Avoiding others deepens isolation and prevents new friendships.", isCorrect: false },
-                    { text: "Greets a classmate confidently.", outcome: "The classmate responds kindly, John feels noticed.", feedback: "Correct. Greeting a classmate builds confidence and connection.", isCorrect: true },
-                    { text: "Joins a game without asking.", outcome: "John is rejected and feels embarrassed.", feedback: "Not correct. Joining without asking can feel forceful and may lead to rejection.", isCorrect: false },
-                    { text: "Waits quietly hoping to be invited.", outcome: "Nobody approaches, John feels invisible.", feedback: "Not correct. Waiting passively leaves John feeling ignored.", isCorrect: false }
-                ]
+                title: "Student walking to school",
+                story: "A student is walking alone on a paved sidewalk on their way to school in the morning.",
+                correctAnswer: "Not a Problem",
+                explanation: "This is a normal daily routine that supports education.",
+                correctFeedback: "Correct. Walking to school is a healthy daily activity.",
+                incorrectFeedback: "Incorrect. Walking to school is not harmful; it supports learning."
             },
             {
-                title: "Scenario 2: Class Group Work",
-                story: "During a science class, the teacher puts John into a group for a project. He feels nervous about sharing his thoughts with strangers.",
-                question: "How should John participate?",
-                options: [
-                    { text: "Refuses to participate.", outcome: "The group struggles without his input, John feels useless.", feedback: "Not correct. Refusing to participate lowers self-esteem and teamwork.", isCorrect: false },
-                    { text: "Offers to share his ideas.", outcome: "The group listens, and John gains confidence.", feedback: "Correct. Sharing ideas shows contribution and builds confidence.", isCorrect: true },
-                    { text: "Copies others silently.", outcome: "The work is done, but John feels he added nothing.", feedback: "Not correct. Copying prevents growth and lowers self-worth.", isCorrect: false },
-                    { text: "Complains that nobody includes him.", outcome: "The group feels annoyed, and tension increases.", feedback: "Not correct. Complaining without action causes conflict instead of solutions.", isCorrect: false }
-                ]
+                title: "Flooded road blocking access",
+                story: "After a heavy rainstorm, a major road is completely flooded, and no cars or people can pass through.",
+                correctAnswer: "Problem",
+                explanation: "Flooding prevents movement and creates safety risks.",
+                correctFeedback: "Correct. A blocked road is a real community challenge that requires attention.",
+                incorrectFeedback: "Incorrect. A flooded road is dangerous and limits access; it is a real problem."
             },
             {
-                title: "Scenario 3: After-School Clubs",
-                story: "The school is holding an after-school clubs fair. John sees many options like sports, music, and art, but is hesitant to join.",
-                question: "What is the best way for John to connect with others?",
-                options: [
-                    { text: "Joins a music club to meet new friends.", outcome: "John meets new friends with shared interests.", feedback: "Correct. Joining a club helps John build belonging and new friendships.", isCorrect: true },
-                    { text: "Avoids all clubs.", outcome: "John misses opportunities to connect.", feedback: "Not correct. Avoiding clubs increases loneliness.", isCorrect: false },
-                    { text: "Chooses a club only to impress others.", outcome: "John feels unhappy and unmotivated.", feedback: "Not correct. Pretending for approval does not build self-esteem.", isCorrect: false },
-                    { text: "Visits different clubs before choosing.", outcome: "John finds the best fit for him.", feedback: "Correct. Exploring options first shows confidence and wise choices.", isCorrect: true }
-                ]
+                title: "Child selling fruit instead of being in class",
+                story: "You see a child, who should be in school, selling fruit on the side of the street during school hours.",
+                correctAnswer: "Problem",
+                explanation: "This denies the child the right to education.",
+                correctFeedback: "Correct. A child missing school for work is a serious issue that harms education.",
+                incorrectFeedback: "Incorrect. A child selling fruit is not a normal activity; it denies education."
+            },
+            {
+                title: "Family eating together",
+                story: "A family is gathered around a table, sharing a meal and talking happily.",
+                correctAnswer: "Not a Problem",
+                explanation: "Eating together is a healthy and positive social activity.",
+                correctFeedback: "Correct. Sharing meals strengthens family bonds and is not a problem.",
+                incorrectFeedback: "Incorrect. Eating together is healthy and supports relationships, not a problem."
+            },
+            {
+                title: "Polluted river",
+                story: "A local river is filled with trash, and the water is discolored and smells bad.",
+                correctAnswer: "Problem",
+                explanation: "Pollution harms health, environment, and community safety.",
+                correctFeedback: "Correct. A polluted river is a danger to people and the environment.",
+                incorrectFeedback: "Incorrect. Pollution is never normal; it damages health and nature."
+            },
+            {
+                title: "Broken classroom chair",
+                story: "In a classroom, one of the chairs has a broken leg, making it unusable.",
+                correctAnswer: "Problem",
+                explanation: "Missing or broken resources interfere with learning.",
+                correctFeedback: "Correct. A broken chair is a real gap in resources that affects education.",
+                incorrectFeedback: "Incorrect. A broken chair reduces learning quality and needs fixing."
             }
         ]
     };
-
+    
     let currentScenarioIndex = 0;
     const totalScenarios = activityData.scenarios.length;
     let introAudio, dingAudio, buzzAudio, outroAudio;
@@ -694,46 +707,46 @@
     }
     
     function loadScenario() {
+        if (currentScenarioIndex >= totalScenarios) {
+            endActivity();
+            return;
+        }
         const scenario = activityData.scenarios[currentScenarioIndex];
         const optionsContainer = document.getElementById('options-container');
         
         document.getElementById('scenario-title').textContent = scenario.title;
         document.getElementById('scenario-story-text').innerHTML = scenario.story;
-        document.getElementById('question-text').textContent = scenario.question;
         
         optionsContainer.innerHTML = '';
-        const optionLabels = ['A', 'B', 'C', 'D'];
+        const options = ["Problem", "Not a Problem"];
 
-        scenario.options.forEach((optionData, index) => {
+        options.forEach((optionText, index) => {
             const button = document.createElement('button');
             button.className = 'option-button';
-            button.innerHTML = `<strong>${optionLabels[index]}.</strong> ${optionData.text}`;
-            button.onclick = () => handleOptionClick(optionData, button);
+            button.innerHTML = `<strong>${optionText}</strong>`;
+            button.onclick = () => handleOptionClick(optionText, button);
             optionsContainer.appendChild(button);
         });
         
         updateProgress();
     }
     
-    function handleOptionClick(optionData, clickedButton) {
-        clickedButton.disabled = true;
+    function handleOptionClick(selectedOption, clickedButton) {
+        const scenario = activityData.scenarios[currentScenarioIndex];
+        const isCorrect = selectedOption === scenario.correctAnswer;
         
-        const isCorrect = optionData.isCorrect;
-        
-        const feedbackMessage = `
-            <p style="text-align:left; font-size: 1.1rem;"><strong>Outcome:</strong> ${optionData.outcome}</p>
-            <hr style="margin: 1rem 0;">
-            <p style="text-align:left; font-size: 1.1rem;">${optionData.feedback}</p>
-        `;
+        document.querySelectorAll('.option-button').forEach(btn => btn.disabled = true);
 
         if (isCorrect) {
             playSound(dingAudio);
             clickedButton.classList.add('correct');
-            showFeedbackPopup('correct', feedbackMessage);
+            document.getElementById('correct-feedback-text').textContent = scenario.correctFeedback;
+            showFeedbackPopup('correct');
         } else {
             playSound(buzzAudio);
             clickedButton.classList.add('incorrect');
-            showFeedbackPopup('incorrect', feedbackMessage);
+            document.getElementById('incorrect-feedback-text').textContent = scenario.incorrectFeedback;
+            showFeedbackPopup('incorrect');
         }
     }
 
@@ -741,14 +754,14 @@
         const container = document.getElementById('scenario-container');
         container.classList.add('fade-out');
         setTimeout(() => {
-            if (currentScenarioIndex < totalScenarios - 1) {
-                currentScenarioIndex++;
-                loadScenario();
-                container.classList.remove('fade-out');
-            } else {
-                endActivity();
-            }
-        }, 500);
+            currentScenarioIndex++;
+            loadScenario();
+            container.classList.remove('fade-out');
+            document.querySelectorAll('.option-button').forEach(btn => {
+                btn.classList.remove('correct', 'incorrect');
+                btn.disabled = false;
+            });
+        }, 300);
     }
     
     function updateProgress() {
@@ -757,8 +770,7 @@
         document.getElementById('progress-text').textContent = `${progress} / ${totalScenarios}`;
     }
 
-    function showFeedbackPopup(type, message) {
-        document.getElementById(`${type}-feedback-text`).innerHTML = message;
+    function showFeedbackPopup(type) {
         document.getElementById(`feedback-${type}-overlay`).classList.remove('hidden');
     }
     
@@ -767,106 +779,92 @@
         document.getElementById('game-screen').classList.remove('hidden');
         document.getElementById('activity-intro-overlay').classList.remove('hidden');
         playSound(introAudio);
-        sendEvent(ActivityEvent.START_ACTIVITY, {activityName: 'John’s New School – Simulation Challenge'});
+        sendEvent(ActivityEvent.START_ACTIVITY, {activityName: 'Problem or Not? – Interactive Quiz'});
     }
 
     function showInstructions() { document.getElementById('instructions-overlay').classList.remove('hidden'); }
     
     function showHint() { document.getElementById('hint-overlay').classList.remove('hidden'); }
 
-    function showTakeaways() {
-        stopSound(outroAudio);
-        document.getElementById('takeaways-overlay').classList.remove('hidden');
-        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'John’s New School – Simulation Challenge'});
-    }
 
     function closeModal(id) {
         document.getElementById(id).classList.add('hidden');
         if (id === 'activity-intro-overlay') { 
             stopSound(introAudio); 
             initGame(); 
+        } else if (id === 'feedback-correct-overlay') {
+               goToNextScenario();
+      
+        } else if (id === 'feedback-incorrect-overlay') {
+            document.querySelectorAll('.option-button').forEach(btn => btn.disabled = false);
         }
     }
     
-    function closeCorrectFeedbackAndCheck() {
-        closeModal('feedback-correct-overlay');
-        
-        const scenario = activityData.scenarios[currentScenarioIndex];
-        const totalCorrectOptions = scenario.options.filter(opt => opt.isCorrect).length;
-        const selectedCorrectOptions = document.querySelectorAll('.option-button.correct').length;
-
-        if (selectedCorrectOptions === totalCorrectOptions) {
-            // Enable all buttons before moving to the next scenario to avoid disabled state on restart
-            document.querySelectorAll('.option-button').forEach(btn => btn.disabled = false);
-            goToNextScenario();
-        }
-    }
-
     function endActivity() {
         document.getElementById('progress-bar').style.width = `100%`;
         document.getElementById('progress-text').textContent = `${totalScenarios} / ${totalScenarios}`;
         document.getElementById('game-screen').classList.add('hidden');
         document.getElementById('completion-overlay').classList.remove('hidden');
         playSound(outroAudio);
-        
     }
     
     function restartGame() {
         stopSound(outroAudio);
-        speechSynthesis.cancel();
         document.getElementById('completion-overlay').classList.add('hidden');
         document.getElementById('takeaways-overlay').classList.add('hidden');
         currentScenarioIndex = 0;
         document.getElementById('game-screen').classList.remove('hidden');
         document.getElementById('scenario-container').classList.remove('fade-out');
+        document.querySelectorAll('.option-button').forEach(btn => {
+            btn.classList.remove('correct', 'incorrect');
+            btn.disabled = false;
+        });
         loadScenario();
     }
 
     function goToPreviousActivity() { 
-        window.location.href = "../ACTIVITY2/index.html"; 
+        window.location.href = "../ACTIVITY1/index.html"; 
         stopSound(outroAudio);
-        speechSynthesis.cancel();
-        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'John’s New School – Simulation Challenge'});
+        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'Problem or Not? – Interactive Quiz'});
     }
 
     function goToNextActivity() {
-        window.location.href = "../ACTIVITY4/index.html";
+        window.location.href = "../ACTIVITY3/index.html";
         stopSound(outroAudio);
-        speechSynthesis.cancel();
-        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'John’s New School – Simulation Challenge'});
+        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'Problem or Not? – Interactive Quiz'});
     }
 
-    function ExitLesson() { 
-        sendEvent(LessonEvent.END_LESSON, {lesssonName: 'How Self-Esteem Contributes to Holistic Development: Lesson 1'});
-    }
-    
+
     function populateStaticContent() {
+        document.querySelector('#start-screen h1').textContent = activityData.title;
         document.getElementById('game-title').textContent = activityData.title;
         document.getElementById('intro-text').innerHTML = activityData.introduction;
         
         const instructionsList = document.getElementById('instructions-list');
-        instructionsList.innerHTML = activityData.instructions.map(item => `<li>${item}</li>`).join('');
+        if (Array.isArray(activityData.instructions)) {
+            instructionsList.innerHTML = activityData.instructions.map(item => `<li>${item}</li>`).join('');
+        } else {
+            instructionsList.innerHTML = '';
+        }
 
         const hintList = document.getElementById('hint-list');
-        hintList.innerHTML = activityData.hints.map(item => `<li>${item}</li>`).join('');
+        if (Array.isArray(activityData.hints)) {
+            hintList.innerHTML = activityData.hints.map(item => `<li>${item}</li>`).join('');
+        } else {
+            hintList.innerHTML = '';
+        }
 
         const takeawaysList = document.getElementById('takeaways-list');
-        takeawaysList.innerHTML = activityData.conclusion.takeaways.map(item => `<li>${item}</li>`).join('');
+        if (Array.isArray(activityData.takeaways)) {
+            takeawaysList.innerHTML = activityData.takeaways.map(item => `<li>${item}</li>`).join('');
+        } else {
+            takeawaysList.innerHTML = '';
+        }
 
         document.getElementById('progress-text').textContent = `0 / ${totalScenarios}`;
 
-        const correctBtn = document.querySelector('#feedback-correct-overlay .feedback-btn');
-        correctBtn.onclick = () => closeCorrectFeedbackAndCheck();
-
-        const incorrectBtn = document.querySelector('#feedback-incorrect-overlay .feedback-btn');
-        incorrectBtn.onclick = () => {
-            // Re-enable the button so the user can try again
-            const incorrectButton = document.querySelector('.option-button.incorrect:disabled');
-            if (incorrectButton) {
-                incorrectButton.disabled = false;
-            }
-            closeModal('feedback-incorrect-overlay');
-        };
+        document.querySelector('#feedback-correct-overlay .feedback-btn').onclick = () => closeModal('feedback-correct-overlay');
+        document.querySelector('#feedback-incorrect-overlay .feedback-btn').onclick = () => closeModal('feedback-incorrect-overlay');
     }
 
     window.onload = () => { initAudio(); populateStaticContent(); };

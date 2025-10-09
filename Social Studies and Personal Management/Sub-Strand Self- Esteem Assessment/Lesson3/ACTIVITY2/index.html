@@ -502,7 +502,7 @@
 <div id="game-wrapper">
     <div id="game-container">
         <div id="start-screen" class="screen">
-            <h1>John’s New School</h1>
+            <h1>Wafula's Choice</h1>
             <button class="start-button" onclick="showActivityIntro();">Start Activity</button>
         </div>
 
@@ -588,7 +588,7 @@
             <div class="modal feedback-modal">
                 <div class="feedback-header correct" style="justify-content:center;">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--correct-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:2rem;height:2rem;margin-right:0.5rem;vertical-align:middle;display:inline-block;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                    <h2 style="margin:0;align-self:center;text-align:center;">Correct!</h2>
+                    <h2 style="margin:0;align-self:center;text-align:center;">Good Choice!</h2>
                 </div>
                 <div id="correct-feedback-text"></div>
                 <button class="feedback-btn correct">Continue</button>
@@ -610,60 +610,62 @@
 
 <script>
     const activityData = {
-        title: "John’s New School",
-        introduction: "John has joined a new school. Because of his height and voice, he feels different and isolated. In this activity, you will decide his actions and see how each choice shapes his self-esteem.",
+        title: "Wafula’s Choice",
+        introduction: "Wafula is the School President. In this activity, you will face different situations with him. You will decide how he responds and see how each decision reflects his self-esteem.",
         instructions: [
-            "Read the situation John is in carefully.",
-            "Choose the action you think is best for him.",
-            "Observe how your choice affects his confidence and friendships.",
-            "You must find all correct options to move to the next scenario."
+            "Read each scenario and question carefully.",
+            "Choose Wafula’s response.",
+            "Observe the outcome and reflect on the self-esteem value demonstrated.",
+            "You must find all the positive choices (marked) to move to the next scenario."
         ],
         hints: [
-            "Would hiding from people solve his problem or make it worse?",
-            "Could one kind friend make a difference?",
-            "What happens when you join groups with shared interests?"
+            "Confidence means saying no respectfully when needed.",
+            "Healthy self-esteem honours personal values.",
+            "Assertiveness is expressing yourself clearly and respectfully.",
+            "Leaders maintain integrity even under pressure."
         ],
         conclusion: {
-            voiceOver: "John’s story shows that every decision shapes how confident you feel. Support, courage, and belonging are powerful builders of self-esteem.",
+            voiceOver: "Wafula’s story shows that healthy self-esteem is about making honest choices, staying true to values, expressing yourself clearly, and building positive relationships with others.",
             takeaways: [
-                "Making proactive choices, like greeting someone, builds confidence.",
-                "Contributing your ideas in a group helps you feel valued and builds self-worth.",
-                "Joining groups with shared interests is a great way to make friends and feel a sense of belonging.",
-                "Avoiding social situations or being passive can increase feelings of isolation."
+                "Assertiveness allows you to politely say no while maintaining respect.",
+                "Maintaining integrity, especially under pressure, is a key leadership quality.",
+                "Confidence is built by preparing well and believing in your abilities.",
+                "Making choices aligned with your personal values builds healthy self-esteem."
             ]
         },
         scenarios: [
             {
-                title: "Scenario 1: First Break Time",
-                story: "It's the first break time at the new school. John feels anxious and alone as students gather in groups, laughing and talking.",
-                question: "What should John do?",
+                title: "Scenario 1: The Party Invitation",
+                story: "Wafula is invited to a late-night party where alcohol will be present.",
+                question: "How should Wafula respond to the invitation?",
                 options: [
-                    { text: "Avoids others and eats alone.", outcome: "John feels more isolated.", feedback: "Not correct. Avoiding others deepens isolation and prevents new friendships.", isCorrect: false },
-                    { text: "Greets a classmate confidently.", outcome: "The classmate responds kindly, John feels noticed.", feedback: "Correct. Greeting a classmate builds confidence and connection.", isCorrect: true },
-                    { text: "Joins a game without asking.", outcome: "John is rejected and feels embarrassed.", feedback: "Not correct. Joining without asking can feel forceful and may lead to rejection.", isCorrect: false },
-                    { text: "Waits quietly hoping to be invited.", outcome: "Nobody approaches, John feels invisible.", feedback: "Not correct. Waiting passively leaves John feeling ignored.", isCorrect: false }
+                    { text: "Say no and explain politely", outcome: "Wafula keeps his values, friends respect him.", value: "Assertiveness", isCorrect: true },
+                    { text: "Say yes to fit in", outcome: "Wafula feels uncomfortable and loses confidence.", value: "Fear of rejection", isCorrect: false },
+                    { text: "Avoid conversation", outcome: "Wafula misses a chance to explain himself.", value: "Avoidance", isCorrect: false },
+                    { text: "Suggest a different positive activity", outcome: "Wafula shows leadership by offering an alternative.", value: "Confidence and Creativity", isCorrect: true },
+                    { text: "Get angry and shout", outcome: "Wafula damages relationships and loses respect.", value: "Poor emotional control", isCorrect: false }
                 ]
             },
             {
-                title: "Scenario 2: Class Group Work",
-                story: "During a science class, the teacher puts John into a group for a project. He feels nervous about sharing his thoughts with strangers.",
-                question: "How should John participate?",
+                title: "Scenario 2: Exam Pressure",
+                story: "During an exam, Wafula’s friend whispers and asks him to share answers.",
+                question: "What is the best way for Wafula to respond?",
                 options: [
-                    { text: "Refuses to participate.", outcome: "The group struggles without his input, John feels useless.", feedback: "Not correct. Refusing to participate lowers self-esteem and teamwork.", isCorrect: false },
-                    { text: "Offers to share his ideas.", outcome: "The group listens, and John gains confidence.", feedback: "Correct. Sharing ideas shows contribution and builds confidence.", isCorrect: true },
-                    { text: "Copies others silently.", outcome: "The work is done, but John feels he added nothing.", feedback: "Not correct. Copying prevents growth and lowers self-worth.", isCorrect: false },
-                    { text: "Complains that nobody includes him.", outcome: "The group feels annoyed, and tension increases.", feedback: "Not correct. Complaining without action causes conflict instead of solutions.", isCorrect: false }
+                    { text: "Refuse politely and focus on his work", outcome: "Wafula protects honesty and sets a good example.", value: "Integrity", isCorrect: true },
+                    { text: "Share answers to please his friend", outcome: "Wafula compromises fairness and risks punishment.", value: "Dishonesty", isCorrect: false },
+                    { text: "Encourage friend to try his best", outcome: "Wafula supports his friend positively.", value: "Empathy and Encouragement", isCorrect: true },
+                    { text: "Ignore the friend completely", outcome: "Wafula avoids trouble but misses a chance to guide.", value: "Indifference", isCorrect: false }
                 ]
             },
             {
-                title: "Scenario 3: After-School Clubs",
-                story: "The school is holding an after-school clubs fair. John sees many options like sports, music, and art, but is hesitant to join.",
-                question: "What is the best way for John to connect with others?",
+                title: "Scenario 3: Class Presentation",
+                story: "Wafula is asked to present a class project but feels nervous.",
+                question: "How should Wafula handle the class presentation?",
                 options: [
-                    { text: "Joins a music club to meet new friends.", outcome: "John meets new friends with shared interests.", feedback: "Correct. Joining a club helps John build belonging and new friendships.", isCorrect: true },
-                    { text: "Avoids all clubs.", outcome: "John misses opportunities to connect.", feedback: "Not correct. Avoiding clubs increases loneliness.", isCorrect: false },
-                    { text: "Chooses a club only to impress others.", outcome: "John feels unhappy and unmotivated.", feedback: "Not correct. Pretending for approval does not build self-esteem.", isCorrect: false },
-                    { text: "Visits different clubs before choosing.", outcome: "John finds the best fit for him.", feedback: "Correct. Exploring options first shows confidence and wise choices.", isCorrect: true }
+                    { text: "Prepare well and present confidently", outcome: "Wafula shows courage and belief in himself.", value: "Confidence", isCorrect: true },
+                    { text: "Refuse to present and stay quiet", outcome: "Wafula loses a chance to build confidence.", value: "Fear", isCorrect: false },
+                    { text: "Ask a friend to present with him", outcome: "Wafula manages nervousness while still participating.", value: "Teamwork", isCorrect: true },
+                    { text: "Make excuses and leave", outcome: "Wafula avoids responsibility and respect decreases.", value: "Avoidance", isCorrect: false }
                 ]
             }
         ]
@@ -702,7 +704,7 @@
         document.getElementById('question-text').textContent = scenario.question;
         
         optionsContainer.innerHTML = '';
-        const optionLabels = ['A', 'B', 'C', 'D'];
+        const optionLabels = ['A', 'B', 'C', 'D', 'E'];
 
         scenario.options.forEach((optionData, index) => {
             const button = document.createElement('button');
@@ -723,7 +725,7 @@
         const feedbackMessage = `
             <p style="text-align:left; font-size: 1.1rem;"><strong>Outcome:</strong> ${optionData.outcome}</p>
             <hr style="margin: 1rem 0;">
-            <p style="text-align:left; font-size: 1.1rem;">${optionData.feedback}</p>
+            <p style="text-align:left; font-size: 1.1rem;"><strong>Value Demonstrated:</strong> ${optionData.value}</p>
         `;
 
         if (isCorrect) {
@@ -748,7 +750,7 @@
             } else {
                 endActivity();
             }
-        }, 500);
+        }, 300);
     }
     
     function updateProgress() {
@@ -767,7 +769,7 @@
         document.getElementById('game-screen').classList.remove('hidden');
         document.getElementById('activity-intro-overlay').classList.remove('hidden');
         playSound(introAudio);
-        sendEvent(ActivityEvent.START_ACTIVITY, {activityName: 'John’s New School – Simulation Challenge'});
+        sendEvent(ActivityEvent.START_ACTIVITY, {activityName: 'Wafula’s Choice – Role-Play Simulator'});
     }
 
     function showInstructions() { document.getElementById('instructions-overlay').classList.remove('hidden'); }
@@ -777,7 +779,7 @@
     function showTakeaways() {
         stopSound(outroAudio);
         document.getElementById('takeaways-overlay').classList.remove('hidden');
-        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'John’s New School – Simulation Challenge'});
+        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'Wafula’s Choice – Role-Play Simulator'});
     }
 
     function closeModal(id) {
@@ -813,7 +815,6 @@
     
     function restartGame() {
         stopSound(outroAudio);
-        speechSynthesis.cancel();
         document.getElementById('completion-overlay').classList.add('hidden');
         document.getElementById('takeaways-overlay').classList.add('hidden');
         currentScenarioIndex = 0;
@@ -823,17 +824,15 @@
     }
 
     function goToPreviousActivity() { 
-        window.location.href = "../ACTIVITY2/index.html"; 
+        window.location.href = "../ACTIVITY1/index.html"; 
         stopSound(outroAudio);
-        speechSynthesis.cancel();
-        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'John’s New School – Simulation Challenge'});
+        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'Wafula’s Choice – Role-Play Simulator'});
     }
 
     function goToNextActivity() {
-        window.location.href = "../ACTIVITY4/index.html";
+        window.location.href = "../ACTIVITY3/index.html";
         stopSound(outroAudio);
-        speechSynthesis.cancel();
-        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'John’s New School – Simulation Challenge'});
+        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'Wafula’s Choice – Role-Play Simulator'});
     }
 
     function ExitLesson() { 
@@ -841,7 +840,8 @@
     }
     
     function populateStaticContent() {
-        document.getElementById('game-title').textContent = activityData.title;
+        document.querySelector('#start-screen h1').textContent = activityData.title;
+        document.getElementById('game-title').textContent = "Wafula's Choice";
         document.getElementById('intro-text').innerHTML = activityData.introduction;
         
         const instructionsList = document.getElementById('instructions-list');

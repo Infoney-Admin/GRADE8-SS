@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Social Challenge Simulator</title>
+    <title>Body Language Decoder – Hotspot Game</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -195,7 +195,7 @@
         
         #instructions-overlay .modal { border-top: 8px solid var(--primary-color); }
         #instructions-overlay .modal h2 { color: var(--primary-color); }
-        #instructions-overlay .modal ol { text-align: left; padding-left: 2rem; font-size: 1.2rem; }
+        #instructions-overlay ol, #instructions-overlay ul { text-align: left; padding-left: 2rem; font-size: 1.2rem; list-style-type: none; }
 
         #hint-overlay .modal { border-top: 8px solid var(--secondary-color); }
         #hint-overlay .modal h2 { 
@@ -215,15 +215,12 @@
         #hint-overlay button { background-color: var(--secondary-color); }
 
         /* Feedback Modals */
-        .feedback-modal { max-width: 520px; } /* Increased width for more content */
+        .feedback-modal { max-width: 520px; }
         .feedback-header { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem; }
-        .feedback-header h2 { font-size: 2rem; font-weight: 700; }
+        .feedback-header h2 { font-size: 2rem; font-weight: 600; }
         .feedback-header.correct h2 { color: var(--correct-color); }
-        .feedback-header.incorrect h2 { color: var(--incorrect-color); }
         .feedback-btn.correct { background-color: var(--correct-color); }
-        .feedback-btn.incorrect { background-color: var(--incorrect-color); }
         #feedback-correct-overlay .modal { border-top: 8px solid var(--correct-color); }
-        #feedback-incorrect-overlay .modal { border-top: 8px solid var(--incorrect-color); }
 
         /* ===== COMPLETION SCREEN ===== */
         #completion-overlay { 
@@ -306,15 +303,13 @@
             width: 1.2rem;
             height: 1.2rem;
             background: none;
-            /* SVG checkmark as background-image */
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%235cb85c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 10.8 17 4 10.8"/></svg>');
             background-size: 1.2rem 1.2rem;
             background-repeat: no-repeat;
             background-position: center;
         }
         
-        .end-lesson-btn
-        {
+        .end-lesson-btn {
             background: var(--secondary-color);
             font-family: var(--header-font);
             color: #fff;
@@ -341,122 +336,110 @@
             flex: 1; padding: 1rem 2rem; overflow: auto; display: flex;
             justify-content: center; align-items: center; margin-top: 0;
         }
-        .scenario-container {
-            display: flex; gap: 2rem; align-items: center; width: 100%;
-            max-width: 80rem; padding: 1rem; background: #fff;
-            border-radius: var(--border-radius); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            opacity: 1; transition: opacity 0.3s ease-in-out; height: 55vh;
-        }
-        .scenario-container.fade-out { opacity: 0; }
-        
-        .scenario-details { flex: 1 1 50%; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
-        .scenario-story { font-size: 1.3rem; color: #444; line-height: 1.7; background: #f8f9fa; border-left: 0.25rem solid var(--primary-color); padding: 1.5rem; border-radius: 0.8rem; text-align: left; width: 100%; }
-        
-        .question-section {
-            flex: 1 1 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            background-color: #f2f0f5;
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            height: 50vh;
-            overflow-y: auto;
-        }
-        .question-section h3 { font-family: var(--header-font); color: var(--text-color-dark); font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center; font-weight: 500;}
-        
-        .options-container { display: flex; flex-direction: column; gap: 1rem; width: 100%; max-width: 450px; }
-        .option-button {
-            background: #fff; border: 2px solid #ddd; border-radius: 1rem; padding: 1.2rem; cursor: pointer;
-            transition: all 0.3s ease; font-size: 1.2rem; color: var(--text-color-dark); font-weight: 700;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05); text-align: left;
-        }
-        .option-button:hover:not(:disabled) { transform: translateY(-3px); border-color: var(--primary-color); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
-        .option-button.selected {
-            border-color: var(--secondary-color);
-            background-color: #fffaf0;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(251, 176, 59, 0.2);
-        }
-        .option-button.correct { background: var(--correct-color); color: white; border-color: #fff; transform: scale(1.02); }
-        .option-button.incorrect { background: var(--incorrect-color); color: white; animation: shake 0.5s; }
-        .option-button:disabled { cursor: not-allowed; opacity: 0.7; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
 
+        /* ===== NEW ACTIVITY 4 STYLES ===== */
+        .activity-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            gap: 2rem;
+            align-items: center;
+            justify-content: center;
+        }
+        .text-panel {
+            flex: 0 0 40%;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            border-left: 5px solid var(--primary-color);
+        }
+        .text-panel h3 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-family: var(--header-font);
+        }
+        .text-panel p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        #characters-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            height: 100%;
+            padding: 1rem;
+        }
+        .character-card {
+            position: relative;
+            background-color: #e9ecef;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 3px solid transparent;
+            height: 24vh;
+
+        }
+        .character-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(93, 4, 178, 0.2);
+        }
+        .character-card.viewed {
+            border-color: var(--correct-color);
+        }
+        .character-image {
+            width: 100%;
+            height: 100%;
+            object-fit: fill;
+        }
+        .character-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 0.75rem;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
         /* ===== Glowing Pulsating Effect Keyframes ====== */
         @keyframes glow-pulse { 0%, 100% { box-shadow: 0 0 10px rgba(251,176,59,0.5), 0 0 20px rgba(251,176,59,0.3); transform: scale(1); } 50% { box-shadow: 0 0 20px rgba(251,176,59,0.8), 0 0 30px rgba(251,176,59,0.5); transform: scale(1.1); } }
         @keyframes glow-pulse-white { 0%, 100% { box-shadow: 0 0 10px rgba(255,255,255,0.7), 0 0 20px rgba(255,255,255,0.5); transform: scale(1); } 50% { box-shadow: 0 0 20px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.7); transform: scale(1.1); } }
 
         /* ===== RESPONSIVE DESIGN ===== */
-        @media screen and (min-width: 1400px) {
-            .scenario-story{
-                font-size: 1.8rem;
+        @media(max-width: 1400px) {
+            .character-card{
+                height: 24vh;
             }
         }
-        @media(min-width: 1200px) and (max-width:1399px) { 
-            .question-section {
-                height: 50vh;
-                overflow-y: auto;
-            }
-            .scenario-story {
-                font-size: 1.8rem;
-                color: #444;
-                line-height: 2;
-                background: #f8f9fa;
-                border-left: 0.25rem solid var(--primary-color);
-                padding: 1.5rem;
-                border-radius: 0.8rem;
-                text-align: left;
-                width: 100%;
+        @media (max-width: 1199px) { html { font-size: 2.5vmin; } }
+        @media (max-width: 1024px) { 
+            #game-wrapper { width: 100vw; height: 100vh; border-radius: 0; aspect-ratio: unset; } 
+            .text-panel { flex: 0 0 auto; width: 40%; text-align: center; }
+            #characters-container { width: 90%; }
+            .character-card {
                 height: 30vh;
             }
-        }
-
-        @media (max-width: 1199px) {html { font-size: 2.5vmin; } }
-        @media (max-width: 1024px) {#game-wrapper { width: 100vw; height: 100vh; border-radius: 0; aspect-ratio: unset; }
-            .question-section{
-                height: 50vh;
-                overflow-y: auto;
-            }
         } 
- 
         @media (max-width: 991px) {
             html{ font-size: 3vmin; }
-            .scenario-container { height: auto; max-height: 100%; overflow-y: auto; padding: 1.5rem; }
-       
             .completion-buttons { align-items: center; }
-            .completion-title-banner{
-                top:1%;
-            }
-            .completion-image {
-                width: 57%;
-            }
-            .options-container {
-                display: grid;      
-                flex-direction: column;
-                gap: 1rem;
-                width: 100%;
-                max-width: 100vw;
-                grid-template-columns: repeat(2, auto);
-                height: 45vh;
-                justify-items: flex-start;
-                overflow-y: auto;
-            }
-            .option-button {
-                width: 100%;
-            }
-            .question-section {
-                height: 65vh;
-                overflow-y: auto;
-            }
-            #completion-image {
-                max-width: 60%;
-            }
+            .completion-title-banner{ top:1%; }
+            #completion-image { width: 57%; }
              #takeaways-overlay .modal {
                 max-width: 80vw;
                 height: 67vh;
                 margin-top: 5rem;
+            }
+            .character-card {
+                width: 22vw;
+                height: 33vh;
             }
         }
         @media (max-width: 768px) {
@@ -464,36 +447,11 @@
             .scenario-title { font-size: 1.8rem; }
             .scenario-content { padding: 1rem; }
             .completion-title-banner { font-size: 1.8rem; }
-            #completion-image { max-width: 66%; }
+            #completion-image { max-width: 85%; }
             .completion-btn { min-width: 155px; }
-            .options-container {
-                display: grid;
-                gap: 1rem;
-                width: 100%;
-                max-width: 100vw;
-                grid-template-columns: repeat(2, auto);
-                height: 45vh;
-                justify-items: flex-start;
-                overflow-y: auto;
-            }
-            .question-section h3{
-                font-size: 1.2rem;
-            }
-            .question-section {
-                height: 66vh;
-                overflow-y: auto;
-            }
-            .option-button{
-                font-size: 1rem;    
-                padding: 1rem;
-            }
-            .scenario-container{
-                height: 70vh;
-            }
-             #completion-image {
-                max-width: 85%;
-            }
-           
+            #characters-container { gap: 1rem; }
+            .text-panel h3 { font-size: 1.5rem; }
+            .text-panel p { font-size: 1rem; }
         }
     </style>
 </head>
@@ -502,35 +460,34 @@
 <div id="game-wrapper">
     <div id="game-container">
         <div id="start-screen" class="screen">
-            <h1>John’s New School</h1>
+            <h1>Body Language Decoder</h1>
             <button class="start-button" onclick="showActivityIntro();">Start Activity</button>
         </div>
 
         <div id="game-screen" class="screen hidden">
             <div class="game-top-section">
-                <h1 id="game-title">Simulation Challenge</h1>
+                <h1 id="game-title">Body Language Decoder</h1>
                 <div class="top-right-controls">
                     <div id="progress-container">
                         <div id="progress-bar"></div>
                     </div>
-                    <span id="progress-text">0 / 3</span>
+                    <span id="progress-text">0 / 4</span>
                     <div class="instructions-icon" onclick="showInstructions()">
                         <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
                     </div>
                 </div>
             </div>
 
-            <h2 class="scenario-title" id="scenario-title"></h2>
+            <h2 class="scenario-title" id="scenario-title">Click a character to see what their body language reveals.</h2>
             
             <div class="scenario-content">
-                <div class="scenario-container" id="scenario-container">
-                    <div class="scenario-details">
-                        <p class="scenario-story" id="scenario-story-text"></p>
+                <div class="activity-container">
+                     <div class="text-panel">
+                        <h3>Decode Their Body Language</h3>
+                        <p>Click on each character to analyze their posture, gestures, and expressions. What do they tell you about their self-esteem?</p>
                     </div>
-                    <div class="question-section">
-                        <h3 id="question-text"></h3>
-                        <div class="options-container" id="options-container"></div>
-                    </div>
+                    <div id="characters-container">
+                        </div>
                 </div>
             </div>
             
@@ -545,7 +502,7 @@
             <div class="completion-buttons">
                 <button class="completion-btn btn-prev" onclick="goToPreviousActivity()">Previous Activity</button>
                 <button class="completion-btn btn-restart" onclick="restartGame()">Restart Activity</button>
-                <button class="completion-btn btn-next" onclick="goToNextActivity()">Next Activity</button>
+                <button class="completion-btn btn-next" onclick="showTakeaways()">Key Takeaways</button>
             </div>
         </div>
         
@@ -570,8 +527,8 @@
 
         <div id="instructions-overlay" class="overlay hidden">
             <div class="modal">
-                <h2>Instructions</h2>
-                <ol id="instructions-list"></ol>
+                <h2>Learner Instructions</h2>
+                <ul id="instructions-list"></ul>
                 <button onclick="closeModal('instructions-overlay')">Got it!</button>
             </div>
         </div>
@@ -586,23 +543,11 @@
         
         <div id="feedback-correct-overlay" class="overlay hidden">
             <div class="modal feedback-modal">
-                <div class="feedback-header correct" style="justify-content:center;">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--correct-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:2rem;height:2rem;margin-right:0.5rem;vertical-align:middle;display:inline-block;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                    <h2 style="margin:0;align-self:center;text-align:center;">Correct!</h2>
+                <div class="feedback-header correct">
+                    <h2 id="feedback-header-text"></h2>
                 </div>
                 <div id="correct-feedback-text"></div>
-                <button class="feedback-btn correct">Continue</button>
-            </div>
-        </div>
-        
-        <div id="feedback-incorrect-overlay" class="overlay hidden">
-            <div class="modal feedback-modal">
-                <div class="feedback-header incorrect" style="justify-content:center;">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--incorrect-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:2rem;height:2rem;margin-right:0.5rem;vertical-align:middle;display:inline-block;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-                    <h2 style="margin:0;align-self:center;text-align:center;">Not Quite</h2>
-                </div>
-                <div id="incorrect-feedback-text"></div>
-                <button class="feedback-btn incorrect">Try Again</button>
+                <button class="feedback-btn correct" onclick="closeFeedbackAndContinue()">Continue</button>
             </div>
         </div>
     </div>
@@ -610,79 +555,67 @@
 
 <script>
     const activityData = {
-        title: "John’s New School",
-        introduction: "John has joined a new school. Because of his height and voice, he feels different and isolated. In this activity, you will decide his actions and see how each choice shapes his self-esteem.",
+        title: "Body Language Decoder",
+        introduction: "Body language often speaks louder than words. In this activity, you will explore characters’ postures and gestures to see what they reveal about self-esteem.",
         instructions: [
-            "Read the situation John is in carefully.",
-            "Choose the action you think is best for him.",
-            "Observe how your choice affects his confidence and friendships.",
-            "You must find all correct options to move to the next scenario."
+            "Click on each character’s body language hotspot.",
+            "Read the explanation of what it reveals about their self-esteem."
         ],
         hints: [
-            "Would hiding from people solve his problem or make it worse?",
-            "Could one kind friend make a difference?",
-            "What happens when you join groups with shared interests?"
+            "Does the character look relaxed and open, or closed and nervous?",
+            "Eye contact often shows confidence.",
+            "Gestures such as crossed arms may show discomfort."
         ],
         conclusion: {
-            voiceOver: "John’s story shows that every decision shapes how confident you feel. Support, courage, and belonging are powerful builders of self-esteem.",
+            voiceOver: "You have decoded how self-esteem shows through body language. By observing others — and yourself — you can strengthen confidence in social interactions.",
             takeaways: [
-                "Making proactive choices, like greeting someone, builds confidence.",
-                "Contributing your ideas in a group helps you feel valued and builds self-worth.",
-                "Joining groups with shared interests is a great way to make friends and feel a sense of belonging.",
-                "Avoiding social situations or being passive can increase feelings of isolation."
+                "Healthy self-esteem shows in eye contact, assertiveness, and open body language.",
+                "Low self-esteem may appear as avoidance, apologising too much, or fear of speaking up.",
+                "Self-assessment helps you notice your patterns and guide personal growth.",
+                "Positive affirmations and journaling are practical tools for building awareness and confidence."
             ]
         },
-        scenarios: [
+        characters: [
             {
-                title: "Scenario 1: First Break Time",
-                story: "It's the first break time at the new school. John feels anxious and alone as students gather in groups, laughing and talking.",
-                question: "What should John do?",
-                options: [
-                    { text: "Avoids others and eats alone.", outcome: "John feels more isolated.", feedback: "Not correct. Avoiding others deepens isolation and prevents new friendships.", isCorrect: false },
-                    { text: "Greets a classmate confidently.", outcome: "The classmate responds kindly, John feels noticed.", feedback: "Correct. Greeting a classmate builds confidence and connection.", isCorrect: true },
-                    { text: "Joins a game without asking.", outcome: "John is rejected and feels embarrassed.", feedback: "Not correct. Joining without asking can feel forceful and may lead to rejection.", isCorrect: false },
-                    { text: "Waits quietly hoping to be invited.", outcome: "Nobody approaches, John feels invisible.", feedback: "Not correct. Waiting passively leaves John feeling ignored.", isCorrect: false }
-                ]
+                name: "Confident",
+                image: "images/Confident.jpg",
+                bodyLanguage: "Eye contact, open arms",
+                explanation: "This shows comfort, openness, and healthy self-esteem."
             },
             {
-                title: "Scenario 2: Class Group Work",
-                story: "During a science class, the teacher puts John into a group for a project. He feels nervous about sharing his thoughts with strangers.",
-                question: "How should John participate?",
-                options: [
-                    { text: "Refuses to participate.", outcome: "The group struggles without his input, John feels useless.", feedback: "Not correct. Refusing to participate lowers self-esteem and teamwork.", isCorrect: false },
-                    { text: "Offers to share his ideas.", outcome: "The group listens, and John gains confidence.", feedback: "Correct. Sharing ideas shows contribution and builds confidence.", isCorrect: true },
-                    { text: "Copies others silently.", outcome: "The work is done, but John feels he added nothing.", feedback: "Not correct. Copying prevents growth and lowers self-worth.", isCorrect: false },
-                    { text: "Complains that nobody includes him.", outcome: "The group feels annoyed, and tension increases.", feedback: "Not correct. Complaining without action causes conflict instead of solutions.", isCorrect: false }
-                ]
+                name: "Shy",
+                image: "images/Shy.jpg",
+                bodyLanguage: "Looking down, arms crossed",
+                explanation: "This shows self-doubt, discomfort, and lack of confidence."
             },
             {
-                title: "Scenario 3: After-School Clubs",
-                story: "The school is holding an after-school clubs fair. John sees many options like sports, music, and art, but is hesitant to join.",
-                question: "What is the best way for John to connect with others?",
-                options: [
-                    { text: "Joins a music club to meet new friends.", outcome: "John meets new friends with shared interests.", feedback: "Correct. Joining a club helps John build belonging and new friendships.", isCorrect: true },
-                    { text: "Avoids all clubs.", outcome: "John misses opportunities to connect.", feedback: "Not correct. Avoiding clubs increases loneliness.", isCorrect: false },
-                    { text: "Chooses a club only to impress others.", outcome: "John feels unhappy and unmotivated.", feedback: "Not correct. Pretending for approval does not build self-esteem.", isCorrect: false },
-                    { text: "Visits different clubs before choosing.", outcome: "John finds the best fit for him.", feedback: "Correct. Exploring options first shows confidence and wise choices.", isCorrect: true }
-                ]
+                name: "Assertive",
+                image: "images/Assertive.jpg",
+                bodyLanguage: "Calm face, hands on hips",
+                explanation: "This shows confidence balanced with respect."
+            },
+            {
+                name: "Nervous",
+                image: "images/Nervous.jpg",
+                bodyLanguage: "Fidgeting, avoiding gaze",
+                explanation: "This shows anxiety, fear, and low self-esteem."
             }
         ]
     };
 
-    let currentScenarioIndex = 0;
-    const totalScenarios = activityData.scenarios.length;
-    let introAudio, dingAudio, buzzAudio, outroAudio;
+    let viewedCharacters = new Set();
+    let totalCharacters;
+    let introAudio, dingAudio, outroAudio;
 
     function initAudio() {
         try {
             introAudio = new Audio('audio/intro.mp3');
             dingAudio = new Audio('audio/ding.mp3');
-            buzzAudio = new Audio('audio/buzz.mp3');
             outroAudio = new Audio('audio/outro.mp3');
         } catch (e) {
             console.warn("Audio could not be loaded.");
             const mockAudio = { play: () => {}, pause: () => {}, currentTime: 0 };
-            introAudio = dingAudio = buzzAudio = outroAudio = mockAudio;
+            introAudio = dingAudio = outroAudio = mockAudio;
         }
     }
 
@@ -690,76 +623,51 @@
     function stopSound(audio) { if(audio) { audio.pause(); } }
 
     function initGame() {
-        loadScenario();
+        renderCharacters();
     }
     
-    function loadScenario() {
-        const scenario = activityData.scenarios[currentScenarioIndex];
-        const optionsContainer = document.getElementById('options-container');
-        
-        document.getElementById('scenario-title').textContent = scenario.title;
-        document.getElementById('scenario-story-text').innerHTML = scenario.story;
-        document.getElementById('question-text').textContent = scenario.question;
-        
-        optionsContainer.innerHTML = '';
-        const optionLabels = ['A', 'B', 'C', 'D'];
+    function renderCharacters() {
+        const container = document.getElementById('characters-container');
+        container.innerHTML = '';
+        activityData.characters.forEach(character => {
+            const card = document.createElement('div');
+            card.className = 'character-card';
+            card.id = `char-${character.name}`;
+            card.onclick = () => showFeedback(character);
 
-        scenario.options.forEach((optionData, index) => {
-            const button = document.createElement('button');
-            button.className = 'option-button';
-            button.innerHTML = `<strong>${optionLabels[index]}.</strong> ${optionData.text}`;
-            button.onclick = () => handleOptionClick(optionData, button);
-            optionsContainer.appendChild(button);
+            const image = document.createElement('img');
+            image.src = character.image;
+            image.alt = character.name;
+            image.className = 'character-image';
+
+            const name = document.createElement('div');
+            name.className = 'character-name';
+            name.textContent = character.name;
+
+            card.appendChild(image);
+            card.appendChild(name);
+            container.appendChild(card);
         });
-        
+    }
+    
+    function showFeedback(character) {
+        if (viewedCharacters.has(character.name)) return;
+
+        playSound(dingAudio);
+        viewedCharacters.add(character.name);
+        document.getElementById(`char-${character.name}`).classList.add('viewed');
         updateProgress();
-    }
-    
-    function handleOptionClick(optionData, clickedButton) {
-        clickedButton.disabled = true;
         
-        const isCorrect = optionData.isCorrect;
+        document.getElementById('feedback-header-text').textContent = character.bodyLanguage;
+        document.getElementById('correct-feedback-text').innerHTML = `<p style="text-align:left; font-size: 1.1rem;">${character.explanation}</p>`;
         
-        const feedbackMessage = `
-            <p style="text-align:left; font-size: 1.1rem;"><strong>Outcome:</strong> ${optionData.outcome}</p>
-            <hr style="margin: 1rem 0;">
-            <p style="text-align:left; font-size: 1.1rem;">${optionData.feedback}</p>
-        `;
-
-        if (isCorrect) {
-            playSound(dingAudio);
-            clickedButton.classList.add('correct');
-            showFeedbackPopup('correct', feedbackMessage);
-        } else {
-            playSound(buzzAudio);
-            clickedButton.classList.add('incorrect');
-            showFeedbackPopup('incorrect', feedbackMessage);
-        }
+        document.getElementById('feedback-correct-overlay').classList.remove('hidden');
     }
 
-    function goToNextScenario() {
-        const container = document.getElementById('scenario-container');
-        container.classList.add('fade-out');
-        setTimeout(() => {
-            if (currentScenarioIndex < totalScenarios - 1) {
-                currentScenarioIndex++;
-                loadScenario();
-                container.classList.remove('fade-out');
-            } else {
-                endActivity();
-            }
-        }, 500);
-    }
-    
     function updateProgress() {
-        const progress = currentScenarioIndex;
-        document.getElementById('progress-bar').style.width = `${(progress / totalScenarios) * 100}%`;
-        document.getElementById('progress-text').textContent = `${progress} / ${totalScenarios}`;
-    }
-
-    function showFeedbackPopup(type, message) {
-        document.getElementById(`${type}-feedback-text`).innerHTML = message;
-        document.getElementById(`feedback-${type}-overlay`).classList.remove('hidden');
+        const progress = viewedCharacters.size;
+        document.getElementById('progress-bar').style.width = `${(progress / totalCharacters) * 100}%`;
+        document.getElementById('progress-text').textContent = `${progress} / ${totalCharacters}`;
     }
     
     function showActivityIntro() {
@@ -767,17 +675,17 @@
         document.getElementById('game-screen').classList.remove('hidden');
         document.getElementById('activity-intro-overlay').classList.remove('hidden');
         playSound(introAudio);
-        sendEvent(ActivityEvent.START_ACTIVITY, {activityName: 'John’s New School – Simulation Challenge'});
+        sendEvent(ActivityEvent.START_ACTIVITY, {activityName: 'Body Language Decoder'});
     }
 
     function showInstructions() { document.getElementById('instructions-overlay').classList.remove('hidden'); }
-    
     function showHint() { document.getElementById('hint-overlay').classList.remove('hidden'); }
-
+    
     function showTakeaways() {
         stopSound(outroAudio);
+        document.getElementById('completion-overlay').classList.add('hidden');
         document.getElementById('takeaways-overlay').classList.remove('hidden');
-        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'John’s New School – Simulation Challenge'});
+        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'Body Language Decoder'});
     }
 
     function closeModal(id) {
@@ -788,60 +696,41 @@
         }
     }
     
-    function closeCorrectFeedbackAndCheck() {
+    function closeFeedbackAndContinue() {
         closeModal('feedback-correct-overlay');
-        
-        const scenario = activityData.scenarios[currentScenarioIndex];
-        const totalCorrectOptions = scenario.options.filter(opt => opt.isCorrect).length;
-        const selectedCorrectOptions = document.querySelectorAll('.option-button.correct').length;
-
-        if (selectedCorrectOptions === totalCorrectOptions) {
-            // Enable all buttons before moving to the next scenario to avoid disabled state on restart
-            document.querySelectorAll('.option-button').forEach(btn => btn.disabled = false);
-            goToNextScenario();
+        if (viewedCharacters.size === totalCharacters) {
+            setTimeout(endActivity, 500);
         }
     }
 
     function endActivity() {
-        document.getElementById('progress-bar').style.width = `100%`;
-        document.getElementById('progress-text').textContent = `${totalScenarios} / ${totalScenarios}`;
         document.getElementById('game-screen').classList.add('hidden');
         document.getElementById('completion-overlay').classList.remove('hidden');
         playSound(outroAudio);
-        
     }
     
     function restartGame() {
         stopSound(outroAudio);
-        speechSynthesis.cancel();
         document.getElementById('completion-overlay').classList.add('hidden');
         document.getElementById('takeaways-overlay').classList.add('hidden');
-        currentScenarioIndex = 0;
+        viewedCharacters.clear();
+        document.querySelectorAll('.character-card').forEach(card => card.classList.remove('viewed'));
+        updateProgress();
         document.getElementById('game-screen').classList.remove('hidden');
-        document.getElementById('scenario-container').classList.remove('fade-out');
-        loadScenario();
     }
 
     function goToPreviousActivity() { 
-        window.location.href = "../ACTIVITY2/index.html"; 
+        window.location.href = "../ACTIVITY3/index.html"; 
         stopSound(outroAudio);
-        speechSynthesis.cancel();
-        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'John’s New School – Simulation Challenge'});
-    }
-
-    function goToNextActivity() {
-        window.location.href = "../ACTIVITY4/index.html";
-        stopSound(outroAudio);
-        speechSynthesis.cancel();
-        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'John’s New School – Simulation Challenge'});
+        sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'Body Language Decoder'});
     }
 
     function ExitLesson() { 
-        sendEvent(LessonEvent.END_LESSON, {lesssonName: 'How Self-Esteem Contributes to Holistic Development: Lesson 1'});
+        sendEvent(LessonEvent.END_LESSON, {lessonName: 'Assessing Your Self-Esteem in Social Interactions: Lesson 3'});
     }
     
     function populateStaticContent() {
-        document.getElementById('game-title').textContent = activityData.title;
+        totalCharacters = activityData.characters.length;
         document.getElementById('intro-text').innerHTML = activityData.introduction;
         
         const instructionsList = document.getElementById('instructions-list');
@@ -853,20 +742,7 @@
         const takeawaysList = document.getElementById('takeaways-list');
         takeawaysList.innerHTML = activityData.conclusion.takeaways.map(item => `<li>${item}</li>`).join('');
 
-        document.getElementById('progress-text').textContent = `0 / ${totalScenarios}`;
-
-        const correctBtn = document.querySelector('#feedback-correct-overlay .feedback-btn');
-        correctBtn.onclick = () => closeCorrectFeedbackAndCheck();
-
-        const incorrectBtn = document.querySelector('#feedback-incorrect-overlay .feedback-btn');
-        incorrectBtn.onclick = () => {
-            // Re-enable the button so the user can try again
-            const incorrectButton = document.querySelector('.option-button.incorrect:disabled');
-            if (incorrectButton) {
-                incorrectButton.disabled = false;
-            }
-            closeModal('feedback-incorrect-overlay');
-        };
+        document.getElementById('progress-text').textContent = `0 / ${totalCharacters}`;
     }
 
     window.onload = () => { initAudio(); populateStaticContent(); };

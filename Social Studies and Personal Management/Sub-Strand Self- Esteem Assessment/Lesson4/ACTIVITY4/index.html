@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Positive vs Negative Thoughts – Swap Game</title>
+<style>
+    /* ====== FONT IMPORTS ====== */
+    @font-face {
+      font-family: 'Fredoka';
+      src: url('../assets/Fredoka-VariableFont_wdth\,wght.ttf') format('truetype');
+    }
+    ::-webkit-scrollbar{
+        display: none;
+    }
+    
+    /* ====== KEYFRAMES ====== */
+    @keyframes glow-pulse-white {
+      0%, 100% { box-shadow: 0 0 10px rgba(255,255,255,0.7), 0 0 20px rgba(255,255,255,0.5); transform: scale(1); }
+      50% { box-shadow: 0 0 20px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.7); transform: scale(1.1); }
+    }
+    @keyframes glow-pulse {
+        0%, 100% {
+            box-shadow: 0 0 10px rgba(251, 176, 59, 0.5), 0 0 20px rgba(251, 176, 59, 0.3);
+            transform: scale(1);
+        }
+        50% {
+            box-shadow: 0 0 20px rgba(251, 176, 59, 0.8), 0 0 30px rgba(251, 176, 59, 0.5);
+            transform: scale(1.1);
+        }
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideIn { from { transform: translateY(30px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); } }
+    
+    /* ====== ROOT VARIABLES & SCALING ====== */
+    :root {
+      --primary-color: #5D04B2;
+      --secondary-color: #FBB03B;
+      --correct-color: #5cb85c;
+      --incorrect-color: #d9534f;
+      --text-color-dark: #333;
+      --text-color-light: #fff;
+      --border-radius: 1rem;
+      --header-font: 'Fredoka', 'Poppins', sans-serif;
+      --body-font: var(--header-font);
+    }
+    html {
+      font-size: 1.8vmin;
+    }
+    
+    /* Optional global base */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+        width: 100%;
+        height: 100vh;
+        overflow: hidden; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #e6eef7;
+        font-family: var(--body-font);
+    }
+
+    #game-wrapper {
+        width: 100%;
+        max-width: 1200px;
+        height: auto;
+        aspect-ratio: 16 / 9;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+    }
+    
+    #game-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .touch-clone {
+        position: fixed;
+        opacity: 0.9;
+        pointer-events: none;
+        z-index: 9999;
+        transform-origin: center center;
+        transition: transform 0.1s;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+
+    .screen {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        overflow: hidden;
+    }
+
+    .screen.hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(0.95);
+    }
+    
+    /* ===== START SCREEN ===== */
+    #start-screen {
+      color: var(--text-color-light);
+      text-align: center;
+      padding: 2rem;
+      background-image: url('images/gamebg.jpg');
+      background-size: cover;
+      background-position: center;
+      justify-content: center;
+      align-items: center;
+    }
+    #start-screen h1 {
+      color: var(--text-color-light);
+      font-size: 4rem;
+      font-family: var(--header-font);
+      font-weight: 500;
+    }
+    .start-button {
+      font-family: var(--header-font);
+        background: var(--secondary-color);
+        color: var(--text-color-light);
+        font-weight: 500;
+        font-size: 1.2rem;
+        border: 3px solid #fff;
+        border-radius: 4.8rem;
+        padding: 1rem 2rem;
+        margin-top: 1.6rem;
+        cursor: pointer;
+        text-shadow: 0 0.2rem 0 #b88b2a;
+        transition: all 0.2s;
+    }
+    .start-button:hover {
+      transform: scale(1.06);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+    }
+
+    /* ===== GAME SCREEN BASE ===== */
+    #game-screen {
+      justify-content: flex-start;
+      overflow: hidden;
+      position: relative;
+    }
+    .game-top-section {
+        width: 100%;
+        background-color: var(--primary-color);
+        padding: clamp(0.05rem, 1vmin, 0.1rem) clamp(0.25rem, 1.5vmin, 0.65rem);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #fff;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 10;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    #game-title {
+      font-size: clamp(1.8rem, 4vmin, 2.8rem);
+      font-weight: 600;
+      margin: 0;
+      font-family: var(--header-font);
+    }
+    .top-right-controls {
+        display: flex;
+        align-items: center;
+        gap: clamp(0.5rem, 2vw, 1.5rem);
+        padding: clamp(0.25rem, 1vw, 0.75rem);
+        font-size: clamp(0.8rem, 2vw, 1.2rem);
+    }
+    .control-icon {
+      width: 2.5rem; 
+      height: 2.5rem;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 15; 
+      flex-shrink: 0;
+    }
+    .control-icon:hover {
+      background: rgba(255, 255, 255, 0.3); 
+      transform: scale(1.1);
+    }
+    .control-icon svg {
+      width: 1.25rem; 
+      height: 1.25rem; 
+      fill: white;
+    }
+    #instructions-icon {
+        animation: glow-pulse-white 2s infinite;
+    }
+    
+    #progress-container {
+      width: clamp(100px, 20vw, 200px);
+      background-color: rgba(255,255,255,0.3);
+      border-radius: 1rem;
+      height: clamp(15px, 2.5vmin, 20px);
+      border: 2px solid #fff;
+    }
+    #progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #FFFF00;
+      border-radius: 0.8rem;
+      transition: width 0.5s ease;
+    }
+    #progress-text {
+      font-weight: 700; 
+      color: #fff;
+      font-size: clamp(1rem, 2vmin, 1.4rem);
+    }
+    
+    /* ====== HINT ICON ====== */
+    .hint-icon {
+        position: absolute;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        width: 50px;
+        height: 50px;
+        background: var(--secondary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 1001;
+        box-shadow: 0 4px 15px rgba(251, 176, 59, 0.4);
+        animation: glow-pulse 2s infinite ease-in-out;
+        border: 3px solid white;
+    }
+    .hint-icon:hover {
+        animation-play-state: paused;
+        transform: scale(1.1);
+    }
+    .hint-icon svg {
+        fill: white;
+        width: 24px;
+        height: 24px;
+    }
+
+    /* ====== Game Content Layout ====== */
+    .game-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding-top: 4.5rem;
+    }
+
+    #drop-zones-container {
+        flex-grow: 1;
+        padding: clamp(0.75rem, 2vmin, 1.5rem);
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: clamp(0.5rem, 1.5vmin, 1rem);
+        overflow: hidden;
+    }
+    
+    #drag-items-container {
+        flex-shrink: 0;
+        height: 20%;
+        background: linear-gradient(to bottom, #dce8f7, #c1d2e8);
+        box-shadow: inset 0 5px 15px -5px rgba(0,0,0,0.1);
+        padding: clamp(0.75rem, 2vmin, 1.5rem);
+        display: flex;
+        flex-wrap: wrap;
+        gap: clamp(0.5rem, 1.2vmin, 1rem);
+        justify-content: center;
+        align-items: center;
+        overflow-y: auto;
+    }
+
+    /* ====== Drag & Drop Items Styling ====== */
+    .drag-item {
+        color: white;
+        font-weight: 500;
+        border-radius: 50em;
+        padding: clamp(0.6rem, 1.5vmin, 0.8rem) clamp(1.2rem, 2.5vmin, 1.8rem);
+        font-size: clamp(0.9rem, 2.1vmin, 1rem);
+        text-align: center;
+        cursor: grab;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        transition: all 0.2s ease-out;
+        flex-shrink: 0;
+        border: 2px solid rgba(255,255,255,0.5);
+    }
+    /* Unique colors for drag items */
+    .drag-item.color-1 { background-color: #43A047; } /* Green */
+    .drag-item.color-2 { background-color: #1E88E5; } /* Blue */
+    .drag-item.color-3 { background-color: #FB8C00; } /* Orange */
+    .drag-item.color-4 { background-color: #E53935; } /* Red */
+
+    .drag-item:hover {
+        transform: scale(1.07);
+        filter: brightness(1.1);
+    }
+    .drag-item.dragging {
+        opacity: 0.2;
+        cursor: grabbing;
+    }
+    
+    /* Drop Zone Styling */
+    .drop-zone {
+        background: #f0f8ff;
+        border: 3px dashed #a7d9f7;
+        border-radius: 1rem;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        padding: 0.5rem;
+        overflow: hidden;
+    }
+    .drop-zone .object-text {
+        font-size: clamp(1rem, 2.5vmin, 1.4rem);
+        font-weight: 700;
+        color: #2c3e50;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .drop-zone.drag-over {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 5px rgba(255, 170, 0, 0.5);
+        background: #fff0e0;
+    }
+
+    .drop-zone.matched {
+        border-style: solid;
+        border-color: var(--correct-color);
+        background: hsl(120, 80%, 97%);
+        flex-direction: column;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    .drop-zone.matched .object-text {
+        display: block;
+        font-size: clamp(1rem, 2.2vmin, 1.5rem);
+        color: var(--text-color-dark);
+        font-weight: 700;
+        position: absolute;
+        top: 12%;
+        text-decoration: line-through;
+        opacity: 0.5;
+    }
+    .drop-zone.matched .drag-item {
+        background: var(--correct-color);
+        cursor: default;
+        box-shadow: none;
+        transform: none;
+        font-size: clamp(0.9rem, 2vmin, 1.2rem);
+        padding: clamp(0.5rem, 1.2vmin, 0.6rem) clamp(0.7rem, 2.2vmin, 1.5rem);
+    }
+
+
+    /* ===== MODALS & OVERLAYS ===== */
+    .overlay {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.4);
+      backdrop-filter: blur(5px);
+      z-index: 3000;
+      display: flex; justify-content: center; align-items: center;
+      animation: fadeIn 0.3s ease;
+    }
+    .overlay.hidden {
+      display: none; visibility: hidden; opacity: 0;
+    }
+    .modal {
+      background: #fff;
+      padding: 2.5rem;
+      border-radius: 1rem;
+      text-align: center;
+      width: 90%; max-width: 600px;
+      animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .modal h2 {
+      font-size: 1.8rem; font-weight: 600; margin-bottom: 1.5rem; font-family: var(--header-font);
+    }
+    .modal p, .modal li, .modal ul, .modal ol {
+      font-size: 1.2rem; line-height: 1.6; color: var(--text-color-dark); text-align: left;
+    }
+    .modal ul { list-style: none; padding: 0;}
+    #hint-.overlay .modal ul li { padding: 0.8rem; border-radius: 0.5rem; margin-bottom: 0.5rem; list-style: initial; }
+    .modal ul li strong { color: var(--primary-color); }
+    
+    #activity-intro-overlay .modal { border-top: 8px solid var(--primary-color); }
+    #activity-intro-overlay .modal h2 { color: var(--primary-color); }
+    #activity-intro-overlay .modal p { background: #f8f9fa; padding: 1.5rem; border-radius: 0.75rem; border-left: 4px solid var(--primary-color); text-align: center; font-size: 1.3rem;}
+    
+    #instructions-overlay .modal { border-top: 8px solid var(--primary-color); }
+    #instructions-overlay .modal h2 { color: var(--primary-color); }
+    #instructions-overlay .modal ol { padding-left: 2rem; }
+    
+    #hint-overlay .modal { border-top: 8px solid var(--secondary-color);height: 50vh; overflow-y: auto; }
+    #hint-overlay .modal h2 { color: var(--secondary-color); }
+    
+    .feedback-modal { max-width: 480px; }
+    .feedback-header {
+      display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem;
+    }
+    .feedback-header svg {
+        width: 2rem;
+        height: 2rem;
+        flex-shrink: 0;
+    }
+    .feedback-header h2 { font-size: 2rem; font-weight: 700; margin: 0; }
+    .feedback-header.correct h2 { color: var(--correct-color); }
+    .feedback-header.incorrect h2 { color: var(--incorrect-color); }
+    .feedback-btn.correct { background-color: var(--correct-color); }
+    .feedback-btn.incorrect { background-color: var(--incorrect-color); }
+    #feedback-modal-overlay.correct-feedback .modal { border-top: 8px solid var(--correct-color); }
+    #feedback-modal-overlay.incorrect-feedback .modal { border-top: 8px solid var(--incorrect-color); }
+
+    .modal button {
+      width: 100%; padding: 1rem; font-size: 1.2rem; font-weight: 700;
+      border: none; border-radius: 0.75rem; cursor: pointer; color: #fff;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 1rem;
+    }
+    .modal button:hover { transform: scale(1.02); }
+    #activity-intro-overlay button, #instructions-overlay button { background-color: var(--primary-color); }
+    #hint-overlay button { background-color: var(--secondary-color); }
+    
+    /* ===== COMPLETION OVERLAY ===== */
+    #completion-overlay {
+      background-image: url('images/gamebg.jpg'); background-size: cover; background-position: center;
+      color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center;
+      gap: 1rem; padding: 1rem;
+    }
+    .completion-title-banner {
+      font-size: clamp(2rem, 7vmin, 4rem);
+      text-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.2);
+      text-align: center;
+      font-family: var(--header-font);
+      font-weight: 500;
+    }
+    #completion-overlay .modal {
+      background: transparent; box-shadow: none; width: auto; max-width: none;
+      display: flex; justify-content: center; align-items: center;
+      padding: 0; overflow: visible;
+    }
+    #completion-image {
+      width: clamp(400px, 70%, 700px); max-width: 85%; height: auto;
+      border: 3px solid var(--secondary-color);
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      margin-top: 0.5rem;
+    }
+    .completion-buttons {
+        position: static; width: 100%; display: flex; justify-content: space-between;
+        gap: 1rem; padding: 0 2rem 2rem 2rem; box-sizing: border-box;
+        align-items: flex-end; margin-top: 0;
+    }
+    .completion-btn {
+        font-family: var(--header-font); background: var(--secondary-color); color: #fff;
+        font-weight: 500; 
+        font-size: 1.3rem;
+        border: 0.1875rem solid #fff; border-radius: 3rem; 
+        padding: clamp(0.5rem, 1.5vmin, 0.75rem) clamp(1.25rem, 3vmin, 2rem);
+        cursor: pointer; transition: all 0.2s;
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+        text-shadow: 0 0.125rem 0 #b88b2a; text-decoration: none;
+        min-width: 8.75rem; /* 140px */
+    }
+    .completion-btn:hover { transform: scale(1.05); box-shadow: 0 0.5rem 1.25rem rgba(0,0,0,0.2); }
+    
+    /* ===== TAKEAWAYS OVERLAY ===== */
+    #takeaways-overlay {
+        background-image: url(images/gamebg.jpg); flex-direction: column; justify-content: center;
+    }
+    .takeaways-main-header {
+        font-family: var(--header-font); color: white; font-size: 2.5rem;
+        position: absolute; top: 5%; text-align: center; width: 100%;
+        text-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.3);
+    }
+    #takeaways-overlay .modal { max-width: 800px; padding: 2rem; display: flex; flex-direction: column; align-items: center; height: 45vh;
+        overflow-y: auto; margin-top: 3rem;
+    }
+    .takeaways-header { color:var(--primary-color); display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+    .takeaways-header h3 { font-family: var(--header-font); font-size: 1.8rem; color: var(--primary-color); }
+    #takeaways-list { list-style-type: none; padding: 0; width: 100%; }
+    #takeaways-list li {
+        background: none;
+        border-left: none;
+        margin-bottom: 0rem;
+        padding: 1rem 1rem 1rem 2.5rem;
+        border-radius: 0.5rem;
+        font-size: 1.1rem;
+        text-align: left;
+        position: relative;
+    }
+    #takeaways-list li::before {
+        content: '';
+        display: inline-block;
+        position: absolute;
+        left: 0.8rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1.2rem;
+        height: 1.2rem;
+        background: none;
+        /* SVG checkmark as background-image */
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%235cb85c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 10.8 17 4 10.8"/></svg>');
+        background-size: 1.2rem 1.2rem;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    
+    .end-lesson-btn
+    {
+        background: var(--secondary-color);
+        font-family: var(--header-font);
+        color: #fff;
+        font-weight: 500;
+        font-size: 1.3rem;
+        border: 3px solid #fff;
+        border-radius: 3rem;
+        padding: clamp(0.5rem, 1.5vmin, 0.75rem) clamp(1.25rem, 3vmin, 2rem);
+        text-shadow: 0 2px 0 #b88b2a;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        width: auto;
+        min-width: 180px;
+        margin-top: 2rem;
+        cursor: pointer;
+    }
+    .end-lesson-btn:hover { transform: scale(1.06); box-shadow: 0 6px 24px rgba(0,0,0,0.18); }
+
+
+    /* ===== RESPONSIVE DESIGN ===== */
+    @media (min-width: 1400px) {
+      .drag-item{
+        width: 14vw;
+      }
+        
+    }
+    @media (max-width: 1199px) {
+      html { font-size: 2.4vmin; }
+    }
+    @media (max-width: 1024px) {
+        #game-wrapper { width: 100vw !important; height: 100vh !important; border-radius: 0 !important; max-width: none !important; aspect-ratio: unset !important; box-shadow: none; }
+
+    }
+    @media (max-width: 991px) {
+      html { font-size: 3.2vmin; }
+      #completion-image { max-width: 55%; }
+      #hint-overlay .modal { height: 80vh; overflow-y: auto;}
+      #takeaways-overlay .modal {
+        max-width: 70vw;
+        height: 63vh;
+        margin-top: 4rem;
+    }
+    }
+    @media (max-width: 768px) {
+      html { font-size: 3.4vmin; }
+      .completion-title-banner { font-size: 2.8rem; }
+      #completion-image { max-width: 65%; }
+      .completion-buttons {padding: 1rem; align-items: center;}
+      .completion-btn { min-width: 120px; }
+      #drag-items-container { height: 25%; }
+    }
+    @media (max-width: 480px) {
+        html { font-size: 4.2vmin; }
+    }
+</style>
+</head>
+<body>
+<div id="game-wrapper">
+   <div id="game-container">
+       <div id="start-screen" class="screen">
+           <h1>Positive vs Negative Thoughts</h1>
+           <button class="start-button">Start Activity</button>
+       </div>
+
+       <div id="game-screen" class="screen hidden">
+           <div class="game-top-section">
+               <h1 id="game-title">Positive vs Negative Thoughts</h1>
+               <div class="top-right-controls">
+                    <div id="progress-container">
+                        <div id="progress-bar"></div>
+                    </div>
+                    <span id="progress-text">0 / 4</span>
+                    <div class="control-icon" id="instructions-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+                    </div>
+                </div>
+           </div>
+           <div class="game-content">
+              <div id="drop-zones-container"></div>
+              <div id="drag-items-container"></div>
+           </div>
+            <div class="hint-icon" id="hint-icon">
+                <svg viewBox="0 0 24 24">
+                   <path d="M9 21c0 .5.4 1 1 1h4c.6 0 1-.5 1-1v-1H9v1zm3-19C8.1 2 5 5.1 5 9c0 2.4 1.2 4.5 3 5.7V17c0 .5.4 1 1 1h6c.6 0 1-.5 1-1v-2.3c1.8-1.3 3-3.4 3-5.7 0-3.9-3.1-7-7-7z"></path>
+                </svg>
+            </div>
+       </div>
+
+        <div id="activity-intro-overlay" class="overlay hidden">
+           <div class="modal">
+                <h2>Activity Introduction</h2>
+                <p>Negative thoughts weaken self-esteem. In this activity, you will replace them with positive alternatives that build confidence.</p>
+                <button id="close-intro-btn">Continue</button>
+           </div>
+       </div>
+
+        <div id="instructions-overlay" class="overlay hidden">
+            <div class="modal">
+                <h2>Learner Instructions</h2>
+                <p>Drag the correct positive thought from the bottom panel and drop it onto its matching negative thought in the main area.</p>
+                <button id="close-instructions-btn">Got it!</button>
+            </div>
+        </div>
+
+        <div id="hint-overlay" class="overlay hidden">
+            <div class="modal">
+                <h2>Here is a hint</h2>
+                <ul>
+                    <li>Turn ‘I cannot’ into ‘I am learning’.</li>
+                    <li>Think of what you would say to encourage a friend.</li>
+                    <li>A positive thought should sound hopeful and forward-looking.</li>
+                </ul>
+                <button id="close-hint-btn">Got It!</button>
+            </div>
+        </div>
+       
+        <div id="feedback-modal-overlay" class="overlay hidden">
+            <div class="modal feedback-modal">
+                <div class="feedback-header">
+                    <h2 id="feedback-title"></h2>
+                </div>
+                <p id="feedback-modal-text"></p>
+                <button id="next-question-button" class="feedback-btn">Continue</button>
+            </div>
+        </div>
+
+        <div id="completion-overlay" class="overlay hidden">
+            <h2 class="completion-title-banner">Activity Conclusion</h2>
+            <div class="modal">
+                <img id="completion-image" src="images/complete.jpg" alt="Completion celebration" onerror="this.src='https://placehold.co/400x300/7c3aed/ffffff?text=Complete!'; this.onerror=null;">
+            </div>
+            <div class="completion-buttons">
+                <button class="completion-btn" id="previous-activity-btn">Previous Activity</button>
+                <button class="completion-btn" id="restart-activity-btn">Restart Activity</button>
+                <button class="completion-btn" id="show-takeaways-btn">Key Takeaways</button>
+            </div>
+        </div>
+
+        <div id="takeaways-overlay" class="overlay hidden">
+            <h2 class="takeaways-main-header">Lesson Complete</h2>
+            <div class="modal">
+                <div class="takeaways-header">
+                    <h3>Key Takeaways</h3>
+                </div>
+                <ul id="takeaways-list"></ul>
+            </div>
+            <button class="end-lesson-btn" onclick="sendEvent(LessonEvent.END_LESSON, {lessonName: 'Sharing Goals for Self-Improvement in Social Life: Lesson 2'})">Exit Lesson</button>
+        </div>
+   </div>
+</div>
+
+<audio id="intro-audio" src="audio/intro.mp3" preload="auto"></audio>
+<audio id="complete-audio" src="audio/outro.mp3" preload="auto"></audio>
+<audio id="ding-sound" src="audio/ding.mp3" preload="auto"></audio>
+<audio id="buzz-sound" src="audio/buzz.mp3" preload="auto"></audio>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- DOM Elements ---
+    const startScreen = document.getElementById('start-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const startBtn = document.querySelector('.start-button');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const dragItemsContainer = document.getElementById('drag-items-container');
+    const dropZonesContainer = document.getElementById('drop-zones-container');
+
+    // --- Modal & Overlay Elements ---
+    const activityIntroOverlay = document.getElementById('activity-intro-overlay');
+    const instructionsOverlay = document.getElementById('instructions-overlay');
+    const hintOverlay = document.getElementById('hint-overlay');
+    const feedbackModalOverlay = document.getElementById('feedback-modal-overlay');
+    const completionOverlay = document.getElementById('completion-overlay');
+    const takeawaysOverlay = document.getElementById('takeaways-overlay');
+
+    // --- Button Elements ---
+    const closeIntroBtn = document.getElementById('close-intro-btn');
+    const instructionsIcon = document.getElementById('instructions-icon');
+    const closeInstructionsBtn = document.getElementById('close-instructions-btn');
+    const hintIcon = document.getElementById('hint-icon');
+    const closeHintBtn = document.getElementById('close-hint-btn');
+    const nextQuestionBtn = document.getElementById('next-question-button');
+    const restartActivityBtn = document.getElementById('restart-activity-btn');
+    const previousActivityBtn = document.getElementById('previous-activity-btn');
+    const showTakeawaysBtn = document.getElementById('show-takeaways-btn');
+    
+    // --- Feedback Elements ---
+    const feedbackHeader = feedbackModalOverlay.querySelector('.feedback-header');
+    const feedbackTitle = document.getElementById('feedback-title');
+    const feedbackText = document.getElementById('feedback-modal-text');
+
+    // --- Takeaways Elements ---
+    const takeawaysList = document.getElementById('takeaways-list');
+
+    // --- Audio Elements ---
+    const introAudio = document.getElementById('intro-audio');
+    const completeAudio = document.getElementById('complete-audio');
+    const dingSound = document.getElementById('ding-sound');
+    const buzzSound = document.getElementById('buzz-sound');
+
+    // --- SVG Icons ---
+    const icons = {
+        correct: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
+        incorrect: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`
+    };
+
+    // --- Game Data ---
+    const gameData = [
+        { id: "learning", name: "I am learning and improving.", object: "I am not good at this.", feedback: { correct: "Correct. Recognising learning shows growth and builds self-esteem.", incorrect: "Incorrect. Saying you are not good does not allow room for improvement. Try again." }},
+        { id: "try_again", name: "I can try again until I succeed.", object: "I always fail.", feedback: { correct: "Correct. Trying again shows perseverance and builds confidence.", incorrect: "Incorrect. Thinking that you always fail removes hope. Think of a positive way to continue." }},
+        { id: "valuable", name: "I am valuable and worthy of friendship.", object: "Nobody likes me.", feedback: { correct: "Correct. Valuing yourself opens the way to positive relationships.", incorrect: "Incorrect. Believing nobody likes you reduces your worth. Replace it with a thought that affirms your value." }},
+        { id: "practise", name: "I can practise and become confident.", object: "I cannot speak in public.", feedback: { correct: "Correct. Practising builds skill and confidence over time.", incorrect: "Incorrect. Saying you cannot only limits you. Think of practice as the way to confidence." }}
+    ];
+
+    const takeawaysData = [
+        "Self-esteem improves through positive self-talk, realistic goals, and self-care.",
+        "Affirmations reshape negative thoughts into confidence.",
+        "Seeking support shows strength, not weakness.",
+        "High self-esteem boosts productivity, motivation, and happiness."
+    ];
+    
+    // --- Game State ---
+    let completedTasks = 0;
+    const totalTasks = gameData.length;
+    let draggedItem = null;
+    let touchClone = null;
+
+    // --- Core Functions ---
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function initializeGame() {
+        completedTasks = 0;
+        updateProgressBar();
+        loadItems();
+        populateTakeaways();
+    }
+
+    function populateTakeaways() {
+        takeawaysList.innerHTML = '';
+        takeawaysData.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            takeawaysList.appendChild(li);
+        });
+    }
+
+    function loadItems() {
+        dragItemsContainer.innerHTML = '';
+        dropZonesContainer.innerHTML = '';
+
+        let positiveThoughts = shuffleArray([...gameData]); // Draggables
+        let negativeThoughts = [...gameData]; // Dropzones in order
+        const colorClasses = ['color-1', 'color-2', 'color-3', 'color-4'];
+        
+        positiveThoughts.forEach((item, index) => {
+            const dragItem = document.createElement('div');
+            dragItem.className = 'drag-item';
+            dragItem.classList.add(colorClasses[index % colorClasses.length]);
+            dragItem.draggable = true;
+            dragItem.dataset.id = item.id;
+            dragItem.dataset.correctFeedback = item.feedback.correct;
+            dragItem.dataset.incorrectFeedback = item.feedback.incorrect;
+            dragItem.textContent = item.name;
+            addDragListeners(dragItem);
+            dragItemsContainer.appendChild(dragItem);
+        });
+        
+        negativeThoughts.forEach(item => {
+            const dropZone = document.createElement('div');
+            dropZone.className = 'drop-zone';
+            dropZone.dataset.accepts = item.id;
+            dropZone.innerHTML = `<span class="object-text">${item.object}</span>`;
+            addDropListeners(dropZone);
+            dropZonesContainer.appendChild(dropZone);
+        });
+    }
+
+    function addDragListeners(item) {
+        item.addEventListener('dragstart', (e) => {
+            draggedItem = item;
+            setTimeout(() => item.classList.add('dragging'), 0);
+        });
+        item.addEventListener('dragend', () => item.classList.remove('dragging'));
+        
+        let offsetX, offsetY;
+        item.addEventListener('touchstart', (e) => {
+            if (e.cancelable) e.preventDefault();
+            draggedItem = item;
+            const touch = e.touches[0];
+            const rect = item.getBoundingClientRect();
+            offsetX = touch.clientX - rect.left;
+            offsetY = touch.clientY - rect.top;
+            touchClone = item.cloneNode(true);
+            touchClone.classList.add('touch-clone');
+            touchClone.style.width = `${rect.width}px`;
+            touchClone.style.height = `${rect.height}px`;
+            document.body.appendChild(touchClone);
+            moveTouchClone(e);
+            item.classList.add('dragging');
+        }, { passive: false });
+
+        item.addEventListener('touchmove', (e) => {
+            if (!touchClone) return;
+            if (e.cancelable) e.preventDefault();
+            moveTouchClone(e);
+        }, { passive: false });
+
+        item.addEventListener('touchend', (e) => {
+            if (!draggedItem) return;
+            const touch = e.changedTouches[0];
+            let dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+            let dropZone = dropTarget ? dropTarget.closest('.drop-zone') : null;
+            if (dropZone) handleDrop(dropZone);
+            if (touchClone) touchClone.remove();
+            touchClone = null;
+            if (draggedItem) draggedItem.classList.remove('dragging');
+            document.querySelectorAll('.drop-zone.drag-over').forEach(zone => zone.classList.remove('drag-over'));
+        });
+        
+        function moveTouchClone(e) {
+            const touch = e.touches[0];
+            touchClone.style.left = `${touch.clientX - offsetX}px`;
+            touchClone.style.top = `${touch.clientY - offsetY}px`;
+            let elementUnder = document.elementFromPoint(touch.clientX, touch.clientY);
+            let dropZoneUnder = elementUnder ? elementUnder.closest('.drop-zone') : null;
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.classList.toggle('drag-over', zone === dropZoneUnder && !zone.classList.contains('matched'));
+            });
+        }
+    }
+
+    function addDropListeners(zone) {
+        zone.addEventListener('dragover', e => {
+            e.preventDefault();
+            if (!zone.classList.contains('matched')) zone.classList.add('drag-over');
+        });
+        zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+        zone.addEventListener('drop', e => {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+            handleDrop(zone);
+        });
+    }
+
+    function handleDrop(zone) {
+        if (!draggedItem || zone.classList.contains('matched')) return;
+        const isCorrect = draggedItem.dataset.id === zone.dataset.accepts;
+        if (isCorrect) {
+            completedTasks++;
+            updateProgressBar();
+            zone.appendChild(draggedItem);
+            zone.classList.add('matched');
+            draggedItem.draggable = false;
+            draggedItem.style.cursor = 'default';
+            showFeedback(true, draggedItem.dataset.correctFeedback);
+        } else {
+            showFeedback(false, draggedItem.dataset.incorrectFeedback);
+        }
+    }
+
+    function updateProgressBar() {
+        const percentage = (completedTasks / totalTasks) * 100;
+        progressBar.style.width = `${percentage}%`;
+        progressText.textContent = `${completedTasks} / ${totalTasks}`;
+    }
+
+    function showFeedback(isCorrect, message) {
+        const titleText = isCorrect ? "Correct!" : "Not Quite...";
+        feedbackTitle.innerHTML = `${isCorrect ? icons.correct : icons.incorrect} ${titleText}`;
+        feedbackText.textContent = message;
+        feedbackHeader.className = `feedback-header ${isCorrect ? 'correct' : 'incorrect'}`;
+        nextQuestionBtn.className = `feedback-btn ${isCorrect ? 'correct' : 'incorrect'}`;
+        feedbackModalOverlay.className = `overlay ${isCorrect ? 'correct-feedback' : 'incorrect-feedback'}`;
+        playSound(isCorrect ? dingSound : buzzSound);
+        feedbackModalOverlay.classList.remove('hidden');
+    }
+    
+    function checkGameCompletion() {
+        if (completedTasks === totalTasks) {
+            setTimeout(() => {
+                gameScreen.classList.add('hidden');
+                completionOverlay.classList.remove('hidden');
+                playSound(completeAudio);
+            }, 500);
+        }
+    }
+
+    function playSound(sound) { if (sound) { sound.currentTime = 0; sound.play().catch(e => {}); } }
+    
+    function stopAllAudio() {
+        [introAudio, completeAudio, dingSound, buzzSound].forEach(audio => { if (audio) { audio.pause(); audio.currentTime = 0; } });
+    }
+
+    // --- Event Listeners Setup ---
+    startBtn.addEventListener('click', () => {
+        startScreen.classList.add('hidden');
+        gameScreen.classList.remove('hidden');
+        activityIntroOverlay.classList.remove('hidden');
+        playSound(introAudio);
+        sendEvent(ActivityEvent.START_ACTIVITY, { activityName: 'Positive vs Negative Thoughts – Swap Game' });
+    });
+
+    closeIntroBtn.addEventListener('click', () => {
+        stopAllAudio();
+        activityIntroOverlay.classList.add('hidden');
+        initializeGame();
+    });
+
+    instructionsIcon.addEventListener('click', () => instructionsOverlay.classList.remove('hidden'));
+    closeInstructionsBtn.addEventListener('click', () => instructionsOverlay.classList.add('hidden'));
+
+    hintIcon.addEventListener('click', () => hintOverlay.classList.remove('hidden'));
+    closeHintBtn.addEventListener('click', () => hintOverlay.classList.add('hidden'));
+
+    nextQuestionBtn.addEventListener('click', () => {
+        feedbackModalOverlay.classList.add('hidden');
+        checkGameCompletion();
+    });
+
+    restartActivityBtn.addEventListener('click', () => {
+        stopAllAudio();
+        completionOverlay.classList.add('hidden');
+        takeawaysOverlay.classList.add('hidden');
+        gameScreen.classList.remove('hidden');
+        initializeGame();
+    });
+    
+    previousActivityBtn.addEventListener('click', () => {
+        window.location.href = '../ACTIVITY3/index.html';
+    });
+
+    showTakeawaysBtn.addEventListener('click', () => {
+        stopAllAudio();
+        completionOverlay.classList.add('hidden');
+        takeawaysOverlay.classList.remove('hidden');
+        if (typeof sendEvent !== 'undefined') sendEvent(ActivityEvent.END_ACTIVITY, { activityName: 'Positive vs Negative Thoughts – Swap Game' });
+    });
+
+});
+</script>
+<script src="../eventSender.js"></script>
+</body>
+</html>

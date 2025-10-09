@@ -44,6 +44,7 @@
         background-color: #f0f4f8;
         font-family: var(--header-font), sans-serif;
         padding: 0.5rem;
+        overflow: auto;
     }
 
     #game-wrapper {
@@ -212,7 +213,7 @@
         border-radius: var(--border-radius); text-align: center;
         width: 90%; max-width: 600px;
         animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        position: relative;
+        position: relative; height: auto; max-height: 70vh; overflow-y: auto;
     }
     .modal-content h2, .modal h2 {
       font-size: 2rem; font-weight: 600; margin-bottom: 1.5rem;
@@ -349,7 +350,7 @@
             width: 60vw;
         }
     }
-    @media (max-width: 1000px) {
+    @media (max-width: 1024px) {
         #game-wrapper {
             width: 100vw !important; height: 100vh !important;
             min-width: 100vw !important; min-height: 100vh !important;
@@ -642,16 +643,24 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Position tooltip outside the wheel
         const tooltipRadius = radius * 1.3; 
-        const tooltipX = centerX + tooltipRadius * Math.cos(midAngle);
-        const tooltipY = centerY + tooltipRadius * Math.sin(midAngle);
+        let tooltipX = centerX + tooltipRadius * Math.cos(midAngle);
+        let tooltipY = centerY + tooltipRadius * Math.sin(midAngle);
 
-        const tooltipWidth = W * 0.2;
+        const tooltipWidth = W * 0.3; // Wider for better text flow with larger font
         const tooltipPadding = 10;
-        const lineHeight = H * 0.05;
+        
+        // --- Adjust font size and line height for screen size ---
+        let fontSize;
+        if (W <= 1024) { // Check canvas width which is more reliable
+            fontSize = H * 0.045; // Further increased font size for smaller screens
+        } else {
+            fontSize = H * 0.03;
+        }
+        const lineHeight = fontSize * 1.2; // Relative line height
 
         // --- Measure text height to dynamically size the tooltip background ---
         ctx.save();
-        ctx.font = `normal ${H * 0.03}px ${getComputedStyle(document.body).fontFamily}`;
+        ctx.font = `normal ${fontSize}px ${getComputedStyle(document.body).fontFamily}`;
         const words = segment.explanation.split(' ');
         let line = '';
         let lineCount = 1;
@@ -664,28 +673,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 line = testLine;
             }
         }
-        const tooltipHeight = lineCount * lineHeight + tooltipPadding * 2;
+        const tooltipHeight = lineCount * lineHeight + (lineCount > 1 ? lineHeight * 0.5 : 0) + tooltipPadding * 2; // Add extra padding between lines
         
-        // --- Position the tooltip box ---
-        let rectX = tooltipX;
-        let rectY = tooltipY;
-        // Adjust position to keep it on screen
-        if(tooltipX + tooltipWidth / 2 > W) rectX -= (tooltipX + tooltipWidth/2 - W);
-        if(tooltipX - tooltipWidth / 2 < 0) rectX += (tooltipWidth/2 - tooltipX);
-        if(tooltipY + tooltipHeight / 2 > H) rectY -= (tooltipY + tooltipHeight/2 - H);
-        if(tooltipY - tooltipHeight / 2 < 0) rectY += (tooltipHeight/2 - tooltipY);
+        // --- Clamp position to keep tooltip on screen, ensuring it feels fixed ---
+        const edgePadding = 5; // Pixels from the edge
+        tooltipX = Math.max(tooltipWidth / 2 + edgePadding, Math.min(W - tooltipWidth / 2 - edgePadding, tooltipX));
+        tooltipY = Math.max(tooltipHeight / 2 + edgePadding, Math.min(H - tooltipHeight / 2 - edgePadding, tooltipY));
 
         // --- Draw tooltip background ---
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
         ctx.beginPath();
-        ctx.roundRect(rectX - tooltipWidth / 2, rectY - tooltipHeight / 2, tooltipWidth, tooltipHeight, 8);
+        ctx.roundRect(tooltipX - tooltipWidth / 2, tooltipY - tooltipHeight / 2, tooltipWidth, tooltipHeight, 8);
         ctx.fill();
 
         // --- Draw tooltip text ---
         ctx.fillStyle = '#fff';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        wrapText(ctx, segment.explanation, rectX, rectY, tooltipWidth - tooltipPadding, lineHeight);
+        wrapText(ctx, segment.explanation, tooltipX, tooltipY, tooltipWidth - tooltipPadding, lineHeight);
         ctx.restore();
     }
 
@@ -773,8 +778,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         W = r.width;
         H = r.height;
-        // Make radius smaller to accommodate tooltips around the wheel
-        radius = Math.min(W, H) * 0.5; 
+        // Make radius smaller to guarantee space for tooltips, preventing visual imbalance
+        radius = Math.min(W, H) * 0.35; 
         centerX = W / 2;
         centerY = H / 2;
 
