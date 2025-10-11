@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crossword Challenge - Community Problems</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ====== FONT IMPORTS ====== */
+        @font-face {
+            font-family: 'Fredoka';
+            src: url('../assets/Fredoka-VariableFont_wdth\,wght.ttf') format('truetype');
+        }
+
+
+        ::-webkit-scrollbar{
+            display: none;
+        }
+
+        /* ====== ROOT VARIABLES & SCALING UNIT ====== */
+        :root {
+              --font-xs: 1.1rem;
+            --font-sm: 1.4rem;
+            --font-md: 1.4rem;
+            --font-lg: 2rem;
+            --font-xl: 4rem;
+            --pad-sm: 1rem;
+            --pad-md: 1.6rem;
+            --pad-lg: 2.4rem;
+            --primary-color: #5D04B2;
+            --secondary-color: #FBB03B;
+            --correct-color: #5cb85c;
+            --incorrect-color: #d9534f;
+            --text-color-dark: #333;
+            --text-color-light: #fff;
+            --header-font: 'Fredoka', 'Poppins', sans-serif;
+            --body-font: var(--header-font);
+        }
+
+        /* Establish a master viewport-based scaling unit */
+        html {
+            font-size: 1.5vmin;
+        }
+
+        /* ====== GLOBAL BASE ====== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; background: #f0f4f8;
+            font-family: var(--header-font);
+            overflow: hidden; /* Prevent body scroll on smaller screens */
+        }
+        #game-wrapper {
+            width: 100%; max-width: 1200px; /* 1200px -> 75rem */
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            display: flex; flex-direction: column; 
+            box-shadow: 0 0.9375rem 2.5rem rgba(0,0,0,0.3); /* 15px 40px */
+            position: relative;
+        }
+        #game-container {
+            width: 100%; height: 100%; background: #fff;
+            position: relative; display: flex; flex-direction: column;
+        }
+        .screen {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s;
+            pointer-events: all;
+            visibility: visible;
+            padding: 2rem;
+        }
+        .hidden { 
+            opacity: 0; 
+            pointer-events: none;
+            visibility: hidden;
+        }
+
+        /* ===== START SCREEN ===== */
+        #start-screen {
+            background-image:url(images/gamebg.jpg);
+            background-size: cover;
+            background-position: center;
+            color: var(--text-color-light);
+            text-align: center;
+        }
+        #start-screen h1 {
+            color: var(--text-color-light); font-size: 4rem; text-align: center;
+            font-family: var(--header-font);
+            font-weight: 500;
+        }
+    .start-button {
+        font-family: var(--header-font);
+        background: var(--secondary-color);
+        color: var(--text-color-light);
+        font-weight: 500;
+        font-size: 1.2rem;
+        border: 3px solid #fff;
+        border-radius: 4.8rem;
+        padding: var(--pad-sm) var(--pad-lg);
+        margin-top: 1.6rem;
+        cursor: pointer;
+        text-shadow: 0 0.2rem 0 #b88b2a;
+        transition: all 0.2s;
+    }
+    
+    .start-button:hover {
+      transform: scale(1.06);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+    }
+    
+        /* ===== GAME SCREEN STYLES ===== */
+        #game-screen {
+            justify-content: flex-start;
+            overflow: hidden;
+            position: relative;
+            padding: 0;
+        }
+        .game-top-section {
+            width: 100%; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
+            background: var(--primary-color); 
+            padding: clamp(0.5rem, 1.5vmin, 0.75rem) clamp(0.75rem, 2vmin, 1.25rem);
+            position: absolute; top: 0; left: 0; z-index: 10;
+            box-shadow: 0 0.125rem 0.625rem rgba(0,0,0,0.2);
+        }
+        #game-title {
+            color: var(--text-color-light); 
+            font-size: clamp(1.2rem, 4vmin, 1.8rem);
+            font-weight: 600;
+            flex: 1; margin: 0; font-family: var(--header-font); text-align: left;
+        }
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        #progress-container {
+            width: clamp(6.25rem, 20vw, 12.5rem); /* 100px, 200px */
+            background-color: rgba(255, 255, 255, 0.3); border-radius: 1rem; 
+            height: clamp(0.9375rem, 2.5vmin, 1.25rem); /* 15px, 20px */
+            border: 0.125rem solid #fff; /* 2px */
+            position: relative;
+            overflow: hidden;
+        }
+        #progress-bar {
+            height: 100%; width: 0%; background: #FFFF00;
+            border-radius: 0.8rem; transition: width 0.5s ease;
+            position: absolute; left: 0; top: 0;
+        }
+        #progress-text {
+            color: var(--text-color-light);
+            font-weight: 700;
+            font-size: clamp(0.75rem, 2vmin, 1rem);
+        }
+        
+        /* ====== ICONS & ANIMATIONS ====== */
+        @keyframes glow-pulse { 0%, 100% { box-shadow: 0 0 0.625rem rgba(251, 176, 59, 0.5), 0 0 1.25rem rgba(251, 176, 59, 0.3); transform: scale(1); } 50% { box-shadow: 0 0 1.25rem rgba(251, 176, 59, 0.8), 0 0 1.875rem rgba(251, 176, 59, 0.5); transform: scale(1.1); } }
+        @keyframes glow-pulse-white { 0%, 100% { box-shadow: 0 0 0.625rem rgba(255, 255, 255, 0.7), 0 0 1.25rem rgba(255, 255, 255, 0.5); transform: scale(1); } 50% { box-shadow: 0 0 1.25rem rgba(255, 255, 255, 1), 0 0 1.875rem rgba(255, 255, 255, 0.7); transform: scale(1.1); } }
+        .instructions-icon {
+            position: static; width: 2.5rem; height: 2.5rem; /* 40px */
+            background: rgba(255, 255, 255, 0.2); border: 0.125rem solid rgba(255, 255, 255, 0.3); /* 2px */
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s ease; z-index: 15;
+            animation: glow-pulse-white 2.5s infinite ease-in-out;
+        }
+        .instructions-icon svg { fill: white; width: 1.25rem; height: 1.25rem; } /* 20px */
+        .instructions-icon:hover { animation: none; background: rgba(255, 255, 255, 0.3); transform: scale(1.1); }
+        .hint-icon {
+            position: absolute; bottom: 1rem; right: 1rem; width: 3.125rem; height: 3.125rem; /* 50px */
+            background: #FBB03B; border: 0.1875rem solid white; border-radius: 50%; /* 3px */
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; z-index: 1001;
+            animation: glow-pulse 2s infinite;
+        }
+        .hint-icon:hover { animation: none; transform: scale(1.1); box-shadow: 0 0.375rem 1.5625rem rgba(251, 176, 59, 0.8); }
+        .hint-icon svg { width: 1.5rem; height: 1.5rem; fill: white; } /* 24px */
+
+        /* --- Base Modal Styles --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.4); backdrop-filter: blur(0.3125rem);
+            z-index: 3000; display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: 1rem;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal {
+            background-color: #ffffff; padding: 2.5rem; border-radius: 1rem;
+            text-align: center; width: 90%; max-width: 37.5rem; /* 600px */
+            border-top: 0.5rem solid; /* 8px */
+            transform: scale(0.95);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-overlay.active .modal { transform: scale(1); }
+    .modal-title { font-size: 2rem; font-weight: 600; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+    /* Ensure feedback icons in modal titles inherit color and align with text */
+    .modal-title svg { width: 2rem; height: 2rem; display: inline-block; vertical-align: middle; flex-shrink: 0; }
+    /* .modal-title svg path, .modal-title svg circle, .modal-title svg rect { fill: currentColor !important; stroke: none !important; } */
+        .modal-text { font-size: 1.2rem; line-height: 1.6; color: var(--text-color-dark); margin-bottom: 1.5rem; }
+        .modal-button {
+            width: 100%; padding: 1rem; font-size: 1.2rem; font-weight: 700;
+            border: none; border-radius: 0.75rem; cursor: pointer; color: #fff;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .modal-button:hover { transform: scale(1.02); }
+
+        /* --- Specific Modal Styles --- */
+        #narrationModal .modal, #helpModal .modal { border-color: var(--primary-color); }
+        #narrationModal .modal-title, #helpModal .modal-title { color: var(--primary-color); }
+        #narrationModal .modal-button, #helpModal .modal-button { background-color: var(--primary-color); }
+        
+        #incorrectFeedbackModal .modal { border-color: var(--incorrect-color); }
+        #incorrectFeedbackModal .modal-title { color: var(--incorrect-color); }
+        #incorrectFeedbackModal .modal-button { background-color: var(--incorrect-color); }
+        
+        #correctFeedbackModal .modal { border-color: var(--correct-color); }
+        #correctFeedbackModal .modal-title { color: var(--correct-color); }
+        #correctFeedbackModal .modal-button { background-color: var(--correct-color); }
+
+        .narration-text {
+            font-size: 1.1rem; line-height: 1.6; color: var(--text-color-dark); margin-bottom: 1.5rem;
+            text-align: left; background: #f8f9fa; padding: 1.5rem;
+            border-radius: 0.75rem; border-left: 0.25rem solid var(--primary-color);
+        }
+        #helpModal .modal-text { text-align: left; }
+
+
+        /* --- END SCREEN STYLES (3 BUTTONS) --- */
+        #end-screen {
+            color: var(--text-color-light); 
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            gap: 1rem; padding: 1rem;
+            background-image: url(images/gamebg.jpg);
+        }
+        #end-screen h2 {
+            font-size: clamp(2rem, 7vmin, 4rem);
+            margin-bottom: 1rem; text-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.2);
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .end-screen-image-container {
+            width: 100%;
+            display: flex;        
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 5rem;
+        }
+        
+        .end-screen-image {
+            max-width:100%;
+            width: 69%;
+            height: auto;
+            display: block;
+            border: 3px solid var(--secondary-color);
+            border-radius: 1rem;
+        }
+  
+        .end-buttons-bar {
+            position: absolute; bottom: 0.5rem; left: 0; right: 0;
+            width: 100%;
+            display: grid; 
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: clamp(0.75rem, 2vmin, 1.25rem);
+            padding: 0 1.25rem 0.5rem;
+        }
+        .end-button {
+            font-family: var(--header-font); background: var(--secondary-color); color: #fff;
+            font-weight: 500; 
+            font-size: 1rem;
+            border: 0.1875rem solid #fff; border-radius: 3rem; 
+            padding: clamp(0.5rem, 1.5vmin, 0.75rem) clamp(1.25rem, 3vmin, 2rem);
+            cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+            text-shadow: 0 0.125rem 0 #b88b2a; text-decoration: none;
+            min-width: 8.75rem; /* 140px */
+        }
+        .end-button:hover { transform: scale(1.06); box-shadow: 0 0.375rem 1.5rem rgba(0,0,0,0.18); }
+        #previous-button { grid-column: 1; justify-self: start; }
+        #play-again-button { grid-column: 2; justify-self: center; }
+        #next-button { grid-column: 3; justify-self: end; }
+        
+        /* ====== KEY TAKEAWAYS SCREEN ====== */
+        .end-lesson-screen {
+            display: flex; flex-direction: column; position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; justify-content: center; align-items: center;
+            padding: 2rem; background-color: var(--primary-color); text-align: center; color: white; gap: 1.5rem;
+        }
+        .end-lesson-screen h2 { font-size: 2.5rem; text-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.2); }
+        #key-takeaways-overlay{
+            background-image: url(images/gamebg.jpg);
+        }
+        .takeaways-container {
+            background-color: white; color: var(--text-color-dark);
+            border-radius: 1rem; padding: 1.5rem 2rem; max-width: 45rem;
+            width: 90%; border-top: 0.3rem solid var(--secondary-color);
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+        }
+        .takeaways-title { font-size: 2rem; color: var(--primary-color); margin-bottom: 1.2rem; font-weight: 700; }
+        .takeaways-list { list-style-type: none; padding: 0; text-align: left; }
+        .takeaways-list li { position: relative; padding-left: 2rem; margin-bottom: 0.8rem; font-size: 1rem; line-height: 1.5; }
+        .takeaways-list li::before { content: "✓"; color: var(--correct-color); position: absolute; left: 0; top: 0; font-size: 1.2rem; font-weight: bold; }
+        .primary-action-btn {
+            background: var(--secondary-color); color: #fff; font-weight: 900; font-size: 1.25rem;
+            border: 0.1875rem solid #fff; border-radius: 3rem; padding: 0.75rem 2.5rem;
+            cursor: pointer; text-shadow: 0 0.125rem 0 #b88b2a; transition: all 0.2s;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2); text-decoration: none;
+        }
+        .primary-action-btn:hover { transform: scale(1.06); }
+
+        /* ===== CROSSWORD GAME CONTENT ===== */
+        .game-content {
+            flex: 1; padding: 1rem 2rem; overflow: auto;
+            background: linear-gradient(135deg, #E8F4FD 0%, #F0F8E8 100%);
+            margin-top: 5rem; /* 80px */
+            display: flex; align-items: center; justify-content: center;
+        }
+        .crossword-layout {
+            display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem;
+            width: 100%; max-width: 68.75rem; /* 1100px */
+            margin: 0 auto;
+            align-items: flex-start;
+        }
+        .crossword-grid-container {
+            background-color: #7ab5e3;
+            background-image: linear-gradient(160deg, #0093E9 0%, #80D0C7 100%);
+            border-radius: 1.5rem; 
+            padding: 1rem;
+            box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.2), inset 0 0.125rem 0.25rem rgba(255, 255, 255, 0.7);
+            border: 0.3rem solid white;
+        }
+       
+        .crossword-grid { display: grid; gap: 0.125rem; background: rgba(0,0,0,0.2); } /* 2px */
+        
+        .grid-cell-container { position: relative; background-color: white; border-radius: 0.2rem;}
+        .word-number {
+            position: absolute; top: 0.1rem; left: 0.2rem;
+            font-size: 0.6rem; color: #333;
+            font-weight: normal; pointer-events: none;
+        }
+        .grid-cell {
+            width: 100%; height: 100%;
+            background-color: transparent; color: #1a1a1a;
+            text-align: center; font-size: 1.2rem; font-weight: 600; /* Reduced font weight */
+            text-transform: uppercase; border: none;
+            caret-color: var(--primary-color); padding: 0; border-radius: 0.2rem;
+        }
+        .grid-cell:focus {
+            outline: none; background-color: #fffde7;
+            box-shadow: 0 0 0 0.1875rem var(--secondary-color) inset; /* 3px */
+        }
+        .grid-cell.empty { background-color: transparent; border: none; }
+        .grid-cell-container.highlight { background-color: #a7d8ff; }
+        .grid-cell-container.correct { background-color: var(--correct-color); }
+        .grid-cell-container.correct .grid-cell { color: white; }
+        .grid-cell-container.incorrect-flash { animation: flash-red 0.5s; }
+        @keyframes flash-red { 50% { background-color: var(--incorrect-color); } }
+
+        .clues-container {
+            background: white; border-radius: 1rem;
+            padding: 1.5rem; box-shadow: 0 0.5rem 1.5625rem rgba(0,0,0,0.15); /* 8px 25px */
+            border: 0.1875rem solid #4A90E2; max-height: 43.75vh;
+            overflow-y: auto;
+        }
+        .clues-container h3 {
+            font-family: var(--header-font); color: var(--primary-color);
+            margin: 0 0 1rem 0; font-size: 1.8rem;
+        }
+        .clue-list { list-style: none; padding: 0; margin: 0; }
+        .clue-item {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+        .clue-item:hover { background-color: #f0f0f0; }
+        .clue-item.active { background-color: var(--secondary-color); color: white; }
+        .clue-item.solved { text-decoration: line-through; opacity: 0.6; }
+
+        /* ====== RESPONSIVE DESIGN ====== */
+        @media (min-width:1200px) {
+            html { font-size: 1.8vmin; }
+             .crossword-grid-container {
+                height: 50vh;
+            } 
+            .clues-container {
+            max-height: 50.75vh;
+            height: 100%;
+          }
+          .crossword-grid {
+            height: 100%;
+        }
+        }
+        @media only screen and (max-width: 1200px) { /* 1200px */
+            html { font-size: 1.6vw; } /* Switch to vw for vertical screens */
+            #game-wrapper {
+                width: 100vw; height: 100vh; border-radius: 0;
+                max-width: none; aspect-ratio: unset;
+            }
+            .clues-container
+                {
+                    max-height: 55.75vh;
+                }
+                 .crossword-grid-container {
+                height: 50vh;
+            } 
+            .crossword-grid{
+                height: 100%;
+            }
+        }
+        @media only screen and (max-width:991px) {
+            html { font-size: 1.8vw; }
+            .game-content { padding: 1rem; margin-top: 4.375rem; height: calc(100% - 4.375rem); } /* 70px */
+            .clues-container {
+                max-height: 75vh;
+            }
+            .crossword-grid-container{
+                height: 70vh;
+                aspect-ratio: 14 / 9;
+            }
+            .takeaways-container {
+                height: 61vh;
+                overflow-y: auto;
+            }
+            .end-screen-image{
+                width: 55%;
+            }
+            .end-screen-image-container {
+                margin-top: 0rem;
+                margin-bottom: 5rem;
+            }
+
+        }
+        @media only screen and (max-width: 768px) { 
+            html { font-size: 3.2vmin; }
+            #game-title { font-size: 1.3rem; }
+            .game-content { margin-top: 5.625rem; height: calc(100% - 5.625rem); } /* 90px */
+            .crossword-layout { gap: 1rem; }
+            .clues-container h3 { font-size: 1.5rem; }
+            .end-buttons-bar { gap: 0.75rem; position: static; padding: 1rem; }
+            .end-button { justify-self: center; }
+            .end-screen-image {
+                width: 69%;
+            }
+            .end-screen-image-container 
+            {
+                margin-bottom:0rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-wrapper">
+    <div id="game-container">
+        <div id="start-screen" class="screen">
+            <h1>Community Problem Crossword</h1>
+            <button class="start-button" onclick="showNarration();">Start Activity</button>
+        </div>
+
+        <div id="game-screen" class="screen hidden">
+            <div class="game-top-section">
+                <h1 id="game-title">Community Problem Crossword</h1>
+                <div class="header-controls">
+                    <div id="progress-container">
+                        <div id="progress-bar"></div>
+                    </div>
+                    <span id="progress-text">0 / 8</span>
+                    <div class="instructions-icon" onclick="openModal('helpModal')">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hint-icon" onclick="useHint()">
+                <svg viewBox="0 0 24 24"><path d="M9 21c0 .5.4 1 1 1h4c.6 0 1-.5 1-1v-1H9v1zm3-19C8.1 2 5 5.1 5 9c0 2.4 1.2 4.5 3 5.7V17c0 .5.4 1 1 1h6c.6 0 1-.5 1-1v-2.3c1.8-1.3 3-3.4 3-5.7 0-3.9-3.1-7-7-7z"/></svg>
+            </div>
+            
+            <div class="game-content">
+                <div class="crossword-layout">
+                    <div class="crossword-grid-container">
+                        <div class="crossword-grid" id="crossword-grid"></div>
+                    </div>
+                    <div class="clues-container">
+                        <div id="clues-across">
+                            <h3>Across</h3>
+                            <ul class="clue-list" id="clues-list-across"></ul>
+                        </div>
+                        <div id="clues-down" style="margin-top: 1.5rem;">
+                            <h3>Down</h3>
+                            <ul class="clue-list" id="clues-list-down"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="end-screen" class="screen hidden">
+            <h2>Activity Conclusion</h2>
+            <div class="end-screen-image-container">
+                <img src="images/complete.jpg" alt="Completion celebration" class="end-screen-image">
+            </div>
+            <div class="end-buttons-bar">
+                <button id="previous-button" class="end-button" onclick="window.location.href='../ACTIVITY2/index.html';">Previous Activity</button>
+                <button id="play-again-button" class="end-button" onclick="stopOutroAudio(); restartGame()">Restart Activity</button>
+                <button id="next-button" class="end-button" onclick="showKeyTakeaways()">Key Takeaways</button>
+            </div>
+        </div>
+        
+        <div id="key-takeaways-overlay" class="screen hidden end-lesson-screen">
+            <h2>Lesson Complete</h2>
+            <div class="takeaways-container">
+                <div class="takeaways-title">Key Takeaways</div>
+                <ul class="takeaways-list">
+                    <li>A <b>problem</b> is an issue that negatively affects people’s lives (e.g., drought, hunger, jigger infestation).</li>
+                    <li>A <b>gap</b> is something missing, such as clean water, education, or waste management.</li>
+                    <li>Problems can be identified through observation, interviews, surveys, and meetings.</li>
+                    <li>Choosing the right problem is the first step towards meaningful change.</li>
+                </ul>
+            </div>
+            <button class="primary-action-btn" onclick="closeKeyTakeaways()">Exit Lesson</button>
+        </div>
+
+        <div id="narrationModal" class="modal-overlay">
+            <div class="modal">
+                <h2 class="modal-title">Activity Introduction</h2>
+                <p class="narration-text">Let us test your memory! In this crossword puzzle, you will use the clues to find key words about community problems and gaps. Solving it will help you remember important terms for real-life application.</p>
+                <button id="continueNarrationButton" class="modal-button" onclick="continueNarration()">Continue</button>
+            </div>
+        </div>
+
+        <div id="helpModal" class="modal-overlay">
+            <div class="modal">
+                <h2 class="modal-title">Instructions</h2>
+                <p class="modal-text">Read each clue carefully and type the correct word into the crossword grid. Use the Hint button if you need help with a letter.</p>
+                <button class="modal-button" onclick="closeModal('helpModal')">Got It!</button>
+            </div>
+        </div>
+        
+        <div id="incorrectFeedbackModal" class="modal-overlay">
+            <div class="modal">
+                <h2 class="modal-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--incorrect-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:2rem;height:2rem;margin-right:0.5rem;vertical-align:middle;display:inline-block;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                    Not Quite!
+                </h2>
+                <p class="modal-text">Not quite. Look again at the clues and think of the key words we use when talking about community problems. Try filling in the puzzle again.</p>
+                <button class="modal-button" onclick="closeModal('incorrectFeedbackModal')">Try Again</button>
+            </div>
+        </div>
+        <div id="correctFeedbackModal" class="modal-overlay">
+            <div class="modal">
+                <h2 class="modal-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--correct-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:2rem;height:2rem;margin-right:0.5rem;vertical-align:middle;display:inline-block;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    Correct!
+                </h2>
+                <p class="modal-text">Well done! You matched the clues with the correct terms. These words will help you describe community problems and gaps clearly.</p>
+                <button class="modal-button" onclick="closeModal('correctFeedbackModal')">Continue</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<script>
+    const endScreenDelay = 1000;
+    const GRID_ROWS = 12;
+    const GRID_COLS = 12;
+
+    // Crossword data for Activity 3
+    const crosswordData = [
+        // Across
+        { id: 1, number: 1, answer: "JIGGERS", clue: "Spread of insects in the feet that cause pain and swelling.", startRow: 0, startCol: 0, orientation: 'across' },
+        { id: 2, number: 4, answer: "SURVEY", clue: "Talking to people to find their views.", startRow: 2, startCol: 1, orientation: 'across' },
+        { id: 3, number: 6, answer: "GAP", clue: "A missing service, like water or education.", startRow: 5, startCol: 0, orientation: 'across' },
+        { id: 4, number: 7, answer: "DROUGHT", clue: "Lack of rain that affects farming and drinking water.", startRow: 7, startCol: 3, orientation: 'across' },
+        { id: 5, number: 8, answer: "GARBAGE", clue: "Waste left in the streets, not collected.", startRow: 9, startCol: 5, orientation: 'across' },
+        // Down
+        { id: 6, number: 2, answer: "SCARCITY", clue: "Not enough safe water for daily use.", startRow: 0, startCol: 11, orientation: 'down' },
+        { id: 7, number: 3, answer: "DROPOUT", clue: "Leaving school before finishing.", startRow: 1, startCol: 9, orientation: 'down' },
+        { id: 8, number: 5, answer: "BARAZA", clue: "A group meeting where people discuss community issues.", startRow: 4, startCol: 1, orientation: 'down' },
+    ];
+
+    let solvedWords = [];
+    let currentWord = null;
+    let gridState = Array(GRID_ROWS).fill(null).map(() => Array(GRID_COLS).fill(null));
+
+    // Audio Handling
+    let introAudio, dingAudio, buzzAudio, outroAudio;
+    
+    function initAudio() {
+        try {
+            introAudio = new Audio('audio/intro.mp3');
+            dingAudio = new Audio('audio/ding.mp3');
+            buzzAudio = new Audio('audio/buzz.mp3');
+            outroAudio = new Audio('audio/outro.mp3');
+        } catch (e) { console.warn("Audio files could not be loaded."); }
+    }
+
+    function playSound(audio) {
+        if (audio && typeof audio.play === 'function') {
+            audio.currentTime = 0;
+            audio.play().catch(e => console.error("Audio play failed:", e));
+        }
+    }
+    
+    function stopSound(audio) {
+        if (audio && typeof audio.pause === 'function') {
+            audio.pause();
+            audio.currentTime = 0;
+        }
+    }
+    
+    function stopOutroAudio() {
+        stopSound(outroAudio);
+    }
+
+    function generateCrossword() {
+        const gridElement = document.getElementById('crossword-grid');
+        gridElement.innerHTML = '';
+        gridElement.style.gridTemplateColumns = `repeat(${GRID_COLS}, 1fr)`;
+        gridElement.style.gridTemplateRows = `repeat(${GRID_ROWS}, 1fr)`;
+        
+        const startCells = {};
+        crosswordData.forEach(word => {
+            const rIndex = word.startRow;
+            const cIndex = word.startCol;
+            const key = `${rIndex}-${cIndex}`;
+
+            if (!startCells[key] || !startCells[key].includes(word.number)) {
+                 if (!startCells[key]) startCells[key] = [];
+                 startCells[key].push(word.number);
+            }
+            
+            for (let i = 0; i < word.answer.length; i++) {
+                const r = word.orientation === 'across' ? word.startRow : word.startRow + i;
+                const c = word.orientation === 'across' ? word.startCol + i : word.startCol;
+                if (r < GRID_ROWS && c < GRID_COLS) {
+                    if (!gridState[r][c]) {
+                        gridState[r][c] = { words: [] };
+                    }
+                    if (!gridState[r][c].words.includes(word.id)) {
+                        gridState[r][c].words.push(word.id);
+                    }
+                }
+            }
+        });
+
+        for (let r = 0; r < GRID_ROWS; r++) {
+            for (let c = 0; c < GRID_COLS; c++) {
+                const cellData = gridState[r][c];
+                if (cellData) {
+                    const container = document.createElement('div');
+                    container.className = 'grid-cell-container';
+                    container.dataset.row = r;
+                    container.dataset.col = c;
+                    
+                    const key = `${r}-${c}`;
+                    if (startCells[key]) {
+                        const numberLabel = document.createElement('span');
+                        numberLabel.className = 'word-number';
+                        numberLabel.textContent = startCells[key].join(',');
+                        container.appendChild(numberLabel);
+                    }
+
+                    const cellInput = document.createElement('input');
+                    cellInput.type = 'text';
+                    cellInput.maxLength = 1;
+                    cellInput.className = 'grid-cell';
+                    cellInput.dataset.row = r;
+                    cellInput.dataset.col = c;
+                    cellInput.addEventListener('input', handleInput);
+                    cellInput.addEventListener('keydown', handleKeyDown);
+                    cellInput.addEventListener('focus', handleFocus);
+                    container.appendChild(cellInput);
+                    gridElement.appendChild(container);
+                } else {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.className = 'grid-cell empty';
+                    gridElement.appendChild(emptyCell);
+                }
+            }
+        }
+    }
+
+
+    function renderClueLists() {
+        const acrossList = document.getElementById('clues-list-across');
+        const downList = document.getElementById('clues-list-down');
+        acrossList.innerHTML = '';
+        downList.innerHTML = '';
+        
+        const acrossWords = crosswordData.filter(w => w.orientation === 'across').sort((a,b) => a.number - b.number);
+        const downWords = crosswordData.filter(w => w.orientation === 'down').sort((a,b) => a.number - b.number);
+
+        acrossWords.forEach(word => {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `<b>${word.number}.</b> ${word.clue}`;
+            listItem.className = 'clue-item';
+            listItem.dataset.wordId = word.id;
+            listItem.onclick = () => selectWord(word.id);
+            if (solvedWords.includes(word.id)) listItem.classList.add('solved');
+            acrossList.appendChild(listItem);
+        });
+
+        downWords.forEach(word => {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `<b>${word.number}.</b> ${word.clue}`;
+            listItem.className = 'clue-item';
+            listItem.dataset.wordId = word.id;
+            listItem.onclick = () => selectWord(word.id);
+            if (solvedWords.includes(word.id)) listItem.classList.add('solved');
+            downList.appendChild(listItem);
+        });
+    }
+
+    function selectWord(wordId, focus = true) {
+        currentWord = crosswordData.find(w => w.id === wordId);
+        highlightWord(currentWord);
+        
+        if (focus) {
+            for (let i = 0; i < currentWord.answer.length; i++) {
+                const r = currentWord.orientation === 'across' ? currentWord.startRow : currentWord.startRow + i;
+                const c = currentWord.orientation === 'across' ? currentWord.startCol + i : currentWord.startCol;
+                const cell = document.querySelector(`.grid-cell[data-row='${r}'][data-col='${c}']`);
+                if (cell && !cell.disabled) {
+                    cell.focus();
+                    break; 
+                }
+            }
+        }
+    }
+
+    function highlightWord(word) {
+        document.querySelectorAll('.grid-cell-container').forEach(c => c.classList.remove('highlight'));
+        document.querySelectorAll('.clue-item').forEach(c => c.classList.remove('active'));
+        
+        if (!word) return;
+        
+        for (let i = 0; i < word.answer.length; i++) {
+            const r = word.orientation === 'across' ? word.startRow : word.startRow + i;
+            const c = word.orientation === 'across' ? word.startCol + i : word.startCol;
+            document.querySelector(`.grid-cell-container[data-row='${r}'][data-col='${c}']`)?.classList.add('highlight');
+        }
+        
+        document.querySelector(`.clue-item[data-word-id='${word.id}']`)?.classList.add('active');
+    }
+
+    function handleInput(e) {
+        const cell = e.target;
+        cell.value = cell.value.toUpperCase();
+        const { row, col } = cell.dataset;
+        gridState[row][col].words.forEach(wordId => checkWordCompletion(crosswordData.find(w => w.id === wordId)));
+
+        if (cell.value && currentWord && !solvedWords.includes(currentWord.id)) {
+            const nextCell = getNextCell(parseInt(row), parseInt(col), currentWord.orientation);
+            if (nextCell) nextCell.focus();
+        }
+    }
+    
+    function handleKeyDown(e) {
+        const cell = e.target;
+        const { row, col } = cell.dataset;
+
+        if (e.key === 'Backspace' && !cell.value) {
+            const prevCell = getPrevCell(parseInt(row), parseInt(col), currentWord.orientation);
+            if (prevCell) prevCell.focus();
+        } else if (e.key.startsWith('Arrow')) {
+            e.preventDefault();
+            let nextR = parseInt(row), nextC = parseInt(col);
+            if (e.key === 'ArrowUp') nextR--;
+            if (e.key === 'ArrowDown') nextR++;
+            if (e.key === 'ArrowLeft') nextC--;
+            if (e.key === 'ArrowRight') nextC++;
+            const nextCell = document.querySelector(`.grid-cell[data-row='${nextR}'][data-col='${nextC}']`);
+            if (nextCell && !nextCell.disabled) nextCell.focus();
+        }
+    }
+
+    function handleFocus(e) {
+        const { row, col } = e.target.dataset;
+        const cellData = gridState[row][col];
+        if (cellData && cellData.words.length > 0) {
+            let idToSelect = cellData.words.find(id => !solvedWords.includes(id)) || cellData.words[0];
+            if (currentWord && cellData.words.includes(currentWord.id) && !solvedWords.includes(currentWord.id)) {
+                idToSelect = currentWord.id;
+            }
+            selectWord(idToSelect, false);
+        }
+    }
+
+    function getNextCell(row, col, orientation, isReverse = false) {
+        let nextR = row, nextC = col;
+        let wordBoundary = false;
+        if (currentWord) {
+             const endR = currentWord.orientation === 'across' ? currentWord.startRow : currentWord.startRow + currentWord.answer.length -1;
+             const endC = currentWord.orientation === 'across' ? currentWord.startCol + currentWord.answer.length -1: currentWord.startCol;
+             if((!isReverse && (nextR === endR && nextC === endC)) || (isReverse && (nextR === currentWord.startRow && nextC === currentWord.startCol))) {
+                 wordBoundary = true;
+             }
+        }
+
+        if(wordBoundary) return null;
+
+        while (true) {
+            if (orientation === 'across') { isReverse ? nextC-- : nextC++; }
+            else { isReverse ? nextR-- : nextR++; }
+            if (nextR < 0 || nextR >= GRID_ROWS || nextC < 0 || nextC >= GRID_COLS) return null;
+
+            const nextInput = document.querySelector(`input.grid-cell[data-row='${nextR}'][data-col='${nextC}']`);
+            if (nextInput && !nextInput.disabled) return nextInput;
+            if (!document.querySelector(`.grid-cell-container[data-row='${nextR}'][data-col='${nextC}']`)) return null;
+        }
+    }
+    function getPrevCell(row, col, orientation) { return getNextCell(row, col, orientation, true); }
+
+    function checkWordCompletion(word) {
+        if (!word || solvedWords.includes(word.id)) return;
+        
+        let userInput = '';
+        let isComplete = true;
+        let wordContainers = [];
+        
+        for (let i = 0; i < word.answer.length; i++) {
+            const r = word.orientation === 'across' ? word.startRow : word.startRow + i;
+            const c = word.orientation === 'across' ? word.startCol + i : word.startCol;
+            const container = document.querySelector(`.grid-cell-container[data-row='${r}'][data-col='${c}']`);
+            const cell = container?.querySelector('input');
+            wordContainers.push(container);
+            if (cell && cell.value) { userInput += cell.value; }
+            else { isComplete = false; break; }
+        }
+        
+        if (!isComplete) return;
+
+        if (userInput.toUpperCase() === word.answer.toUpperCase()) {
+            if (solvedWords.includes(word.id)) return;
+            solvedWords.push(word.id);
+            playSound(dingAudio);
+            
+            openModal('correctFeedbackModal');
+            
+            wordContainers.forEach(container => {
+                container.classList.add('correct');
+                container.querySelector('input').disabled = true;
+            });
+            renderClueLists();
+            updateProgress();
+        } else {
+            playSound(buzzAudio);
+            openModal('incorrectFeedbackModal');
+            wordContainers.forEach(container => {
+                const { row, col } = container.dataset;
+                const isPartOfSolvedWord = gridState[row][col].words.some(id => solvedWords.includes(id));
+                if (!isPartOfSolvedWord) {
+                    container.querySelector('input').value = '';
+                    container.classList.add('incorrect-flash');
+                    setTimeout(() => container.classList.remove('incorrect-flash'), 500);
+                }
+            });
+        }
+    }
+
+    function updateProgress() {
+        const totalWords = crosswordData.length;
+        const progressFill = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const percentage = totalWords > 0 ? (solvedWords.length / totalWords) * 100 : 0;
+        progressFill.style.width = `${percentage}%`;
+        progressText.textContent = `${solvedWords.length} / ${totalWords}`;
+        if (solvedWords.length === totalWords) {
+            window._activity_allWordsSolved = true;
+        }
+    }
+
+    function startGame() {
+        solvedWords = [];
+        currentWord = null;
+        gridState = Array(GRID_ROWS).fill(null).map(() => Array(GRID_COLS).fill(null));
+        generateCrossword();
+        renderClueLists();
+        updateProgress();
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+    }
+    
+    function restartGame() {
+        document.getElementById('end-screen').classList.add('hidden');
+        startGame();
+    }
+    
+    function openModal(modalId) { document.getElementById(modalId)?.classList.add('active'); }
+    function closeModal(modalId) {
+        document.getElementById(modalId)?.classList.remove('active');
+        if (modalId === 'correctFeedbackModal' && window._activity_allWordsSolved) {
+            window._activity_allWordsSolved = false;
+            setTimeout(endGame, endScreenDelay);
+        }
+    }
+    function continueNarration() {
+        stopSound(introAudio);
+        closeModal('narrationModal');
+    }
+
+    function showNarration() {
+        startGame(); 
+        openModal('narrationModal');
+        playSound(introAudio);
+        if (typeof sendEvent !== 'undefined' && typeof ActivityEvent !== 'undefined') {
+            sendEvent(ActivityEvent.START_ACTIVITY, {activityName: "Community Problem Crossword"});
+        }
+    }
+    
+    function useHint() {
+        if (!currentWord || solvedWords.includes(currentWord.id)) {
+            return;
+        }
+
+        let firstEmptyCell = null;
+        let firstEmptyCellIndex = -1;
+
+        for (let i = 0; i < currentWord.answer.length; i++) {
+            const r = currentWord.orientation === 'across' ? currentWord.startRow : currentWord.startRow + i;
+            const c = currentWord.orientation === 'across' ? currentWord.startCol + i : currentWord.startCol;
+            const cell = document.querySelector(`.grid-cell[data-row='${r}'][data-col='${c}']`);
+            
+            if (cell && !cell.value) {
+                firstEmptyCell = cell;
+                firstEmptyCellIndex = i;
+                break;
+            }
+        }
+
+        if (firstEmptyCell && firstEmptyCellIndex !== -1) {
+            const correctLetter = currentWord.answer[firstEmptyCellIndex];
+            firstEmptyCell.value = correctLetter;
+            
+            const { row, col } = firstEmptyCell.dataset;
+            gridState[row][col].words.forEach(wordId => checkWordCompletion(crosswordData.find(w => w.id === wordId)));
+
+            if (!solvedWords.includes(currentWord.id)) {
+                 const nextCell = getNextCell(parseInt(firstEmptyCell.dataset.row), parseInt(firstEmptyCell.dataset.col), currentWord.orientation);
+                 if (nextCell) {
+                     nextCell.focus();
+                 }
+            }
+        }
+    }
+    
+    function endGame() {
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('end-screen').classList.remove('hidden');
+        playSound(outroAudio);
+        if (typeof sendEvent !== 'undefined' && typeof ActivityEvent !== 'undefined') {
+            sendEvent(ActivityEvent.END_ACTIVITY, {activityName: "Community Problem Crossword"});
+        }
+    }
+    
+    function showKeyTakeaways() {
+        stopOutroAudio();
+        document.getElementById('end-screen').classList.add('hidden');
+        document.getElementById('key-takeaways-overlay').classList.remove('hidden');
+    }
+
+    function closeKeyTakeaways() {
+        if (typeof sendEvent !== 'undefined' && typeof LessonEvent !== 'undefined') {
+            sendEvent(LessonEvent.END_LESSON, {lessonName: "Identifying a Problem or Gap in the Community: Lesson 1"});
+        }
+    }
+    
+    window.onload = initAudio;
+</script>
+<script src="../eventSender.js"></script>
+</body>
+</html>
