@@ -596,7 +596,7 @@
                 </div>       
                 <div class="completion-buttons-footer">
                     <button class="completion-btn" onclick="restartGame()">Restart Activity</button>
-                    <button class="completion-btn" onclick="previousActivity()">Previous Activity</button>
+                    <button class="completion-btn" onclick="goToNextActivity()">Next Activity</button>
                 </div>
             </div>
         </div>
@@ -777,17 +777,15 @@
                      gameScreen.classList.add('hidden');
                      completionOverlay.classList.remove('hidden');
                      if (sounds.outro) playSound(sounds.outro); 
-                     sendEvent(ActivityEvent.END_ACTIVITY, { activityName: 'Meet-the-Animal-You' });
                  }, 800);
             }
         }
-        function previousActivity() {
+        function goToNextActivity() {
             if (sounds.outro) sounds.outro.pause();
-            // This is a placeholder, update with the actual previous activity URL if needed
-            // window.location.href = '../ACTIVITY_PREVIOUS/index.html';    
-            console.log("Navigating to the previous activity.");
-            sendEvent(LessonEvent.END_LESSON, { lessonName: 'Personality Hotspot: Lesson 1' });
-        }
+            // This is a placeholder, update with the actual next activity URL if needed
+            window.location.href = '../ACTIVITY2/index.html';    
+            sendEvent(ActivityEvent.END_ACTIVITY, { activityName: 'Next-Activity' });
+          }
         
         function restartGame() {
             if (sounds.outro) sounds.outro.pause();

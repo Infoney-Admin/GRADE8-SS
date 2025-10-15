@@ -437,7 +437,6 @@
             <h2 class="completion-title-banner">Activity Conclusion</h2>
             <img id="completion-image" src="images/complete.jpg" alt="Activity Complete Summary">
             <div class="completion-buttons">
-                <button class="completion-btn btn-prev" onclick="goToPreviousActivity()">Previous Activity</button>
                 <button class="completion-btn btn-restart" onclick="restartGame()">Restart Activity</button>
                 <button class="completion-btn btn-next" onclick="goToNextActivity()">Next Activity</button>
             </div>
@@ -659,7 +658,7 @@
     }
 
     function goToNextActivity() {
-        window.location.href = "../ACTIVITY4/index.html";
+        window.location.href = "../ACTIVITY2/index.html";
         stopSound(outroAudio);
         sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'Juma the President – Case Study Explorer'});
     }

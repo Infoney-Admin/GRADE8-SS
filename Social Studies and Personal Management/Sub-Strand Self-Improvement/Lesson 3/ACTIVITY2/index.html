@@ -236,7 +236,7 @@
             width: 40vw;
             height: auto;
             border-radius: 15px;
-            border: 5px solid var(--secondary-color);
+            border: 3px solid var(--secondary-color);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             margin-top: 0.5rem;
         }
@@ -251,7 +251,7 @@
             font-family: var(--header-font); background: var(--secondary-color); color: #fff;
             font-weight: 500; 
             font-size: 1.3rem;
-            border: 0.1875rem solid #fff; border-radius: 3rem; 
+            border: 0.045rem solid #fff; border-radius: 3rem; 
             padding: clamp(0.5rem, 1.5vmin, 0.75rem) clamp(1.25rem, 3vmin, 2rem);
             cursor: pointer; transition: all 0.2s;
             box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
@@ -345,7 +345,7 @@
 
         #timeline-nav {
             display: flex;
-            justify-content: flex-end; /* center the single Next button */
+            justify-content: center; /* center the single Next button */
             width: 100%;
             max-width: 80rem;
             padding: 0 2rem;
@@ -363,6 +363,7 @@
             cursor: pointer;
             transition: all 0.2s;
             visibility: visible;
+            margin-bottom: 0.5rem;
         }
         .nav-btn:hover:not(:disabled) { transform: scale(1.05); }
         .nav-btn.hidden { visibility: hidden; }
