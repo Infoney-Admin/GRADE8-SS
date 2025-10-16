@@ -44,7 +44,7 @@
         background-color: #f0f4f8;
         font-family: var(--header-font), sans-serif;
         padding: 0.5rem;
-        overflow: auto;
+        overflow: hidden;
     }
 
     #game-wrapper {
@@ -373,7 +373,11 @@
              height: auto;
         }
         .completion-buttons-footer {align-items: center; bottom: 1rem; gap: 1rem; flex-wrap: wrap; }
-        #activity-intro-overlay .modal-content, #instructions-overlay .modal-content, #hint-overlay .modal-content { height: 90vh; overflow-y: auto; }
+        #activity-intro-overlay .modal-content, #instructions-overlay .modal-content, #hint-overlay .modal-content { 
+            height: 90vh; 
+            max-height: 100vh;
+            overflow-y: auto;
+         }
         .completion-header{
             font-size: 3rem;
         }
@@ -555,11 +559,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function drawWheel() {
         if (!ctx || !W || !H) return;
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // Use canvas.width for retina
-        ctx.save();
-        ctx.scale(dpr, dpr); // Scale context for retina display
-        
-        // Draw Segments
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.save(); // Save the original state before any transformations
+        ctx.scale(dpr, dpr); // Apply scaling for all subsequent drawing
+
+        // --- Draw Segments ---
+        ctx.save(); // Save the scaled state before translating for segments
         ctx.translate(centerX, centerY);
         ACTIVITY_DATA.forEach((segment, i) => {
             const startAngle = i * anglePerSegment - (Math.PI / 2); // Start at the top
@@ -613,10 +618,10 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.lineWidth = 2; // Thinner line for better look
             ctx.stroke();
         });
-        ctx.restore(); // Restore from translate(centerX, centerY)
+        ctx.restore(); // Restore from translate, back to just the scaled state
 
-        // Draw Center Hub
-        ctx.save();
+        // --- Draw Center Hub ---
+        ctx.save(); // Save the scaled state before translating for the hub
         ctx.translate(centerX, centerY);
         ctx.beginPath();
         ctx.arc(0, 0, radius * 0.35, 0, 2 * Math.PI);
@@ -627,14 +632,15 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillStyle = '#333';
         ctx.font = `bold ${radius * 0.1}px ${getComputedStyle(document.body).fontFamily}`;
         ctx.fillText('Self-Esteem', 0, 0);
-        ctx.restore();
+        ctx.restore(); // Restore from hub's translate, back to just the scaled state
 
-        // Draw Tooltips for Clicked Segments
+        // --- Draw Tooltips for Clicked Segments ---
+        // These are drawn on the scaled context, which is correct as the function uses W, H, centerX, centerY
         clickedSegments.forEach(index => {
             drawTooltipOnCanvas(index);
         });
 
-        ctx.restore(); // Final restore from scaling
+        ctx.restore(); // Restore the original state, removing the scaling
     }
 
     function drawTooltipOnCanvas(index) {
@@ -642,7 +648,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const midAngle = (index * anglePerSegment) + (anglePerSegment / 2) - (Math.PI / 2);
         
         // Position tooltip outside the wheel
-        const tooltipRadius = radius * 1.3; 
+        const tooltipRadius = radius * 1.6; 
         let tooltipX = centerX + tooltipRadius * Math.cos(midAngle);
         let tooltipY = centerY + tooltipRadius * Math.sin(midAngle);
 
