@@ -512,6 +512,9 @@
                 width: 100vw; height: 100vh; min-width: 100vw; min-height: 100vh;
                 border-radius: 0; max-width: none; aspect-ratio: unset;
             }
+               #completion-image{
+                max-width: 60%;
+            }
         }
 
         @media (max-width: 768px) {
@@ -526,7 +529,7 @@
             }
             .completion-btn {
                 width: 80%;
-                max-width: 20rem;
+                max-width: 13rem;
             }
             .scenario-content {
                 padding: 1.5rem;
@@ -541,7 +544,10 @@
             .scenario-table { font-size: 1.2rem; }
             .scenario-table th, .scenario-table td { padding: 0.8rem; }
             .takeaways-list li { font-size: 1rem; }
-        }
+            #completion-image{
+                max-width: 70%;
+            }
+     }
     </style>
 </head>
 <body>
@@ -635,7 +641,7 @@
                 problem: 'Drought',
                 effect: 'No water for farming or drinking',
                 affected: 'Farmers and children',
-                coords: { top: '35%', left: '5%', width: '10%', height: '20%' }
+                coords: { top: '55%', left: '5%', width: '10%', height: '20%' }
             },
             {
                 id: 'barefoot-child',
@@ -643,7 +649,7 @@
                 problem: 'Lack of shoes',
                 effect: 'Risk of jiggers and infections',
                 affected: 'Poor families',
-                coords: { top: '25%', left: '25%', width: '8%', height: '15%' }
+                coords: { top: '40%', left: '25%', width: '8%', height: '15%' }
             },
             {
                 id: 'garbage-pile',
@@ -651,7 +657,7 @@
                 problem: 'Poor waste management',
                 effect: 'Spread of diseases',
                 affected: 'Entire community',
-                coords: { top: '40%', left: '45%', width: '10%', height: '15%' }
+                coords: { top: '70%', left: '50%', width: '10%', height: '15%' }
             },
             {
                 id: 'child-carrying-water',
@@ -659,7 +665,7 @@
                 problem: 'School dropout',
                 effect: 'Lost education and future opportunities',
                 affected: 'Young girls',
-                coords: { top: '60%', left: '80%', width: '8%', height: '20%' }
+                coords: { top: '30%', left: '72%', width: '8%', height: '20%' }
             },
             {
                 id: 'woman-at-borehole',
@@ -667,7 +673,7 @@
                 problem: 'Water scarcity',
                 effect: 'Long walks, lost study time',
                 affected: 'Women and girls',
-                coords: { top: '18%', left: '93%', width: '8%', height: '15%' }
+                coords: { top: '20%', left: '90%', width: '8%', height: '15%' }
             }
         ];
         const TOTAL_ACTIVITIES = activityData.length;
