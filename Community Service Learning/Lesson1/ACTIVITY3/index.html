@@ -505,7 +505,7 @@
                 <img src="images/complete.jpg" alt="Completion celebration" class="end-screen-image">
             </div>
             <div class="end-buttons-bar">
-                <button id="previous-button" class="end-button" onclick="window.location.href='../ACTIVITY2/index.html';">Previous Activity</button>
+                <button id="previous-button" class="end-button" onclick="window.location.href='../ACTIVITY2/index.html'; sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'Community Problem Crossword'});">Previous Activity</button>
                 <button id="play-again-button" class="end-button" onclick="stopOutroAudio(); restartGame()">Restart Activity</button>
                 <button id="next-button" class="end-button" onclick="showKeyTakeaways()">Key Takeaways</button>
             </div>
@@ -954,15 +954,16 @@
         document.getElementById('game-screen').classList.add('hidden');
         document.getElementById('end-screen').classList.remove('hidden');
         playSound(outroAudio);
-        if (typeof sendEvent !== 'undefined' && typeof ActivityEvent !== 'undefined') {
-            sendEvent(ActivityEvent.END_ACTIVITY, {activityName: "Community Problem Crossword"});
-        }
+       
     }
     
     function showKeyTakeaways() {
         stopOutroAudio();
         document.getElementById('end-screen').classList.add('hidden');
         document.getElementById('key-takeaways-overlay').classList.remove('hidden');
+         if (typeof sendEvent !== 'undefined' && typeof ActivityEvent !== 'undefined') {
+            sendEvent(ActivityEvent.END_ACTIVITY, {activityName: "Community Problem Crossword"});
+        }
     }
 
     function closeKeyTakeaways() {

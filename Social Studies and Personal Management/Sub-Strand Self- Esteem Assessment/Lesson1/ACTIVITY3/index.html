@@ -819,7 +819,6 @@
     function goToPreviousActivity() { 
         window.location.href = "../ACTIVITY2/index.html"; 
         stopSound(outroAudio);
-        speechSynthesis.cancel();
         sendEvent(ActivityEvent.END_ACTIVITY, {activityName: 'Otieno & Amina – Dialogue Decision Maker'});
     }
     function ExitLesson() { 

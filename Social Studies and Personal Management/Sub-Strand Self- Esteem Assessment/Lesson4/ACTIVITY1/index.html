@@ -925,7 +925,7 @@
             startBtn.removeAttribute('onclick');
             startBtn.addEventListener('click', () => {
                 startGameWithHint();
-                try { sendEvent(ActivityEvent.START_ACTIVITY, { activityName: 'Build Your Self-Esteem Toolkit' }); } catch(e) { /* ignore */ }
+                try { sendEvent(ActivityEvent.START_ACTIVITY, {activityName: 'Build Your Self-Esteem Toolkit'}); } catch(e) { /* ignore */ }
             });
         }
         function goToNextActivity(){
